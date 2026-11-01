@@ -1,5 +1,6 @@
 import {sparkline, comparisonChart, palette, seriesDashes, escapeHTML as esc} from './charts.js?v=1.2.0';
 import {createHome} from './home.js?v=1.2.0';
+import {createSentiment} from './sentiment.js?v=1.2.1';
 
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
@@ -88,13 +89,7 @@ function renderOverview() {
     const delta=Number.isFinite(prev)&&Number.isFinite(current?.value)?current.value-prev:null;
     return `<div class="breadth-row"><div><span>${label}</span><small title="相比前一交易日的百分點變化" class="${cls(delta)}">1D ${signed(delta,1)}</small><strong>${number(current?.value,0)}<em>%</em></strong></div><div class="breadth-chart">${sparkline(values,{width:330,height:23})}</div><small class="breadth-base">${current?.count??0} / ${current?.total??0} 隻</small></div>`;
   }).join('');
-  const sentiment=data.sentiment;
-  if(sentiment.status==='ok') {
-    const v=sentiment.value, label=v<25?'極度恐懼':v<45?'恐懼':v<=55?'中性':v<=75?'貪婪':'極度貪婪';
-    $('#sentiment-content').innerHTML=`<div class="sentiment-value ${v<45?'negative':v>55?'positive':''}">${number(v,0)}<span>${label}</span></div><div class="sentiment-track"><i style="left:${v}%"></i></div><div class="scale-labels"><span>極度恐懼</span><span>極度貪婪</span></div><div class="sentiment-history"><span>昨收 <b>${number(sentiment.previousClose,0)}</b></span><span>一週前 <b>${number(sentiment.weekAgo,0)}</b></span><span>一月前 <b>${number(sentiment.monthAgo,0)}</b></span></div><p class="panel-footnote">CNN 原指數，非本站合成。時點 ${hkTime(sentiment.asOf)} HKT。</p>`;
-  } else {
-    $('#sentiment-content').innerHTML='<div class="unavailable-visual"><div class="gauge-placeholder"><span>—</span></div><span class="unavailable-badge">來源暫未提供</span></div><p class="unavailable-note">CNN 公開端點未能取得有效數據。此欄保留缺值，待下次更新再試。</p><a class="external-link" href="https://www.cnn.com/markets/fear-and-greed" target="_blank" rel="noopener">到 CNN 查看 ↗</a>';
-  }
+  sentimentPanel.setFallback(data.sentiment);
   $('#macro-content').innerHTML=data.macro.length?data.macro.map(row=>{
     const stale=row.status==='stale', direction=row.changeMonth*row.direction;
     return `<div class="macro-row"><div><a href="${esc(row.url||'https://fred.stlouisfed.org/')}" target="_blank" rel="noopener">${esc(row.name)}</a><small>${esc(row.asOf?.slice(5)||'—')}${stale?' · 舊值':''}</small><strong>${number(row.value,row.id==='DTWEXBGS'?2:2)}${esc(row.unit)}</strong><span class="macro-change ${stale?'muted':cls(direction)}">${signed(row.changeMonth)}</span></div><div class="macro-scale"><span>${row.windowYears||'—'} 年寬鬆百分位</span><div><i style="width:${Math.max(0,Math.min(100,row.easePercentile||0))}%"></i></div><span>${number(row.easePercentile,0)} / 100</span></div></div>`;
@@ -236,7 +231,8 @@ function searchCompare() {
 }
 function renderMethodStatus() {
   const d=state.data;
-  $('#method-status').innerHTML=`<table class="method-status-table"><tbody><tr><td>日線資料</td><td>${esc(d.asOf)} · ${d.meta.currentCount}/${d.meta.universeCount} 隻</td></tr><tr><td>1H 資料覆蓋</td><td>${d.meta.intradayCount} 隻（各列另附時點）</td></tr><tr><td>CNN 恐懼貪婪</td><td>${d.sentiment.status==='ok'?'已取得':'未取得，保留缺值'}</td></tr><tr><td>合約名單</td><td>${d.contracts.status==='ok'?'已取得':'未取得，停用篩選'}</td></tr><tr><td>下載失敗請求</td><td>${d.meta.errors.length} 筆（日線／小時線獨立計數）</td></tr><tr><td>FRED 更新</td><td>${d.meta.macroError?'失敗，顯示舊值或缺值':'成功，使用各列觀測日期'}</td></tr></tbody></table>`;
+  const sentiment=sentimentPanel.data||d.sentiment;
+  $('#method-status').innerHTML=`<table class="method-status-table"><tbody><tr><td>日線資料</td><td>${esc(d.asOf)} · ${d.meta.currentCount}/${d.meta.universeCount} 隻</td></tr><tr><td>1H 資料覆蓋</td><td>${d.meta.intradayCount} 隻（各列另附時點）</td></tr><tr><td>CNN 恐懼貪婪</td><td>${sentiment&&['ok','stale'].includes(sentiment.status)?esc(sentiment.source)+' · '+esc(sentiment.observationDate||sentiment.asOf?.slice(0,10)||'—')+(sentiment.status==='stale'?' · 舊值':''):'未取得，保留缺值'}</td></tr><tr><td>合約名單</td><td>${d.contracts.status==='ok'?'已取得':'未取得，停用篩選'}</td></tr><tr><td>下載失敗請求</td><td>${d.meta.errors.length} 筆（日線／小時線獨立計數）</td></tr><tr><td>FRED 更新</td><td>${d.meta.macroError?'失敗，顯示舊值或缺值':'成功，使用各列觀測日期'}</td></tr></tbody></table>`;
   const weights=d.meta.scoreWeights;
   if(weights)$('#score-formula').textContent=Object.entries(weights).map(([p,w])=>`${w} × 超額 ${p}D`).join(' + ');
   const long=d.meta.longTermWeights;
@@ -282,7 +278,7 @@ document.addEventListener('click',event=>{
 ['method-open','notice-method','footer-method'].forEach(id=>$('#'+id).addEventListener('click',()=>$('#method-dialog').showModal()));
 $$('dialog').forEach(dialog=>dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}}));
 $('#theme-toggle').addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='dark'?'reading':'dark'));
-$('#refresh').addEventListener('click',()=>state.view==='home'?home.load(true):loadData(true));
+$('#refresh').addEventListener('click',()=>state.view==='home'?home.load(true):Promise.allSettled([loadData(true),sentimentPanel.load(true)]));
 $('#overview-toggle').addEventListener('click',()=>{const expanded=$('#overview-toggle').getAttribute('aria-expanded')==='true';$('#overview-grid').hidden=expanded;$('#overview-toggle').setAttribute('aria-expanded',!expanded);$('#overview-toggle').textContent=expanded?'展開 ＋':'收起 −';});
 $('#search').addEventListener('input',event=>{state.search=event.target.value.trim();state.exactSymbol=null;state.page=1;renderTable();});
 [['sector-filter','sector'],['metric-filter','metric'],['operator-filter','operator'],['value-filter','value']].forEach(([id,key])=>$('#'+id).addEventListener(id==='value-filter'?'input':'change',event=>{state[key]=event.target.value;state.page=1;renderTable();}));
@@ -297,6 +293,7 @@ $('#compare-search').addEventListener('input',searchCompare);
 $('#compare-period').addEventListener('change',event=>{state.period=Number(event.target.value);renderComparison();});
 $('#export-chart').addEventListener('click',exportComparison);
 document.addEventListener('keydown',event=>{if(event.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)&&!$('dialog[open]')){event.preventDefault();if(state.view==='home')home.focusSearch();else if(state.view==='compare')$('#compare-search').focus();else $('#search').focus();}});
+const sentimentPanel=createSentiment({document,fetch:window.fetch.bind(window),toast,onUpdate:()=>{if(state.data)renderMethodStatus();}});
 const home=createHome({document,window,fetch:window.fetch.bind(window),download,toast,getView:()=>state.view,
   onView:view=>switchView(view),onCompare:symbol=>{addCompare(symbol);switchView('compare');},
   onStock:symbol=>{switchView('stocks');resetFilters();state.search=symbol;state.exactSymbol=symbol;state.page=1;$('#search').value=symbol;renderTable();$('#rankings').scrollIntoView({behavior:'smooth',block:'start'});},
@@ -305,4 +302,4 @@ window.addEventListener('popstate',()=>switchView(readView(),false));
 const initialSymbol=new URLSearchParams(location.search).get('s');
 if(initialSymbol){state.search=initialSymbol.replace(/^LB:/,'').replace(/\.US$/,'');state.exactSymbol=state.search;$('#search').value=state.search;}
 switchView(state.view,false);
-loadData();home.load();
+loadData();home.load();sentimentPanel.load();

@@ -12,7 +12,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from engine import build_equities, macro_summary
-from providers import cached_chart, fetch_contracts, fetch_fred, fetch_sentiment, parse_chart
+from providers import cached_chart, fetch_contracts, fetch_fred, parse_chart
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -21,7 +21,7 @@ def run():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--refresh", action="store_true", help="Ignore cache TTLs")
     parser.add_argument("--workers", type=int, help="Download concurrency, 1–8")
-    parser.add_argument("--skip-optional", action="store_true", help="Skip CNN and Binance")
+    parser.add_argument("--skip-optional", action="store_true", help="Skip sentiment sources and Binance")
     args = parser.parse_args()
     settings = json.loads((ROOT / "config/settings.json").read_text())
     universe = json.loads((ROOT / "config/universe.json").read_text())
@@ -64,9 +64,13 @@ def run():
     except Exception as exc:
         result["macro"] = [{**row, "status": "stale"} for row in prior.get("macro", [])]
         macro_error = str(exc)[:180]
-    result["sentiment"] = fetch_sentiment() if not args.skip_optional else {"status": "unavailable", "value": None, "reason": "Skipped by configuration"}
+    if not args.skip_optional:
+        from update_sentiment import update_sentiment_snapshot
+        result["sentiment"] = update_sentiment_snapshot(ROOT, previous=prior.get("sentiment"))
+    else:
+        result["sentiment"] = prior.get("sentiment") or {"status":"unavailable","value":None,"reason":"Skipped by configuration"}
     result["contracts"] = fetch_contracts({s["symbol"] for s in universe["stocks"]}) if not args.skip_optional else {"status": "unavailable", "symbols": []}
-    result["meta"] = {"schemaVersion": 1, "generatedAt": datetime.now(timezone.utc).isoformat(), "downloadStartedAt": now.isoformat(), "source": "Yahoo Finance public chart / FRED / CNN / Binance",
+    result["meta"] = {"schemaVersion": 1, "generatedAt": datetime.now(timezone.utc).isoformat(), "downloadStartedAt": now.isoformat(), "source": "Yahoo Finance public chart / FRED / CNN index via MacroMicro or CNN / Binance",
                       "universeDate": universe["capturedAt"], "universeCount": len(universe["stocks"]), "currentCount": valid,
                       "coverage": round(coverage, 4), "intradayCount": sum(r["intra"]["h1"] is not None for r in result["rows"]),
                       "scoreFormula": "0.5 × excess(1 trading day) + 0.3 × excess(5 trading days) + 0.2 × excess(20 trading days)",

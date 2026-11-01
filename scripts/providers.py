@@ -15,7 +15,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 UTC = timezone.utc
-HEADERS = {"User-Agent": "OpenRS/1.0 (personal research dashboard)"}
+HEADERS = {"User-Agent": "LokiRS/1.2.1 (public market research dashboard)"}
 FRED_IDS = ["WALCL", "WTREGEN", "RRPONTSYD", "BAMLH0A0HYM2", "BAMLC0A0CM", "NFCI", "DTWEXBGS", "DFII10"]
 
 
@@ -137,20 +137,9 @@ def fetch_fred(cache: Path, refresh: bool = False) -> dict:
     return parse_fred(path.read_bytes())
 
 
-def fetch_sentiment() -> dict:
-    url = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
-    try:
-        data = json.loads(fetch_bytes(url, attempts=1))
-        fg = data["fear_and_greed"]
-        value = float(fg["score"])
-        if not 0 <= value <= 100:
-            raise ValueError("Invalid CNN score")
-        return {"status": "ok", "source": "CNN", "url": "https://www.cnn.com/markets/fear-and-greed", "value": value,
-                "rating": fg.get("rating"), "asOf": fg.get("timestamp"), "previousClose": fg.get("previous_close"),
-                "weekAgo": fg.get("previous_1_week"), "monthAgo": fg.get("previous_1_month"), "yearAgo": fg.get("previous_1_year")}
-    except Exception as exc:
-        return {"status": "unavailable", "source": "CNN", "value": None, "reason": str(exc)[:180],
-                "url": "https://www.cnn.com/markets/fear-and-greed"}
+def fetch_sentiment(previous=None) -> dict:
+    from sentiment_sources import fetch_index
+    return fetch_index(lambda url: fetch_bytes(url, attempts=1), previous=previous)
 
 
 def stock_contract_symbols(data: dict, symbols: set[str]) -> list[str]:
