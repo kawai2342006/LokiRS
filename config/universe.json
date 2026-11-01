@@ -1,0 +1,3691 @@
+{
+  "source": "https://lazyrs.trade/?tab=stocks",
+  "capturedAt": "2026-11-01",
+  "description": "Only public symbol, name and sector metadata. Prices and calculations are independently fetched. This is a fixed universe snapshot; edit to add/remove symbols.",
+  "stocks": [
+    {
+      "symbol": "A",
+      "name": "Agilent Technologies",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "AAPL",
+      "name": "Apple Inc.",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "ABBV",
+      "name": "AbbVie",
+      "sector": "PPH",
+      "sectorName": "製藥"
+    },
+    {
+      "symbol": "ABNB",
+      "name": "Airbnb",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "ABT",
+      "name": "Abbott Laboratories",
+      "sector": "IHI",
+      "sectorName": "醫療器械"
+    },
+    {
+      "symbol": "ACGL",
+      "name": "Arch Capital Group",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "ACN",
+      "name": "Accenture",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "ADBE",
+      "name": "Adobe Inc.",
+      "sector": "IGV",
+      "sectorName": "軟件"
+    },
+    {
+      "symbol": "ADI",
+      "name": "Analog Devices",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "ADM",
+      "name": "Archer Daniels Midland",
+      "sector": "MOO",
+      "sectorName": "農業企業"
+    },
+    {
+      "symbol": "ADP",
+      "name": "Automatic Data Processing",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "ADSK",
+      "name": "Autodesk",
+      "sector": "IGV",
+      "sectorName": "軟件"
+    },
+    {
+      "symbol": "AEE",
+      "name": "Ameren",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "AEP",
+      "name": "American Electric Power",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "AES",
+      "name": "AES Corporation",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "AFL",
+      "name": "Aflac",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "AFRM",
+      "name": "Affirm",
+      "sector": "IPAY",
+      "sectorName": "支付"
+    },
+    {
+      "symbol": "AIG",
+      "name": "American International Group",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "AIZ",
+      "name": "Assurant",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "AJG",
+      "name": "Arthur J. Gallagher & Co.",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "AKAM",
+      "name": "Akamai Technologies",
+      "sector": "HACK",
+      "sectorName": "網絡安全"
+    },
+    {
+      "symbol": "ALAB",
+      "name": "Astera Labs",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "ALB",
+      "name": "Albemarle Corporation",
+      "sector": "XME",
+      "sectorName": "金屬與礦業"
+    },
+    {
+      "symbol": "ALGN",
+      "name": "Align Technology",
+      "sector": "IHI",
+      "sectorName": "醫療器械"
+    },
+    {
+      "symbol": "ALL",
+      "name": "Allstate",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "ALLE",
+      "name": "Allegion",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "AMAT",
+      "name": "Applied Materials",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "AMCR",
+      "name": "Amcor",
+      "sector": "XLB",
+      "sectorName": "原材料"
+    },
+    {
+      "symbol": "AMD",
+      "name": "Advanced Micro Devices",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "AME",
+      "name": "Ametek",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "AMGN",
+      "name": "Amgen",
+      "sector": "XBI",
+      "sectorName": "生物科技（XBI）"
+    },
+    {
+      "symbol": "AMP",
+      "name": "Ameriprise Financial",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "AMT",
+      "name": "American Tower",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "AMX",
+      "name": "America Movil S.A.B. de C.V.",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "AMZN",
+      "name": "Amazon",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "ANET",
+      "name": "Arista Networks",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "AON",
+      "name": "Aon plc",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "AOS",
+      "name": "A. O. Smith",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "APA",
+      "name": "APA Corporation",
+      "sector": "XOP",
+      "sectorName": "油氣開採"
+    },
+    {
+      "symbol": "APD",
+      "name": "Air Products",
+      "sector": "XLB",
+      "sectorName": "原材料"
+    },
+    {
+      "symbol": "APH",
+      "name": "Amphenol",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "APO",
+      "name": "Apollo Global Management",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "APP",
+      "name": "AppLovin",
+      "sector": "IGV",
+      "sectorName": "軟件"
+    },
+    {
+      "symbol": "APTV",
+      "name": "Aptiv",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "ARE",
+      "name": "Alexandria Real Estate Equities",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "ARES",
+      "name": "Ares Management",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "ARGX",
+      "name": "argenx",
+      "sector": "XBI",
+      "sectorName": "生物科技（XBI）"
+    },
+    {
+      "symbol": "ARM",
+      "name": "Arm Holdings",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "ASML",
+      "name": "ASML",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "ASTS",
+      "name": "AST SpaceMobile",
+      "sector": "ITA",
+      "sectorName": "國防航天"
+    },
+    {
+      "symbol": "ASX",
+      "name": "ASE Technology",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "ATO",
+      "name": "Atmos Energy",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "AU",
+      "name": "AngloGold Ashanti PLC",
+      "sector": "GDX",
+      "sectorName": "金礦"
+    },
+    {
+      "symbol": "AVGO",
+      "name": "Broadcom",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "AVY",
+      "name": "Avery Dennison",
+      "sector": "XLB",
+      "sectorName": "原材料"
+    },
+    {
+      "symbol": "AWK",
+      "name": "American Water Works",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "AXON",
+      "name": "Axon Enterprise",
+      "sector": "ITA",
+      "sectorName": "國防航天"
+    },
+    {
+      "symbol": "AXP",
+      "name": "American Express",
+      "sector": "IPAY",
+      "sectorName": "支付"
+    },
+    {
+      "symbol": "AZN",
+      "name": "AstraZeneca",
+      "sector": "PPH",
+      "sectorName": "製藥"
+    },
+    {
+      "symbol": "AZO",
+      "name": "AutoZone",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "BA",
+      "name": "Boeing",
+      "sector": "ITA",
+      "sectorName": "國防航天"
+    },
+    {
+      "symbol": "BABA",
+      "name": "Alibaba",
+      "sector": "KWEB",
+      "sectorName": "中概互聯網"
+    },
+    {
+      "symbol": "BAC",
+      "name": "Bank of America",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "BALL",
+      "name": "Ball Corporation",
+      "sector": "XLB",
+      "sectorName": "原材料"
+    },
+    {
+      "symbol": "BAM",
+      "name": "Brookfield Asset Management Inc Class A Limited Voting Shares",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "BAX",
+      "name": "Baxter International",
+      "sector": "IHI",
+      "sectorName": "醫療器械"
+    },
+    {
+      "symbol": "BB",
+      "name": "BlackBerry",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "BBY",
+      "name": "Best Buy",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "BCS",
+      "name": "Barclays PLC",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "BDX",
+      "name": "Becton Dickinson",
+      "sector": "IHI",
+      "sectorName": "醫療器械"
+    },
+    {
+      "symbol": "BE",
+      "name": "Bloom Energy",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "BEN",
+      "name": "Franklin Resources",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "BF-B",
+      "name": "Brown–Forman",
+      "sector": "PBJ",
+      "sectorName": "食品飲料"
+    },
+    {
+      "symbol": "BG",
+      "name": "Bunge Global",
+      "sector": "MOO",
+      "sectorName": "農業企業"
+    },
+    {
+      "symbol": "BHP",
+      "name": "BHP Group Limited",
+      "sector": "XME",
+      "sectorName": "金屬與礦業"
+    },
+    {
+      "symbol": "BIIB",
+      "name": "Biogen",
+      "sector": "XBI",
+      "sectorName": "生物科技（XBI）"
+    },
+    {
+      "symbol": "BKNG",
+      "name": "Booking Holdings",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "BKR",
+      "name": "Baker Hughes",
+      "sector": "OIH",
+      "sectorName": "油田服務"
+    },
+    {
+      "symbol": "BLDR",
+      "name": "Builders FirstSource",
+      "sector": "XHB",
+      "sectorName": "房屋建築"
+    },
+    {
+      "symbol": "BLK",
+      "name": "BlackRock",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "BMY",
+      "name": "Bristol Myers Squibb",
+      "sector": "PPH",
+      "sectorName": "製藥"
+    },
+    {
+      "symbol": "BNY",
+      "name": "BNY Mellon",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "BP",
+      "name": "BP",
+      "sector": "XLE",
+      "sectorName": "能源"
+    },
+    {
+      "symbol": "BR",
+      "name": "Broadridge Financial Solutions",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "BRK-B",
+      "name": "Berkshire Hathaway",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "BRO",
+      "name": "Brown & Brown",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "BSX",
+      "name": "Boston Scientific",
+      "sector": "IHI",
+      "sectorName": "醫療器械"
+    },
+    {
+      "symbol": "BTI",
+      "name": "British American Tobacco",
+      "sector": "XLP",
+      "sectorName": "必需消費"
+    },
+    {
+      "symbol": "BUD",
+      "name": "Anheuser-Busch Inbev SA Sponsored ADR (Belgium)",
+      "sector": "PBJ",
+      "sectorName": "食品飲料"
+    },
+    {
+      "symbol": "BX",
+      "name": "Blackstone Inc.",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "BXP",
+      "name": "BXP, Inc.",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "C",
+      "name": "Citigroup",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "CAG",
+      "name": "Conagra Brands",
+      "sector": "PBJ",
+      "sectorName": "食品飲料"
+    },
+    {
+      "symbol": "CAH",
+      "name": "Cardinal Health",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "CARR",
+      "name": "Carrier Global",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "CASY",
+      "name": "Casey's",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "CAT",
+      "name": "Caterpillar Inc.",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "CB",
+      "name": "Chubb Limited",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "CBOE",
+      "name": "Cboe Global Markets",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "CBRE",
+      "name": "CBRE Group",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "CBRS",
+      "name": "Cerebras Systems",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "CCEP",
+      "name": "Coca-Cola Europacific Partners plc",
+      "sector": "XLP",
+      "sectorName": "必需消費"
+    },
+    {
+      "symbol": "CCI",
+      "name": "Crown Castle",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "CCL",
+      "name": "Carnival Corporation",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "CDNS",
+      "name": "Cadence Design Systems",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "CDW",
+      "name": "CDW Corporation",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "CEG",
+      "name": "Constellation Energy",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "CF",
+      "name": "CF Industries",
+      "sector": "MOO",
+      "sectorName": "農業企業"
+    },
+    {
+      "symbol": "CFG",
+      "name": "Citizens Financial Group",
+      "sector": "KRE",
+      "sectorName": "區域銀行"
+    },
+    {
+      "symbol": "CHD",
+      "name": "Church & Dwight",
+      "sector": "XLP",
+      "sectorName": "必需消費"
+    },
+    {
+      "symbol": "CHRW",
+      "name": "C.H. Robinson",
+      "sector": "IYT",
+      "sectorName": "運輸"
+    },
+    {
+      "symbol": "CHTR",
+      "name": "Charter Communications",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "CI",
+      "name": "Cigna",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "CIEN",
+      "name": "Ciena",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "CINF",
+      "name": "Cincinnati Financial",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "CL",
+      "name": "Colgate-Palmolive",
+      "sector": "XLP",
+      "sectorName": "必需消費"
+    },
+    {
+      "symbol": "CLSK",
+      "name": "CleanSpark",
+      "sector": "BLOK",
+      "sectorName": "加密概念"
+    },
+    {
+      "symbol": "CLX",
+      "name": "Clorox",
+      "sector": "XLP",
+      "sectorName": "必需消費"
+    },
+    {
+      "symbol": "CMCSA",
+      "name": "Comcast",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "CME",
+      "name": "CME Group",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "CMG",
+      "name": "Chipotle Mexican Grill",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "CMI",
+      "name": "Cummins",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "CMS",
+      "name": "CMS Energy",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "CNC",
+      "name": "Centene Corporation",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "CNP",
+      "name": "CenterPoint Energy",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "COF",
+      "name": "Capital One",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "COHR",
+      "name": "Coherent Corp.",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "COIN",
+      "name": "Coinbase",
+      "sector": "BLOK",
+      "sectorName": "加密概念"
+    },
+    {
+      "symbol": "COO",
+      "name": "Cooper Companies (The)",
+      "sector": "IHI",
+      "sectorName": "醫療器械"
+    },
+    {
+      "symbol": "COP",
+      "name": "ConocoPhillips",
+      "sector": "XOP",
+      "sectorName": "油氣開採"
+    },
+    {
+      "symbol": "COR",
+      "name": "Cencora",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "COST",
+      "name": "Costco",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "CPAY",
+      "name": "Corpay",
+      "sector": "IPAY",
+      "sectorName": "支付"
+    },
+    {
+      "symbol": "CPRT",
+      "name": "Copart",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "CPT",
+      "name": "Camden Property Trust",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "CRH",
+      "name": "CRH plc",
+      "sector": "PAVE",
+      "sectorName": "基建"
+    },
+    {
+      "symbol": "CRL",
+      "name": "Charles River Laboratories",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "CRM",
+      "name": "Salesforce",
+      "sector": "IGV",
+      "sectorName": "軟件"
+    },
+    {
+      "symbol": "CRWD",
+      "name": "CrowdStrike",
+      "sector": "HACK",
+      "sectorName": "網絡安全"
+    },
+    {
+      "symbol": "CRWV",
+      "name": "CoreWeave",
+      "sector": "SKYY",
+      "sectorName": "雲計算"
+    },
+    {
+      "symbol": "CSCO",
+      "name": "Cisco",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "CSGP",
+      "name": "CoStar Group",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "CSX",
+      "name": "CSX Corporation",
+      "sector": "IYT",
+      "sectorName": "運輸"
+    },
+    {
+      "symbol": "CTAS",
+      "name": "Cintas",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "CTSH",
+      "name": "Cognizant",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "CTVA",
+      "name": "Corteva",
+      "sector": "MOO",
+      "sectorName": "農業企業"
+    },
+    {
+      "symbol": "CVNA",
+      "name": "Carvana",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "CVS",
+      "name": "CVS Health",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "CVX",
+      "name": "Chevron Corporation",
+      "sector": "XLE",
+      "sectorName": "能源"
+    },
+    {
+      "symbol": "D",
+      "name": "Dominion Energy",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "DAL",
+      "name": "Delta Air Lines",
+      "sector": "JETS",
+      "sectorName": "航空"
+    },
+    {
+      "symbol": "DASH",
+      "name": "DoorDash",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "DD",
+      "name": "DuPont",
+      "sector": "XLB",
+      "sectorName": "原材料"
+    },
+    {
+      "symbol": "DDOG",
+      "name": "Datadog",
+      "sector": "IGV",
+      "sectorName": "軟件"
+    },
+    {
+      "symbol": "DE",
+      "name": "Deere & Company",
+      "sector": "MOO",
+      "sectorName": "農業企業"
+    },
+    {
+      "symbol": "DECK",
+      "name": "Deckers Brands",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "DELL",
+      "name": "Dell Technologies",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "DG",
+      "name": "Dollar General",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "DGX",
+      "name": "Quest Diagnostics",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "DHI",
+      "name": "D. R. Horton",
+      "sector": "XHB",
+      "sectorName": "房屋建築"
+    },
+    {
+      "symbol": "DHR",
+      "name": "Danaher Corporation",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "DIS",
+      "name": "Walt Disney Company (The)",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "DKNG",
+      "name": "DraftKings",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "DLR",
+      "name": "Digital Realty",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "DLTR",
+      "name": "Dollar Tree",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "DOC",
+      "name": "Healthpeak Properties",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "DOV",
+      "name": "Dover Corporation",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "DOW",
+      "name": "Dow Inc.",
+      "sector": "XLB",
+      "sectorName": "原材料"
+    },
+    {
+      "symbol": "DPZ",
+      "name": "Domino's",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "DRI",
+      "name": "Darden Restaurants",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "DTE",
+      "name": "DTE Energy",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "DUK",
+      "name": "Duke Energy",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "DVA",
+      "name": "DaVita",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "DVN",
+      "name": "Devon Energy",
+      "sector": "XOP",
+      "sectorName": "油氣開採"
+    },
+    {
+      "symbol": "DXCM",
+      "name": "Dexcom",
+      "sector": "IHI",
+      "sectorName": "醫療器械"
+    },
+    {
+      "symbol": "EBAY",
+      "name": "eBay Inc.",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "ECHO",
+      "name": "EchoStar",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "ECL",
+      "name": "Ecolab",
+      "sector": "XLB",
+      "sectorName": "原材料"
+    },
+    {
+      "symbol": "ED",
+      "name": "Consolidated Edison",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "EFX",
+      "name": "Equifax",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "EG",
+      "name": "Everest Group",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "EIX",
+      "name": "Edison International",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "EL",
+      "name": "Estée Lauder Companies (The)",
+      "sector": "XLP",
+      "sectorName": "必需消費"
+    },
+    {
+      "symbol": "ELV",
+      "name": "Elevance Health",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "EME",
+      "name": "Emcor",
+      "sector": "PAVE",
+      "sectorName": "基建"
+    },
+    {
+      "symbol": "EMR",
+      "name": "Emerson Electric",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "EOG",
+      "name": "EOG Resources",
+      "sector": "XOP",
+      "sectorName": "油氣開採"
+    },
+    {
+      "symbol": "EPD",
+      "name": "Enterprise Products Partners L.P.",
+      "sector": "XLE",
+      "sectorName": "能源"
+    },
+    {
+      "symbol": "EQIX",
+      "name": "Equinix",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "EQNR",
+      "name": "Equinor ASA",
+      "sector": "XLE",
+      "sectorName": "能源"
+    },
+    {
+      "symbol": "EQT",
+      "name": "EQT Corporation",
+      "sector": "XOP",
+      "sectorName": "油氣開採"
+    },
+    {
+      "symbol": "ERIE",
+      "name": "Erie Indemnity",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "ES",
+      "name": "Eversource Energy",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "ESS",
+      "name": "Essex Property Trust",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "ET",
+      "name": "Energy Transfer",
+      "sector": "XLE",
+      "sectorName": "能源"
+    },
+    {
+      "symbol": "ETN",
+      "name": "Eaton Corporation",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "ETR",
+      "name": "Entergy",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "EVRG",
+      "name": "Evergy",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "EW",
+      "name": "Edwards Lifesciences",
+      "sector": "IHI",
+      "sectorName": "醫療器械"
+    },
+    {
+      "symbol": "EXC",
+      "name": "Exelon",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "EXE",
+      "name": "Expand Energy",
+      "sector": "XOP",
+      "sectorName": "油氣開採"
+    },
+    {
+      "symbol": "EXPD",
+      "name": "Expeditors International",
+      "sector": "IYT",
+      "sectorName": "運輸"
+    },
+    {
+      "symbol": "EXPE",
+      "name": "Expedia Group",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "EXR",
+      "name": "Extra Space Storage",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "F",
+      "name": "Ford Motor Company",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "FANG",
+      "name": "Diamondback Energy",
+      "sector": "XOP",
+      "sectorName": "油氣開採"
+    },
+    {
+      "symbol": "FAST",
+      "name": "Fastenal",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "FCX",
+      "name": "Freeport-McMoRan",
+      "sector": "XME",
+      "sectorName": "金屬與礦業"
+    },
+    {
+      "symbol": "FDS",
+      "name": "FactSet",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "FDX",
+      "name": "FedEx",
+      "sector": "IYT",
+      "sectorName": "運輸"
+    },
+    {
+      "symbol": "FDXF",
+      "name": "FedEx Freight",
+      "sector": "IYT",
+      "sectorName": "運輸"
+    },
+    {
+      "symbol": "FE",
+      "name": "FirstEnergy",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "FERG",
+      "name": "Ferguson Enterprises",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "FFIV",
+      "name": "F5, Inc.",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "FICO",
+      "name": "Fair Isaac",
+      "sector": "IGV",
+      "sectorName": "軟件"
+    },
+    {
+      "symbol": "FIS",
+      "name": "Fidelity National Information Services",
+      "sector": "IPAY",
+      "sectorName": "支付"
+    },
+    {
+      "symbol": "FISV",
+      "name": "Fiserv",
+      "sector": "IPAY",
+      "sectorName": "支付"
+    },
+    {
+      "symbol": "FITB",
+      "name": "Fifth Third Bancorp",
+      "sector": "KRE",
+      "sectorName": "區域銀行"
+    },
+    {
+      "symbol": "FIX",
+      "name": "Comfort Systems USA",
+      "sector": "PAVE",
+      "sectorName": "基建"
+    },
+    {
+      "symbol": "FLEX",
+      "name": "Flex Ltd.",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "FOX",
+      "name": "Fox Corporation (Class B)",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "FOXA",
+      "name": "Fox Corporation (Class A)",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "FRT",
+      "name": "Federal Realty Investment Trust",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "FSLR",
+      "name": "First Solar",
+      "sector": "TAN",
+      "sectorName": "太陽能"
+    },
+    {
+      "symbol": "FTNT",
+      "name": "Fortinet",
+      "sector": "HACK",
+      "sectorName": "網絡安全"
+    },
+    {
+      "symbol": "FTV",
+      "name": "Fortive",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "GD",
+      "name": "General Dynamics",
+      "sector": "ITA",
+      "sectorName": "國防航天"
+    },
+    {
+      "symbol": "GDDY",
+      "name": "GoDaddy",
+      "sector": "IGV",
+      "sectorName": "軟件"
+    },
+    {
+      "symbol": "GE",
+      "name": "GE Aerospace",
+      "sector": "ITA",
+      "sectorName": "國防航天"
+    },
+    {
+      "symbol": "GEHC",
+      "name": "GE HealthCare",
+      "sector": "IHI",
+      "sectorName": "醫療器械"
+    },
+    {
+      "symbol": "GEN",
+      "name": "Gen Digital",
+      "sector": "HACK",
+      "sectorName": "網絡安全"
+    },
+    {
+      "symbol": "GEV",
+      "name": "GE Vernova",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "GILD",
+      "name": "Gilead Sciences",
+      "sector": "XBI",
+      "sectorName": "生物科技（XBI）"
+    },
+    {
+      "symbol": "GIS",
+      "name": "General Mills",
+      "sector": "PBJ",
+      "sectorName": "食品飲料"
+    },
+    {
+      "symbol": "GL",
+      "name": "Globe Life",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "GLW",
+      "name": "Corning Inc.",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "GM",
+      "name": "General Motors",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "GNRC",
+      "name": "Generac",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "GOOG",
+      "name": "Alphabet Inc. (Class C)",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "GOOGL",
+      "name": "Alphabet Inc. (Class A)",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "GPC",
+      "name": "Genuine Parts Company",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "GPN",
+      "name": "Global Payments",
+      "sector": "IPAY",
+      "sectorName": "支付"
+    },
+    {
+      "symbol": "GRMN",
+      "name": "Garmin",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "GS",
+      "name": "Goldman Sachs",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "GSK",
+      "name": "GSK plc",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "GWW",
+      "name": "W. W. Grainger",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "HAL",
+      "name": "Halliburton",
+      "sector": "OIH",
+      "sectorName": "油田服務"
+    },
+    {
+      "symbol": "HAS",
+      "name": "Hasbro",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "HBAN",
+      "name": "Huntington Bancshares",
+      "sector": "KRE",
+      "sectorName": "區域銀行"
+    },
+    {
+      "symbol": "HCA",
+      "name": "HCA Healthcare",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "HD",
+      "name": "Home Depot (The)",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "HDB",
+      "name": "HDFC Bank Limited",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "HIG",
+      "name": "Hartford (The)",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "HII",
+      "name": "Huntington Ingalls Industries",
+      "sector": "ITA",
+      "sectorName": "國防航天"
+    },
+    {
+      "symbol": "HIMS",
+      "name": "Hims & Hers",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "HLT",
+      "name": "Hilton Worldwide",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "HON",
+      "name": "Honeywell",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "HONA",
+      "name": "Honeywell Aerospace",
+      "sector": "ITA",
+      "sectorName": "國防航天"
+    },
+    {
+      "symbol": "HOOD",
+      "name": "Robinhood Markets",
+      "sector": "BLOK",
+      "sectorName": "加密概念"
+    },
+    {
+      "symbol": "HPE",
+      "name": "Hewlett Packard Enterprise",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "HPQ",
+      "name": "HP Inc.",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "HRL",
+      "name": "Hormel Foods",
+      "sector": "PBJ",
+      "sectorName": "食品飲料"
+    },
+    {
+      "symbol": "HSBC",
+      "name": "HSBC Holdings plc.",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "HSIC",
+      "name": "Henry Schein",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "HST",
+      "name": "Host Hotels & Resorts",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "HSY",
+      "name": "Hershey Company (The)",
+      "sector": "PBJ",
+      "sectorName": "食品飲料"
+    },
+    {
+      "symbol": "HUBB",
+      "name": "Hubbell Incorporated",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "HUM",
+      "name": "Humana",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "HWM",
+      "name": "Howmet Aerospace",
+      "sector": "ITA",
+      "sectorName": "國防航天"
+    },
+    {
+      "symbol": "IBKR",
+      "name": "Interactive Brokers",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "IBM",
+      "name": "IBM",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "IBN",
+      "name": "ICICI Bank Limited",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "ICE",
+      "name": "Intercontinental Exchange",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "IDXX",
+      "name": "Idexx Laboratories",
+      "sector": "IHI",
+      "sectorName": "醫療器械"
+    },
+    {
+      "symbol": "IEX",
+      "name": "IDEX Corporation",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "IFF",
+      "name": "International Flavors & Fragrances",
+      "sector": "XLB",
+      "sectorName": "原材料"
+    },
+    {
+      "symbol": "ILMN",
+      "name": "Illumina, Inc.",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "INCY",
+      "name": "Incyte",
+      "sector": "XBI",
+      "sectorName": "生物科技（XBI）"
+    },
+    {
+      "symbol": "INFY",
+      "name": "Infosys Limited",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "INTC",
+      "name": "Intel",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "INTU",
+      "name": "Intuit",
+      "sector": "IGV",
+      "sectorName": "軟件"
+    },
+    {
+      "symbol": "INVH",
+      "name": "Invitation Homes",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "IONQ",
+      "name": "IonQ",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "IP",
+      "name": "International Paper",
+      "sector": "XLB",
+      "sectorName": "原材料"
+    },
+    {
+      "symbol": "IQV",
+      "name": "IQVIA",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "IR",
+      "name": "Ingersoll Rand",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "IREN",
+      "name": "IREN",
+      "sector": "BLOK",
+      "sectorName": "加密概念"
+    },
+    {
+      "symbol": "IRM",
+      "name": "Iron Mountain",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "ISRG",
+      "name": "Intuitive Surgical",
+      "sector": "IHI",
+      "sectorName": "醫療器械"
+    },
+    {
+      "symbol": "IT",
+      "name": "Gartner",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "ITUB",
+      "name": "Itau Unibanco Banco Holding SA",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "ITW",
+      "name": "Illinois Tool Works",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "IVZ",
+      "name": "Invesco",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "J",
+      "name": "Jacobs Solutions",
+      "sector": "PAVE",
+      "sectorName": "基建"
+    },
+    {
+      "symbol": "JBHT",
+      "name": "J.B. Hunt",
+      "sector": "IYT",
+      "sectorName": "運輸"
+    },
+    {
+      "symbol": "JBL",
+      "name": "Jabil",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "JCI",
+      "name": "Johnson Controls",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "JKHY",
+      "name": "Jack Henry & Associates",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "JNJ",
+      "name": "Johnson & Johnson",
+      "sector": "PPH",
+      "sectorName": "製藥"
+    },
+    {
+      "symbol": "JPM",
+      "name": "JPMorgan Chase",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "KDP",
+      "name": "Keurig Dr Pepper",
+      "sector": "PBJ",
+      "sectorName": "食品飲料"
+    },
+    {
+      "symbol": "KEY",
+      "name": "KeyCorp",
+      "sector": "KRE",
+      "sectorName": "區域銀行"
+    },
+    {
+      "symbol": "KEYS",
+      "name": "Keysight Technologies",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "KHC",
+      "name": "Kraft Heinz",
+      "sector": "PBJ",
+      "sectorName": "食品飲料"
+    },
+    {
+      "symbol": "KIM",
+      "name": "Kimco Realty",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "KKR",
+      "name": "KKR & Co.",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "KLAC",
+      "name": "KLA Corporation",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "KMB",
+      "name": "Kimberly-Clark",
+      "sector": "XLP",
+      "sectorName": "必需消費"
+    },
+    {
+      "symbol": "KMI",
+      "name": "Kinder Morgan",
+      "sector": "XLE",
+      "sectorName": "能源"
+    },
+    {
+      "symbol": "KO",
+      "name": "Coca-Cola Company (The)",
+      "sector": "PBJ",
+      "sectorName": "食品飲料"
+    },
+    {
+      "symbol": "KR",
+      "name": "Kroger",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "KVUE",
+      "name": "Kenvue",
+      "sector": "XLP",
+      "sectorName": "必需消費"
+    },
+    {
+      "symbol": "L",
+      "name": "Loews Corporation",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "LDOS",
+      "name": "Leidos",
+      "sector": "ITA",
+      "sectorName": "國防航天"
+    },
+    {
+      "symbol": "LEN",
+      "name": "Lennar",
+      "sector": "XHB",
+      "sectorName": "房屋建築"
+    },
+    {
+      "symbol": "LH",
+      "name": "Labcorp",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "LHX",
+      "name": "L3Harris",
+      "sector": "ITA",
+      "sectorName": "國防航天"
+    },
+    {
+      "symbol": "LII",
+      "name": "Lennox International",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "LIN",
+      "name": "Linde plc",
+      "sector": "XLB",
+      "sectorName": "原材料"
+    },
+    {
+      "symbol": "LITE",
+      "name": "Lumentum",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "LLY",
+      "name": "Lilly (Eli)",
+      "sector": "PPH",
+      "sectorName": "製藥"
+    },
+    {
+      "symbol": "LMT",
+      "name": "Lockheed Martin",
+      "sector": "ITA",
+      "sectorName": "國防航天"
+    },
+    {
+      "symbol": "LNG",
+      "name": "Cheniere Energy",
+      "sector": "XLE",
+      "sectorName": "能源"
+    },
+    {
+      "symbol": "LNT",
+      "name": "Alliant Energy",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "LOW",
+      "name": "Lowe's",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "LRCX",
+      "name": "Lam Research",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "LULU",
+      "name": "Lululemon Athletica",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "LUV",
+      "name": "Southwest Airlines",
+      "sector": "JETS",
+      "sectorName": "航空"
+    },
+    {
+      "symbol": "LVS",
+      "name": "Las Vegas Sands",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "LYB",
+      "name": "LyondellBasell",
+      "sector": "XLB",
+      "sectorName": "原材料"
+    },
+    {
+      "symbol": "LYG",
+      "name": "Lloyds Banking Group Plc",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "LYV",
+      "name": "Live Nation Entertainment",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "MA",
+      "name": "Mastercard",
+      "sector": "IPAY",
+      "sectorName": "支付"
+    },
+    {
+      "symbol": "MAA",
+      "name": "Mid-America Apartment Communities",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "MAR",
+      "name": "Marriott International",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "MARA",
+      "name": "MARA",
+      "sector": "BLOK",
+      "sectorName": "加密概念"
+    },
+    {
+      "symbol": "MAS",
+      "name": "Masco",
+      "sector": "XHB",
+      "sectorName": "房屋建築"
+    },
+    {
+      "symbol": "MCD",
+      "name": "McDonald's",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "MCHP",
+      "name": "Microchip Technology",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "MCK",
+      "name": "McKesson Corporation",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "MCO",
+      "name": "Moody's Corporation",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "MDB",
+      "name": "MongoDB",
+      "sector": "IGV",
+      "sectorName": "軟件"
+    },
+    {
+      "symbol": "MDLZ",
+      "name": "Mondelez International",
+      "sector": "PBJ",
+      "sectorName": "食品飲料"
+    },
+    {
+      "symbol": "MDT",
+      "name": "Medtronic",
+      "sector": "IHI",
+      "sectorName": "醫療器械"
+    },
+    {
+      "symbol": "MELI",
+      "name": "MercadoLibre",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "MET",
+      "name": "MetLife",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "META",
+      "name": "Meta Platforms",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "MGM",
+      "name": "MGM Resorts",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "MKC",
+      "name": "McCormick & Company",
+      "sector": "PBJ",
+      "sectorName": "食品飲料"
+    },
+    {
+      "symbol": "MLM",
+      "name": "Martin Marietta Materials",
+      "sector": "PAVE",
+      "sectorName": "基建"
+    },
+    {
+      "symbol": "MMM",
+      "name": "3M",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "MNST",
+      "name": "Monster Beverage",
+      "sector": "PBJ",
+      "sectorName": "食品飲料"
+    },
+    {
+      "symbol": "MO",
+      "name": "Altria",
+      "sector": "XLP",
+      "sectorName": "必需消費"
+    },
+    {
+      "symbol": "MOS",
+      "name": "Mosaic Company (The)",
+      "sector": "MOO",
+      "sectorName": "農業企業"
+    },
+    {
+      "symbol": "MPC",
+      "name": "Marathon Petroleum",
+      "sector": "XLE",
+      "sectorName": "能源"
+    },
+    {
+      "symbol": "MPWR",
+      "name": "Monolithic Power Systems",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "MRK",
+      "name": "Merck & Co.",
+      "sector": "PPH",
+      "sectorName": "製藥"
+    },
+    {
+      "symbol": "MRNA",
+      "name": "Moderna",
+      "sector": "XBI",
+      "sectorName": "生物科技（XBI）"
+    },
+    {
+      "symbol": "MRSH",
+      "name": "Marsh McLennan",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "MRVL",
+      "name": "Marvell Technology",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "MS",
+      "name": "Morgan Stanley",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "MSCI",
+      "name": "MSCI Inc.",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "MSFT",
+      "name": "Microsoft",
+      "sector": "IGV",
+      "sectorName": "軟件"
+    },
+    {
+      "symbol": "MSI",
+      "name": "Motorola Solutions",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "MSTR",
+      "name": "Strategy",
+      "sector": "BLOK",
+      "sectorName": "加密概念"
+    },
+    {
+      "symbol": "MTB",
+      "name": "M&T Bank",
+      "sector": "KRE",
+      "sectorName": "區域銀行"
+    },
+    {
+      "symbol": "MTD",
+      "name": "Mettler Toledo",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "MU",
+      "name": "Micron Technology",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "NBIS",
+      "name": "Nebius",
+      "sector": "SKYY",
+      "sectorName": "雲計算"
+    },
+    {
+      "symbol": "NCLH",
+      "name": "Norwegian Cruise Line Holdings",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "NDAQ",
+      "name": "Nasdaq, Inc.",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "NDSN",
+      "name": "Nordson Corporation",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "NEE",
+      "name": "NextEra Energy",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "NEM",
+      "name": "Newmont",
+      "sector": "GDX",
+      "sectorName": "金礦"
+    },
+    {
+      "symbol": "NET",
+      "name": "Cloudflare",
+      "sector": "HACK",
+      "sectorName": "網絡安全"
+    },
+    {
+      "symbol": "NFLX",
+      "name": "Netflix",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "NI",
+      "name": "NiSource",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "NKE",
+      "name": "Nike, Inc.",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "NOC",
+      "name": "Northrop Grumman",
+      "sector": "ITA",
+      "sectorName": "國防航天"
+    },
+    {
+      "symbol": "NOK",
+      "name": "Nokia",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "NOW",
+      "name": "ServiceNow",
+      "sector": "IGV",
+      "sectorName": "軟件"
+    },
+    {
+      "symbol": "NRG",
+      "name": "NRG Energy",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "NSC",
+      "name": "Norfolk Southern",
+      "sector": "IYT",
+      "sectorName": "運輸"
+    },
+    {
+      "symbol": "NTAP",
+      "name": "NetApp",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "NTRA",
+      "name": "Natera Inc.",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "NTRS",
+      "name": "Northern Trust",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "NU",
+      "name": "Nu Holdings",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "NUE",
+      "name": "Nucor",
+      "sector": "XME",
+      "sectorName": "金屬與礦業"
+    },
+    {
+      "symbol": "NVDA",
+      "name": "Nvidia",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "NVO",
+      "name": "Novo Nordisk",
+      "sector": "PPH",
+      "sectorName": "製藥"
+    },
+    {
+      "symbol": "NVR",
+      "name": "NVR, Inc.",
+      "sector": "XHB",
+      "sectorName": "房屋建築"
+    },
+    {
+      "symbol": "NVS",
+      "name": "Novartis AG",
+      "sector": "PPH",
+      "sectorName": "製藥"
+    },
+    {
+      "symbol": "NWS",
+      "name": "News Corp (Class B)",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "NWSA",
+      "name": "News Corp (Class A)",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "NXPI",
+      "name": "NXP Semiconductors",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "O",
+      "name": "Realty Income",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "ODFL",
+      "name": "Old Dominion",
+      "sector": "IYT",
+      "sectorName": "運輸"
+    },
+    {
+      "symbol": "OKE",
+      "name": "Oneok",
+      "sector": "XLE",
+      "sectorName": "能源"
+    },
+    {
+      "symbol": "OKLO",
+      "name": "Oklo",
+      "sector": "URA",
+      "sectorName": "鈾礦"
+    },
+    {
+      "symbol": "OMC",
+      "name": "Omnicom Group",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "ON",
+      "name": "ON Semiconductor",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "ORCL",
+      "name": "Oracle Corporation",
+      "sector": "IGV",
+      "sectorName": "軟件"
+    },
+    {
+      "symbol": "ORLY",
+      "name": "O’Reilly Automotive",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "OTIS",
+      "name": "Otis Worldwide",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "OXY",
+      "name": "Occidental Petroleum",
+      "sector": "XOP",
+      "sectorName": "油氣開採"
+    },
+    {
+      "symbol": "P",
+      "name": "Everpure",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "PANW",
+      "name": "Palo Alto Networks",
+      "sector": "HACK",
+      "sectorName": "網絡安全"
+    },
+    {
+      "symbol": "PAYX",
+      "name": "Paychex",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "PBR",
+      "name": "Petrobras",
+      "sector": "XLE",
+      "sectorName": "能源"
+    },
+    {
+      "symbol": "PCAR",
+      "name": "Paccar",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "PCG",
+      "name": "PG&E Corporation",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "PDD",
+      "name": "PDD Holdings",
+      "sector": "KWEB",
+      "sectorName": "中概互聯網"
+    },
+    {
+      "symbol": "PEG",
+      "name": "Public Service Enterprise Group",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "PEP",
+      "name": "PepsiCo",
+      "sector": "PBJ",
+      "sectorName": "食品飲料"
+    },
+    {
+      "symbol": "PFE",
+      "name": "Pfizer",
+      "sector": "PPH",
+      "sectorName": "製藥"
+    },
+    {
+      "symbol": "PFG",
+      "name": "Principal Financial Group",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "PG",
+      "name": "Procter & Gamble",
+      "sector": "XLP",
+      "sectorName": "必需消費"
+    },
+    {
+      "symbol": "PGR",
+      "name": "Progressive Corporation",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "PH",
+      "name": "Parker Hannifin",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "PHM",
+      "name": "PulteGroup",
+      "sector": "XHB",
+      "sectorName": "房屋建築"
+    },
+    {
+      "symbol": "PKG",
+      "name": "Packaging Corporation of America",
+      "sector": "XLB",
+      "sectorName": "原材料"
+    },
+    {
+      "symbol": "PLD",
+      "name": "Prologis",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "PLTR",
+      "name": "Palantir Technologies",
+      "sector": "IGV",
+      "sectorName": "軟件"
+    },
+    {
+      "symbol": "PM",
+      "name": "Philip Morris International",
+      "sector": "XLP",
+      "sectorName": "必需消費"
+    },
+    {
+      "symbol": "PNC",
+      "name": "PNC Financial Services",
+      "sector": "KRE",
+      "sectorName": "區域銀行"
+    },
+    {
+      "symbol": "PNR",
+      "name": "Pentair",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "PNW",
+      "name": "Pinnacle West Capital",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "PODD",
+      "name": "Insulet Corporation",
+      "sector": "IHI",
+      "sectorName": "醫療器械"
+    },
+    {
+      "symbol": "PPG",
+      "name": "PPG Industries",
+      "sector": "XLB",
+      "sectorName": "原材料"
+    },
+    {
+      "symbol": "PPL",
+      "name": "PPL Corporation",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "PRU",
+      "name": "Prudential Financial",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "PSA",
+      "name": "Public Storage",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "PSX",
+      "name": "Phillips 66",
+      "sector": "XLE",
+      "sectorName": "能源"
+    },
+    {
+      "symbol": "PTC",
+      "name": "PTC Inc.",
+      "sector": "IGV",
+      "sectorName": "軟件"
+    },
+    {
+      "symbol": "PWR",
+      "name": "Quanta Services",
+      "sector": "PAVE",
+      "sectorName": "基建"
+    },
+    {
+      "symbol": "PYPL",
+      "name": "PayPal",
+      "sector": "IPAY",
+      "sectorName": "支付"
+    },
+    {
+      "symbol": "Q",
+      "name": "Qnity Electronics",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "QBTS",
+      "name": "D-Wave",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "QCOM",
+      "name": "Qualcomm",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "RACE",
+      "name": "Ferrari N.V. Common Shares",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "RCL",
+      "name": "Royal Caribbean Group",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "RDDT",
+      "name": "Reddit",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "REG",
+      "name": "Regency Centers",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "REGN",
+      "name": "Regeneron Pharmaceuticals",
+      "sector": "XBI",
+      "sectorName": "生物科技（XBI）"
+    },
+    {
+      "symbol": "RF",
+      "name": "Regions Financial Corporation",
+      "sector": "KRE",
+      "sectorName": "區域銀行"
+    },
+    {
+      "symbol": "RGTI",
+      "name": "Rigetti",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "RIO",
+      "name": "Rio Tinto Plc",
+      "sector": "XME",
+      "sectorName": "金屬與礦業"
+    },
+    {
+      "symbol": "RIOT",
+      "name": "Riot Platforms",
+      "sector": "BLOK",
+      "sectorName": "加密概念"
+    },
+    {
+      "symbol": "RIVN",
+      "name": "Rivian",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "RJF",
+      "name": "Raymond James Financial",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "RKLB",
+      "name": "Rocket Lab",
+      "sector": "ITA",
+      "sectorName": "國防航天"
+    },
+    {
+      "symbol": "RL",
+      "name": "Ralph Lauren Corporation",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "RMD",
+      "name": "ResMed",
+      "sector": "IHI",
+      "sectorName": "醫療器械"
+    },
+    {
+      "symbol": "ROK",
+      "name": "Rockwell Automation",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "ROL",
+      "name": "Rollins, Inc.",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "ROP",
+      "name": "Roper Technologies",
+      "sector": "IGV",
+      "sectorName": "軟件"
+    },
+    {
+      "symbol": "ROST",
+      "name": "Ross Stores",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "RSG",
+      "name": "Republic Services",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "RTX",
+      "name": "RTX Corporation",
+      "sector": "ITA",
+      "sectorName": "國防航天"
+    },
+    {
+      "symbol": "RVTY",
+      "name": "Revvity",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "SAN",
+      "name": "Banco Santander S.A. Sponsored ADR (Spain)",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "SAP",
+      "name": "SAP",
+      "sector": "IGV",
+      "sectorName": "軟件"
+    },
+    {
+      "symbol": "SBAC",
+      "name": "SBA Communications",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "SBUX",
+      "name": "Starbucks",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "SCCO",
+      "name": "Southern Copper",
+      "sector": "XME",
+      "sectorName": "金屬與礦業"
+    },
+    {
+      "symbol": "SCHW",
+      "name": "Charles Schwab Corporation",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "SE",
+      "name": "Sea Limited",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "SHEL",
+      "name": "Shell",
+      "sector": "XLE",
+      "sectorName": "能源"
+    },
+    {
+      "symbol": "SHOP",
+      "name": "Shopify",
+      "sector": "IGV",
+      "sectorName": "軟件"
+    },
+    {
+      "symbol": "SHW",
+      "name": "Sherwin-Williams",
+      "sector": "XLB",
+      "sectorName": "原材料"
+    },
+    {
+      "symbol": "SJM",
+      "name": "J.M. Smucker Company (The)",
+      "sector": "PBJ",
+      "sectorName": "食品飲料"
+    },
+    {
+      "symbol": "SKHY",
+      "name": "SK hynix",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "SKYD",
+      "name": "Skydance Corporation",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "SLB",
+      "name": "Schlumberger",
+      "sector": "OIH",
+      "sectorName": "油田服務"
+    },
+    {
+      "symbol": "SMCI",
+      "name": "Supermicro",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "SMR",
+      "name": "NuScale",
+      "sector": "URA",
+      "sectorName": "鈾礦"
+    },
+    {
+      "symbol": "SNA",
+      "name": "Snap-on",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "SNDK",
+      "name": "Sandisk",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "SNOW",
+      "name": "Snowflake",
+      "sector": "IGV",
+      "sectorName": "軟件"
+    },
+    {
+      "symbol": "SNPS",
+      "name": "Synopsys",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "SNY",
+      "name": "Sanofi",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "SO",
+      "name": "Southern Company",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "SOFI",
+      "name": "SoFi",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "SOLV",
+      "name": "Solventum",
+      "sector": "IHI",
+      "sectorName": "醫療器械"
+    },
+    {
+      "symbol": "SOMN",
+      "name": "Southern Company (The) 2025 Series A Corporate Units",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "SPCX",
+      "name": "SpaceX",
+      "sector": "ITA",
+      "sectorName": "國防航天"
+    },
+    {
+      "symbol": "SPG",
+      "name": "Simon Property Group",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "SPGI",
+      "name": "S&P Global",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "SPOT",
+      "name": "Spotify",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "SRE",
+      "name": "Sempra",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "STE",
+      "name": "Steris",
+      "sector": "IHI",
+      "sectorName": "醫療器械"
+    },
+    {
+      "symbol": "STLD",
+      "name": "Steel Dynamics",
+      "sector": "XME",
+      "sectorName": "金屬與礦業"
+    },
+    {
+      "symbol": "STT",
+      "name": "State Street Corporation",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "STX",
+      "name": "Seagate Technology",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "STZ",
+      "name": "Constellation Brands",
+      "sector": "PBJ",
+      "sectorName": "食品飲料"
+    },
+    {
+      "symbol": "SW",
+      "name": "Smurfit Westrock",
+      "sector": "XLB",
+      "sectorName": "原材料"
+    },
+    {
+      "symbol": "SWK",
+      "name": "Stanley Black & Decker",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "SWKS",
+      "name": "Skyworks Solutions",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "SYF",
+      "name": "Synchrony Financial",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "SYK",
+      "name": "Stryker Corporation",
+      "sector": "IHI",
+      "sectorName": "醫療器械"
+    },
+    {
+      "symbol": "SYY",
+      "name": "Sysco",
+      "sector": "PBJ",
+      "sectorName": "食品飲料"
+    },
+    {
+      "symbol": "T",
+      "name": "AT&T",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "TAP",
+      "name": "Molson Coors Beverage Company",
+      "sector": "PBJ",
+      "sectorName": "食品飲料"
+    },
+    {
+      "symbol": "TDG",
+      "name": "TransDigm Group",
+      "sector": "ITA",
+      "sectorName": "國防航天"
+    },
+    {
+      "symbol": "TDY",
+      "name": "Teledyne Technologies",
+      "sector": "ITA",
+      "sectorName": "國防航天"
+    },
+    {
+      "symbol": "TEAM",
+      "name": "Atlassian Corporation Class A",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "TECH",
+      "name": "Bio-Techne",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "TEL",
+      "name": "TE Connectivity",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "TEM",
+      "name": "Tempus AI",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "TER",
+      "name": "Teradyne",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "TFC",
+      "name": "Truist Financial",
+      "sector": "KRE",
+      "sectorName": "區域銀行"
+    },
+    {
+      "symbol": "TGT",
+      "name": "Target Corporation",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "TJX",
+      "name": "TJX Companies",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "TKO",
+      "name": "TKO Group Holdings",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "TMO",
+      "name": "Thermo Fisher Scientific",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "TMUS",
+      "name": "T-Mobile US",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "TPL",
+      "name": "Texas Pacific Land Corporation",
+      "sector": "XOP",
+      "sectorName": "油氣開採"
+    },
+    {
+      "symbol": "TPR",
+      "name": "Tapestry, Inc.",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "TRGP",
+      "name": "Targa Resources",
+      "sector": "XLE",
+      "sectorName": "能源"
+    },
+    {
+      "symbol": "TRI",
+      "name": "Thomson Reuters Corporation Common Shares",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "TRMB",
+      "name": "Trimble Inc.",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "TROW",
+      "name": "T. Rowe Price",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "TRV",
+      "name": "Travelers Companies (The)",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "TSCO",
+      "name": "Tractor Supply",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "TSLA",
+      "name": "Tesla, Inc.",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "TSM",
+      "name": "TSMC",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "TSN",
+      "name": "Tyson Foods",
+      "sector": "PBJ",
+      "sectorName": "食品飲料"
+    },
+    {
+      "symbol": "TT",
+      "name": "Trane Technologies",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "TTD",
+      "name": "Trade Desk (The)",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "TTE",
+      "name": "TotalEnergies SE",
+      "sector": "XLE",
+      "sectorName": "能源"
+    },
+    {
+      "symbol": "TTWO",
+      "name": "Take-Two Interactive",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "TWLO",
+      "name": "Twilio",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "TXN",
+      "name": "Texas Instruments",
+      "sector": "SMH",
+      "sectorName": "半導體"
+    },
+    {
+      "symbol": "TXT",
+      "name": "Textron",
+      "sector": "ITA",
+      "sectorName": "國防航天"
+    },
+    {
+      "symbol": "TYL",
+      "name": "Tyler Technologies",
+      "sector": "IGV",
+      "sectorName": "軟件"
+    },
+    {
+      "symbol": "UAL",
+      "name": "United Airlines Holdings",
+      "sector": "JETS",
+      "sectorName": "航空"
+    },
+    {
+      "symbol": "UBER",
+      "name": "Uber",
+      "sector": "IYT",
+      "sectorName": "運輸"
+    },
+    {
+      "symbol": "UBS",
+      "name": "UBS Group AG Registered",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "UDR",
+      "name": "UDR, Inc.",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "UHS",
+      "name": "Universal Health Services",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "UL",
+      "name": "Unilever PLC",
+      "sector": "XLP",
+      "sectorName": "必需消費"
+    },
+    {
+      "symbol": "ULTA",
+      "name": "Ulta Beauty",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "UMC",
+      "name": "United Microelectronics Corporation (NEW)",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "UNH",
+      "name": "UnitedHealth Group",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "UNP",
+      "name": "Union Pacific Corporation",
+      "sector": "IYT",
+      "sectorName": "運輸"
+    },
+    {
+      "symbol": "UPS",
+      "name": "United Parcel Service",
+      "sector": "IYT",
+      "sectorName": "運輸"
+    },
+    {
+      "symbol": "URI",
+      "name": "United Rentals",
+      "sector": "PAVE",
+      "sectorName": "基建"
+    },
+    {
+      "symbol": "USB",
+      "name": "U.S. Bancorp",
+      "sector": "KRE",
+      "sectorName": "區域銀行"
+    },
+    {
+      "symbol": "V",
+      "name": "Visa Inc.",
+      "sector": "IPAY",
+      "sectorName": "支付"
+    },
+    {
+      "symbol": "VALE",
+      "name": "Vale",
+      "sector": "XME",
+      "sectorName": "金屬與礦業"
+    },
+    {
+      "symbol": "VEEV",
+      "name": "Veeva Systems",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "VICI",
+      "name": "Vici Properties",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "VLO",
+      "name": "Valero Energy",
+      "sector": "XLE",
+      "sectorName": "能源"
+    },
+    {
+      "symbol": "VLTO",
+      "name": "Veralto",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "VMC",
+      "name": "Vulcan Materials Company",
+      "sector": "PAVE",
+      "sectorName": "基建"
+    },
+    {
+      "symbol": "VMRK",
+      "name": "Vivmark Residential",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "VRSK",
+      "name": "Verisk Analytics",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "VRSN",
+      "name": "Verisign",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "VRT",
+      "name": "Vertiv",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "VRTX",
+      "name": "Vertex Pharmaceuticals",
+      "sector": "XBI",
+      "sectorName": "生物科技（XBI）"
+    },
+    {
+      "symbol": "VST",
+      "name": "Vistra Corp.",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "VTR",
+      "name": "Ventas",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "VTRS",
+      "name": "Viatris",
+      "sector": "PPH",
+      "sectorName": "製藥"
+    },
+    {
+      "symbol": "VZ",
+      "name": "Verizon",
+      "sector": "XLC",
+      "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "WAB",
+      "name": "Wabtec",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "WAT",
+      "name": "Waters Corporation",
+      "sector": "XLV",
+      "sectorName": "醫療"
+    },
+    {
+      "symbol": "WDAY",
+      "name": "Workday, Inc.",
+      "sector": "IGV",
+      "sectorName": "軟件"
+    },
+    {
+      "symbol": "WDC",
+      "name": "Western Digital",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "WEC",
+      "name": "WEC Energy Group",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "WELL",
+      "name": "Welltower",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "WFC",
+      "name": "Wells Fargo",
+      "sector": "XLF",
+      "sectorName": "金融"
+    },
+    {
+      "symbol": "WM",
+      "name": "Waste Management",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "WMB",
+      "name": "Williams Companies",
+      "sector": "XLE",
+      "sectorName": "能源"
+    },
+    {
+      "symbol": "WMT",
+      "name": "Walmart",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "WRB",
+      "name": "W. R. Berkley Corporation",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "WSM",
+      "name": "Williams-Sonoma, Inc.",
+      "sector": "XRT",
+      "sectorName": "零售"
+    },
+    {
+      "symbol": "WST",
+      "name": "West Pharmaceutical Services",
+      "sector": "IHI",
+      "sectorName": "醫療器械"
+    },
+    {
+      "symbol": "WTW",
+      "name": "Willis Towers Watson",
+      "sector": "KIE",
+      "sectorName": "保險"
+    },
+    {
+      "symbol": "WY",
+      "name": "Weyerhaeuser",
+      "sector": "XLRE",
+      "sectorName": "房地產"
+    },
+    {
+      "symbol": "WYNN",
+      "name": "Wynn Resorts",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "XEL",
+      "name": "Xcel Energy",
+      "sector": "XLU",
+      "sectorName": "公用事業"
+    },
+    {
+      "symbol": "XOM",
+      "name": "ExxonMobil",
+      "sector": "XLE",
+      "sectorName": "能源"
+    },
+    {
+      "symbol": "XYL",
+      "name": "Xylem Inc.",
+      "sector": "XLI",
+      "sectorName": "工業"
+    },
+    {
+      "symbol": "XYZ",
+      "name": "Block, Inc.",
+      "sector": "IPAY",
+      "sectorName": "支付"
+    },
+    {
+      "symbol": "YUM",
+      "name": "Yum! Brands",
+      "sector": "XLY",
+      "sectorName": "非必需消費"
+    },
+    {
+      "symbol": "ZBH",
+      "name": "Zimmer Biomet",
+      "sector": "IHI",
+      "sectorName": "醫療器械"
+    },
+    {
+      "symbol": "ZBRA",
+      "name": "Zebra Technologies",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "ZS",
+      "name": "Zscaler",
+      "sector": "HACK",
+      "sectorName": "網絡安全"
+    },
+    {
+      "symbol": "ZTS",
+      "name": "Zoetis",
+      "sector": "PPH",
+      "sectorName": "製藥"
+    }
+  ],
+  "sectors": [
+    {
+      "symbol": "BLOK",
+      "name": "加密概念"
+    },
+    {
+      "symbol": "GDX",
+      "name": "金礦"
+    },
+    {
+      "symbol": "HACK",
+      "name": "網絡安全"
+    },
+    {
+      "symbol": "IGV",
+      "name": "軟件"
+    },
+    {
+      "symbol": "IHI",
+      "name": "醫療器械"
+    },
+    {
+      "symbol": "IPAY",
+      "name": "支付"
+    },
+    {
+      "symbol": "ITA",
+      "name": "國防航天"
+    },
+    {
+      "symbol": "IYT",
+      "name": "運輸"
+    },
+    {
+      "symbol": "JETS",
+      "name": "航空"
+    },
+    {
+      "symbol": "KIE",
+      "name": "保險"
+    },
+    {
+      "symbol": "KRE",
+      "name": "區域銀行"
+    },
+    {
+      "symbol": "KWEB",
+      "name": "中概互聯網"
+    },
+    {
+      "symbol": "MOO",
+      "name": "農業企業"
+    },
+    {
+      "symbol": "OIH",
+      "name": "油田服務"
+    },
+    {
+      "symbol": "PAVE",
+      "name": "基建"
+    },
+    {
+      "symbol": "PBJ",
+      "name": "食品飲料"
+    },
+    {
+      "symbol": "PPH",
+      "name": "製藥"
+    },
+    {
+      "symbol": "SKYY",
+      "name": "雲計算"
+    },
+    {
+      "symbol": "SMH",
+      "name": "半導體"
+    },
+    {
+      "symbol": "TAN",
+      "name": "太陽能"
+    },
+    {
+      "symbol": "URA",
+      "name": "鈾礦"
+    },
+    {
+      "symbol": "XBI",
+      "name": "生物科技（XBI）"
+    },
+    {
+      "symbol": "XHB",
+      "name": "房屋建築"
+    },
+    {
+      "symbol": "XLB",
+      "name": "原材料"
+    },
+    {
+      "symbol": "XLC",
+      "name": "通訊服務"
+    },
+    {
+      "symbol": "XLE",
+      "name": "能源"
+    },
+    {
+      "symbol": "XLF",
+      "name": "金融"
+    },
+    {
+      "symbol": "XLI",
+      "name": "工業"
+    },
+    {
+      "symbol": "XLK",
+      "name": "科技"
+    },
+    {
+      "symbol": "XLP",
+      "name": "必需消費"
+    },
+    {
+      "symbol": "XLRE",
+      "name": "房地產"
+    },
+    {
+      "symbol": "XLU",
+      "name": "公用事業"
+    },
+    {
+      "symbol": "XLV",
+      "name": "醫療"
+    },
+    {
+      "symbol": "XLY",
+      "name": "非必需消費"
+    },
+    {
+      "symbol": "XME",
+      "name": "金屬與礦業"
+    },
+    {
+      "symbol": "XOP",
+      "name": "油氣開採"
+    },
+    {
+      "symbol": "XRT",
+      "name": "零售"
+    }
+  ]
+}

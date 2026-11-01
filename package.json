@@ -1,0 +1,13 @@
+{
+  "name": "open-rs",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Independent free-data relative strength dashboard for GitHub Pages",
+  "scripts": {
+    "dev": "python3 scripts/serve.py",
+    "build": "python3 scripts/build.py",
+    "update-data": "python3 scripts/update_data.py",
+    "test": "python3 -m unittest discover -s tests -v && node --test tests/charts.test.js"
+  }
+}
