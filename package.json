@@ -1,6 +1,6 @@
 {
   "name": "lokirs",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "description": "Loki Archive relative strength dashboard for GitHub Pages",
@@ -8,6 +8,7 @@
     "dev": "python3 scripts/serve.py",
     "build": "python3 scripts/build.py",
     "update-data": "python3 scripts/update_data.py",
-    "test": "python3 -m unittest discover -s tests -v && node --test tests/charts.test.js"
+    "test": "python3 -m unittest discover -s tests -v && node --test tests/charts.test.js",
+    "update-home": "python3 scripts/update_home.py"
   }
 }

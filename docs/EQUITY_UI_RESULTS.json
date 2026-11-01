@@ -1,0 +1,28 @@
+{
+  "tests": 20,
+  "passed": [
+    "LokiRS branding and legacy watchlist survive the theme upgrade",
+    "real snapshot renders 589-stock universe and first 50 rows",
+    "top lists contain ten independent stock buttons",
+    "ticker search filters the actual universe",
+    "watchlist persists locally and filters its own view",
+    "empty search state is explicit",
+    "top three sector filter uses actual sector ranks",
+    "numeric threshold filters all rows before pagination",
+    "descending and ascending price sort work",
+    "pagination and show-all render without lost rows",
+    "CSV export provides a dated standalone file",
+    "stock details render a two-series comparison chart",
+    "details add a stock to comparison and switch view",
+    "comparison removal and search/add work",
+    "SVG export and long/short comparison periods work",
+    "theme and methodology display work",
+    "reading mode is reversible with accessible toggle state",
+    "optional provider outage disables contract filter",
+    "stylesheet parses without a CSS parser error",
+    "SVG export is standalone XML with archive background and signed semantic colors"
+  ],
+  "errors": [],
+  "asOf": "2026-10-30",
+  "scope": "JSDOM simulated DOM integration; not real-browser rendering or mobile visual QA"
+}

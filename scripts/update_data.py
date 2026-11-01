@@ -79,6 +79,12 @@ def run():
     temp.write_text(json.dumps(result, ensure_ascii=False, separators=(",", ":"), allow_nan=False) + "\n")
     temp.replace(output)
     print(f"Saved {output.name}: {valid}/{len(universe['stocks'])}, market date {result['asOf']}", flush=True)
+    # The homepage is independently atomic: a failed optional refresh preserves its prior file.
+    from update_home import refresh_home
+    try:
+        refresh_home(ROOT, equities=result, workers=workers, refresh=False)
+    except Exception as exc:
+        print(f"Homepage update failed; prior home.json preserved: {exc}", file=sys.stderr, flush=True)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,27 @@
+{
+  "tests": 20,
+  "passed": [
+    "root URL opens the home page and keeps equity rankings behind their tab",
+    "six market tiles and all 32 real cross-market rows render",
+    "risk context and funding amounts are derived from the included snapshots",
+    "cross-market search and category filter operate on the whole universe",
+    "cross-market empty state can reset to all markets",
+    "cross-market score sorts in both directions without changing source ranks",
+    "market detail opens a real chart and adds a non-equity asset to comparison",
+    "TradingView copy uses the explicit source symbol",
+    "pulse links open the matching equity row and preserve the home route",
+    "home auto-refresh can be paused and persists only its own setting",
+    "filtered cross-market CSV exports a distinct dated file",
+    "cross-market CSV keeps absolute and excess returns separate",
+    "section collapse state survives a homepage snapshot refresh",
+    "unchanged automatic snapshot checks preserve existing controls",
+    "refreshed homepage preserves collapsed sections and still has all markets",
+    "browser history restores the previous equity tab",
+    "browser forward returns to the home page",
+    "both new stylesheets parse and static UI has no duplicate IDs",
+    "a missing home snapshot leaves the existing equity page usable",
+    "ticker deep links select an exact symbol rather than every matching company name"
+  ],
+  "asOf": "2026-10-30",
+  "scope": "JSDOM simulated DOM; real browser/mobile visual QA unavailable"
+}

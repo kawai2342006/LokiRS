@@ -20,7 +20,7 @@
   --positive-bg: rgba(141,221,155,.07);
   --negative-bg: rgba(241,138,115,.07);
   --shadow: 0 18px 60px #0007;
-  --mono: "IBM Plex Mono", "Courier New", monospace;
+  --mono: "IBM Plex Mono", "Noto Sans TC", "Courier New", monospace;
   --serif: "Noto Serif TC", Georgia, "PMingLiU", serif;
   --font: "Noto Sans TC", Arial, "PingFang TC", "Microsoft JhengHei", sans-serif;
 }

@@ -1,4 +1,5 @@
-import {sparkline, comparisonChart, palette, seriesDashes, escapeHTML as esc} from './charts.js?v=1.1.0';
+import {sparkline, comparisonChart, palette, seriesDashes, escapeHTML as esc} from './charts.js?v=1.2.0';
+import {createHome} from './home.js?v=1.2.0';
 
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
@@ -11,7 +12,8 @@ const storage = {
   },
   set(key, value) { try { localStorage.setItem('lokirs:'+key,JSON.stringify(value)); } catch { /* private browsing */ } }
 };
-const state = {data:null, view:'stocks', search:'', sector:'', sectorTop:0, metric:'score', operator:'gte', value:'', streak:false,
+const readView = () => {const tab=new URLSearchParams(location.search).get('tab');return ['home','stocks','watchlist','compare'].includes(tab)?tab:location.hash==='#rankings'?'stocks':'home';};
+const state = {data:null, view:readView(), search:'', exactSymbol:null, sector:'', sectorTop:0, metric:'score', operator:'gte', value:'', streak:false,
   long:false, resilient:false, perp:false, sort:'score', direction:-1, page:1, pageSize:50,
   watched:new Set(storage.get('watchlist',[])), compare:storage.get('compare',['SPY','NVDA','AAPL']), period:64};
 const number = (v, digits=2) => Number.isFinite(v) ? v.toLocaleString('en-US',{minimumFractionDigits:digits,maximumFractionDigits:digits}) : '—';
@@ -70,10 +72,7 @@ async function loadData(manual=false) {
 
 function renderOverview() {
   const {data}=state, meta=data.meta;
-  $('#asof-label').textContent=`收市數據 ${data.asOf} · 美國交易日`;
-  $('#archive-date').textContent=data.asOf.replaceAll('-','.');
-  $('#coverage-label').textContent=`${meta.currentCount} / ${meta.universeCount} 隻有效 · ${(meta.coverage*100).toFixed(1)}%`;
-  $('#generated-label').textContent=`計算時間 ${hkTime(meta.generatedAt)} HKT`;
+  renderHeader();
   $('#spy-price').textContent=number(data.benchmark.price);
   $('#spy-change').textContent=pp(data.benchmark.d1); $('#spy-change').className=cls(data.benchmark.d1);
   const valid=data.rows.filter(r=>Number.isFinite(r.d1)), outperform=valid.filter(r=>r.d1>0).length;
@@ -102,6 +101,15 @@ function renderOverview() {
   }).join(''):'<p class="unavailable-note">FRED 數據暫未取得，等待下次更新。</p>';
 }
 
+function renderHeader() {
+  const d=state.view==='home'?home.data:state.data;
+  if(!d){$('#asof-label').textContent=state.view==='home'?'讀取跨市場資料…':'讀取美股資料…';$('#coverage-label').textContent='正在載入';return;}
+  $('#asof-label').textContent=(state.view==='home'?'跨市場資料 ':'美股收市數據 ')+d.asOf;
+  $('#archive-date').textContent=d.asOf.replaceAll('-','.');
+  $('#coverage-label').textContent=state.view==='home'?`${d.meta.currentCount} / ${d.meta.universeCount} 項有效 · 美股 ${d.stockAsOf}`:`${d.meta.currentCount} / ${d.meta.universeCount} 隻有效 · ${(d.meta.coverage*100).toFixed(1)}%`;
+  $('#generated-label').textContent=`計算時間 ${hkTime(d.meta.generatedAt)} HKT`;
+}
+
 function renderLeaders() {
   const valid=state.data.rows.filter(r=>Number.isFinite(r.score));
   const strongest=[...valid].sort((a,b)=>b.score-a.score), weakest=[...valid].sort((a,b)=>a.score-b.score);
@@ -123,6 +131,7 @@ function filteredRows() {
   const contracts=new Set(state.data.contracts?.symbols||[]);
   const rows=state.data.rows.filter(r=>{
     if(state.view==='watchlist'&&!state.watched.has(r.symbol)) return false;
+    if(state.exactSymbol&&r.symbol!==state.exactSymbol)return false;
     if(state.search&&!`${r.symbol} ${r.name} ${r.sectorName} ${r.sector}`.toLowerCase().includes(state.search.toLowerCase())) return false;
     if(state.sector&&r.sector!==state.sector) return false;
     if(state.sectorTop&&(!Number.isFinite(r.sectorRank)||r.sectorRank>state.sectorTop)) return false;
@@ -168,22 +177,29 @@ function toggleWatch(symbol) {
   storage.set('watchlist',[...state.watched]); updateWatchCount(); renderTable();
 }
 function resetFilters() {
-  Object.assign(state,{search:'',sector:'',sectorTop:0,metric:'score',operator:'gte',value:'',streak:false,long:false,resilient:false,perp:false,page:1});
+  Object.assign(state,{search:'',exactSymbol:null,sector:'',sectorTop:0,metric:'score',operator:'gte',value:'',streak:false,long:false,resilient:false,perp:false,page:1});
   $('#search').value=''; $('#sector-filter').value=''; $('#metric-filter').value='score'; $('#operator-filter').value='gte'; $('#value-filter').value='';
   ['streak','long','resilient','perp'].forEach(k=>$('#'+k+'-filter').checked=false);
   $$('[data-sector-top]').forEach(b=>{const selected=b.dataset.sectorTop==='0';b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',selected);});
   renderTable();
 }
-function switchView(view) {
+function switchView(view,navigate=true) {
+  view=['home','stocks','watchlist','compare'].includes(view)?view:'home';
+  const changed=state.view!==view;
   state.view=view;state.page=1;
   $$('[data-view]').forEach(b=>{const active=b.dataset.view===view;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
+  $('#home-section').hidden=view!=='home';$('#equity-strip').hidden=view==='home';
   $('#overview-section').hidden=view!=='stocks'; $('#top-section').hidden=view!=='stocks';
-  $('#rankings').hidden=view==='compare';$('#compare-section').hidden=view!=='compare';
-  $('#page-title').innerHTML=view==='stocks'?'在市場分岔之間，<span>找到相對強者。</span>':view==='watchlist'?'每一個變異，<span>都值得持續追蹤。</span>':'讓不同時間線，<span>在同一起點交匯。</span>';
-  $('#view-file').textContent=view==='stocks'?'FIELD / 001':view==='watchlist'?'FILE / 002':'PATH / 003';
-  $('#view-kicker').textContent=view==='stocks'?'THE SACRED TIMELINE':view==='watchlist'?'VARIANT SURVEILLANCE':'TIMELINE COMPARISON';
-  $('#page-subtitle').textContent=view==='stocks'?'以 SPY 為基準，從不同時段觀察個股與板塊的強弱變化。':view==='watchlist'?'自選清單只儲存在此瀏覽器。所有篩選及排序照常可用。':'用共同交易日的收市價比較，最多 10 隻，首日統一為 100。';
-  renderTable();renderComparison();
+  $('#rankings').hidden=!['stocks','watchlist'].includes(view);$('#compare-section').hidden=view!=='compare';
+  $('#page-title').innerHTML=view==='home'?'穿越市場時間線，<span>看清資金的方向。</span>':view==='stocks'?'在市場分岔之間，<span>找到相對強者。</span>':view==='watchlist'?'每一個變異，<span>都值得持續追蹤。</span>':'讓不同時間線，<span>在同一起點交匯。</span>';
+  $('#view-file').textContent=view==='home'?'FIELD / 000':view==='stocks'?'FIELD / 001':view==='watchlist'?'FILE / 002':'PATH / 003';
+  $('#view-kicker').textContent=view==='home'?'THE MULTIVERSE DESK':view==='stocks'?'THE SACRED TIMELINE':view==='watchlist'?'VARIANT SURVEILLANCE':'TIMELINE COMPARISON';
+  $('#page-subtitle').textContent=view==='home'?'從全球資產到美股異動，以公開數據追蹤市場強弱與資金輪動。':view==='stocks'?'以 SPY 為基準，從不同時段觀察個股與板塊的強弱變化。':view==='watchlist'?'自選清單只儲存在此瀏覽器。所有篩選及排序照常可用。':'用共同交易日的收市價比較，最多 10 隻，首日統一為 100。';
+  $('#timeline-caption').textContent=view==='home'?'MARKET SURVEILLANCE / CROSS-MARKET MEDIAN':view==='compare'?'COMMON DATES / REBASED TO 100':'MARKET SURVEILLANCE / SPY BENCHMARK';
+  $('#skip-content').href=view==='home'?'#home-section':view==='compare'?'#compare-section':'#rankings';
+  document.title='LokiRS — '+({home:'跨市場情報主頁',stocks:'美股相對強弱',watchlist:'自選情報檔案',compare:'市場走勢比較'}[view]);
+  if(navigate&&changed&&location.protocol!=='file:'){const url=new URL(location.href);if(view==='home')url.searchParams.delete('tab');else url.searchParams.set('tab',view);url.searchParams.delete('s');url.hash='';history.pushState({},'',url);}
+  renderTable();renderComparison();renderHeader();
 }
 
 function showDetail(symbol) {
@@ -194,10 +210,14 @@ function showDetail(symbol) {
   $('#detail-content').innerHTML=`<div class="detail-heading"><div><h2>${esc(symbol)}<span>${esc(r.name)}</span></h2><p>${esc(r.sectorName)} · ${esc(r.sector)} · 收市 ${esc(r.asOf||'—')}</p></div><div><strong>${number(r.price)}</strong><span>USD</span></div></div><div class="detail-metrics"><div><span>LokiRS · 近似</span><b class="${cls(r.score)}">${signed(r.score)}</b></div><div><span>1D 超額</span><b class="${cls(r.d1)}">${pp(r.d1)}</b></div><div><span>一週超額</span><b class="${cls(r.week?.value)}">${pp(r.week?.value)}</b></div><div><span>一月超額</span><b class="${cls(r.month?.value)}">${pp(r.month?.value)}</b></div></div><div class="detail-chart">${chart}</div><div class="detail-meta"><p>小時線時點：${r.intra.asOf?esc(hkTime(r.intra.asOf))+' HKT':'無完整同步數據'}。日線超額和小時線超額使用各自時點。</p><p>1H／4H K 線格數的實際跨度：${number(r.intra.h1ElapsedHours,1)}／${number(r.intra.h4ElapsedHours,1)} 小時。<br>精確時鐘 1H 超額：${pp(r.intra.clockH1)}；精確時鐘 4H 超額：${pp(r.intra.clockH4)}。</p><p>一週：${esc(periodTitle(r.week))}<br>一個月：${esc(periodTitle(r.month))}</p></div><div class="dialog-bottom"><button class="button" data-add-compare="${esc(symbol)}">＋ 加入走勢比較</button><a class="external-link" target="_blank" rel="noopener" href="https://finance.yahoo.com/quote/${encodeURIComponent(symbol)}/">Yahoo Finance ↗</a></div>`;
   $('#detail-dialog').showModal();
 }
+function comparisonUniverse() {
+  const rows=state.data?.rows||[], markets=home.data?.rows||[];
+  const benchmark={symbol:'SPY',name:'SPY',history:rows.find(r=>r.history.length>10)?.history.map(p=>({...p,close:p.benchmark}))||[]};
+  return [...new Map([benchmark,...markets,...rows].map(r=>[r.symbol,r])).values()];
+}
 function renderComparison() {
-  if(!state.data) return;
-  const rows=state.data.rows;
-  const all=[{symbol:'SPY',name:'SPY',history:rows.find(r=>r.history.length>10)?.history.map(p=>({...p,close:p.benchmark}))||[]},...rows];
+  const all=comparisonUniverse();
+  if(!all.some(r=>r.history.length))return;
   const selected=state.compare.map(s=>all.find(r=>r.symbol===s)).filter(Boolean);
   $('#compare-chips').innerHTML=selected.map((r,i)=>`<button class="compare-chip" data-remove-compare="${esc(r.symbol)}" title="移除 ${esc(r.symbol)}"><i style="border-top-color:${palette[i%palette.length]};border-top-style:${i<4?'solid':i<8?'dashed':'dotted'}"></i>${esc(r.symbol)}<span>×</span></button>`).join('')+`<span class="muted small">${selected.length} / 10</span>`;
   $('#compare-chart').innerHTML=comparisonChart(selected.map((r,i)=>({name:r.symbol,color:palette[i%palette.length],points:r.history.slice(-state.period).map(p=>({date:p.date,value:p.close}))})));
@@ -209,10 +229,8 @@ function addCompare(symbol) {
   $('#compare-search').value='';$('#compare-results').hidden=true;
 }
 function searchCompare() {
-  if(!state.data)return;
   const query=$('#compare-search').value.trim().toLowerCase();
-  const hits=state.data.rows.filter(r=>r.symbol.toLowerCase().includes(query)||r.name.toLowerCase().includes(query)).slice(0,8);
-  if('spy'.includes(query))hits.unshift({symbol:'SPY',name:'SPDR S&P 500 ETF'});
+  const hits=comparisonUniverse().filter(r=>r.symbol.toLowerCase().includes(query)||(r.name||'').toLowerCase().includes(query)).slice(0,8);
   $('#compare-results').hidden=!query;
   $('#compare-results').innerHTML=hits.length?hits.map(r=>`<button data-add-compare="${esc(r.symbol)}"><strong>${esc(r.symbol)}</strong><span>${esc(r.name)}</span><b>＋</b></button>`).join(''):'<p>沒有符合的代號</p>';
 }
@@ -264,9 +282,9 @@ document.addEventListener('click',event=>{
 ['method-open','notice-method','footer-method'].forEach(id=>$('#'+id).addEventListener('click',()=>$('#method-dialog').showModal()));
 $$('dialog').forEach(dialog=>dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}}));
 $('#theme-toggle').addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='dark'?'reading':'dark'));
-$('#refresh').addEventListener('click',()=>loadData(true));
+$('#refresh').addEventListener('click',()=>state.view==='home'?home.load(true):loadData(true));
 $('#overview-toggle').addEventListener('click',()=>{const expanded=$('#overview-toggle').getAttribute('aria-expanded')==='true';$('#overview-grid').hidden=expanded;$('#overview-toggle').setAttribute('aria-expanded',!expanded);$('#overview-toggle').textContent=expanded?'展開 ＋':'收起 −';});
-$('#search').addEventListener('input',event=>{state.search=event.target.value.trim();state.page=1;renderTable();});
+$('#search').addEventListener('input',event=>{state.search=event.target.value.trim();state.exactSymbol=null;state.page=1;renderTable();});
 [['sector-filter','sector'],['metric-filter','metric'],['operator-filter','operator'],['value-filter','value']].forEach(([id,key])=>$('#'+id).addEventListener(id==='value-filter'?'input':'change',event=>{state[key]=event.target.value;state.page=1;renderTable();}));
 ['streak','long','resilient','perp'].forEach(key=>$('#'+key+'-filter').addEventListener('change',event=>{state[key]=event.target.checked;state.page=1;renderTable();}));
 ['reset-filters','empty-reset'].forEach(id=>$('#'+id).addEventListener('click',resetFilters));
@@ -278,5 +296,13 @@ $('#download-csv').addEventListener('click',exportCSV);
 $('#compare-search').addEventListener('input',searchCompare);
 $('#compare-period').addEventListener('change',event=>{state.period=Number(event.target.value);renderComparison();});
 $('#export-chart').addEventListener('click',exportComparison);
-document.addEventListener('keydown',event=>{if(event.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)&&!$('dialog[open]')){event.preventDefault();if(state.view==='compare')$('#compare-search').focus();else $('#search').focus();}});
-loadData();
+document.addEventListener('keydown',event=>{if(event.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)&&!$('dialog[open]')){event.preventDefault();if(state.view==='home')home.focusSearch();else if(state.view==='compare')$('#compare-search').focus();else $('#search').focus();}});
+const home=createHome({document,window,fetch:window.fetch.bind(window),download,toast,getView:()=>state.view,
+  onView:view=>switchView(view),onCompare:symbol=>{addCompare(symbol);switchView('compare');},
+  onStock:symbol=>{switchView('stocks');resetFilters();state.search=symbol;state.exactSymbol=symbol;state.page=1;$('#search').value=symbol;renderTable();$('#rankings').scrollIntoView({behavior:'smooth',block:'start'});},
+  onUpdate:()=>{$('#loading-state').hidden=true;$('#dashboard').hidden=false;renderHeader();renderComparison();}});
+window.addEventListener('popstate',()=>switchView(readView(),false));
+const initialSymbol=new URLSearchParams(location.search).get('s');
+if(initialSymbol){state.search=initialSymbol.replace(/^LB:/,'').replace(/\.US$/,'');state.exactSymbol=state.search;$('#search').value=state.search;}
+switchView(state.view,false);
+loadData();home.load();

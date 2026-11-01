@@ -1,0 +1,268 @@
+{
+  "capturedAt": "2026-11-01",
+  "benchmark": "SPY",
+  "scoreWeights": {
+    "1": 0.5,
+    "5": 0.3,
+    "20": 0.2
+  },
+  "minimumCoverage": 0.8,
+  "markets": [
+    {
+      "symbol": "IBB",
+      "name": "生物科技（IBB）",
+      "providerSymbol": "IBB",
+      "group": "sector",
+      "session": "exchange",
+      "tradingViewSymbol": "IBB"
+    },
+    {
+      "symbol": "FXI",
+      "name": "中國大盤",
+      "providerSymbol": "FXI",
+      "group": "region",
+      "session": "exchange",
+      "tradingViewSymbol": "FXI"
+    },
+    {
+      "symbol": "INDA",
+      "name": "印度",
+      "providerSymbol": "INDA",
+      "group": "region",
+      "session": "exchange",
+      "tradingViewSymbol": "INDA"
+    },
+    {
+      "symbol": "USO",
+      "name": "原油",
+      "providerSymbol": "USO",
+      "group": "commodity",
+      "session": "exchange",
+      "tradingViewSymbol": "USO"
+    },
+    {
+      "symbol": "TLT",
+      "name": "美債 20 年+",
+      "providerSymbol": "TLT",
+      "group": "bond",
+      "session": "exchange",
+      "tradingViewSymbol": "TLT"
+    },
+    {
+      "symbol": "VNQ",
+      "name": "房地產",
+      "providerSymbol": "VNQ",
+      "group": "sector",
+      "session": "exchange",
+      "tradingViewSymbol": "VNQ"
+    },
+    {
+      "symbol": "XBI",
+      "name": "生物科技（XBI）",
+      "providerSymbol": "XBI",
+      "group": "sector",
+      "session": "exchange",
+      "tradingViewSymbol": "XBI"
+    },
+    {
+      "symbol": "USDJPY",
+      "name": "美元兌日圓",
+      "providerSymbol": "JPY=X",
+      "group": "fx",
+      "session": "fx",
+      "tradingViewSymbol": "USDJPY"
+    },
+    {
+      "symbol": "VGK",
+      "name": "歐洲",
+      "providerSymbol": "VGK",
+      "group": "region",
+      "session": "exchange",
+      "tradingViewSymbol": "VGK"
+    },
+    {
+      "symbol": "HYG",
+      "name": "高收益債",
+      "providerSymbol": "HYG",
+      "group": "bond",
+      "session": "exchange",
+      "tradingViewSymbol": "HYG"
+    },
+    {
+      "symbol": "EURUSD",
+      "name": "歐元",
+      "providerSymbol": "EURUSD=X",
+      "group": "fx",
+      "session": "fx",
+      "tradingViewSymbol": "EURUSD"
+    },
+    {
+      "symbol": "UUP",
+      "name": "美元指數",
+      "providerSymbol": "UUP",
+      "group": "fx",
+      "session": "exchange",
+      "tradingViewSymbol": "UUP"
+    },
+    {
+      "symbol": "IWM",
+      "name": "羅素 2000",
+      "providerSymbol": "IWM",
+      "group": "equity",
+      "session": "exchange",
+      "tradingViewSymbol": "IWM"
+    },
+    {
+      "symbol": "KRE",
+      "name": "區域銀行",
+      "providerSymbol": "KRE",
+      "group": "sector",
+      "session": "exchange",
+      "tradingViewSymbol": "KRE"
+    },
+    {
+      "symbol": "ETH",
+      "name": "Ethereum",
+      "providerSymbol": "ETH-USD",
+      "group": "crypto",
+      "session": "utc24h",
+      "tradingViewSymbol": "ETHUSDT"
+    },
+    {
+      "symbol": "3033",
+      "name": "恒生科技 (3033)",
+      "providerSymbol": "3033.HK",
+      "group": "region",
+      "session": "exchange",
+      "tradingViewSymbol": "HKEX:3033"
+    },
+    {
+      "symbol": "BTC",
+      "name": "Bitcoin",
+      "providerSymbol": "BTC-USD",
+      "group": "crypto",
+      "session": "utc24h",
+      "tradingViewSymbol": "BTCUSDT"
+    },
+    {
+      "symbol": "SPY",
+      "name": "S&P 500",
+      "providerSymbol": "SPY",
+      "group": "equity",
+      "session": "exchange",
+      "tradingViewSymbol": "SPY"
+    },
+    {
+      "symbol": "2800",
+      "name": "港股恒指 (2800)",
+      "providerSymbol": "2800.HK",
+      "group": "region",
+      "session": "exchange",
+      "tradingViewSymbol": "HKEX:2800"
+    },
+    {
+      "symbol": "ASHR",
+      "name": "A股滬深300",
+      "providerSymbol": "ASHR",
+      "group": "region",
+      "session": "exchange",
+      "tradingViewSymbol": "ASHR"
+    },
+    {
+      "symbol": "DBA",
+      "name": "農產品",
+      "providerSymbol": "DBA",
+      "group": "commodity",
+      "session": "exchange",
+      "tradingViewSymbol": "DBA"
+    },
+    {
+      "symbol": "SOL",
+      "name": "Solana",
+      "providerSymbol": "SOL-USD",
+      "group": "crypto",
+      "session": "utc24h",
+      "tradingViewSymbol": "SOLUSDT"
+    },
+    {
+      "symbol": "EWJ",
+      "name": "日本",
+      "providerSymbol": "EWJ",
+      "group": "region",
+      "session": "exchange",
+      "tradingViewSymbol": "EWJ"
+    },
+    {
+      "symbol": "EEM",
+      "name": "新興市場",
+      "providerSymbol": "EEM",
+      "group": "region",
+      "session": "exchange",
+      "tradingViewSymbol": "EEM"
+    },
+    {
+      "symbol": "ARKX",
+      "name": "太空與國防創新",
+      "providerSymbol": "ARKX",
+      "group": "sector",
+      "session": "exchange",
+      "tradingViewSymbol": "ARKX"
+    },
+    {
+      "symbol": "HACK",
+      "name": "網絡安全",
+      "providerSymbol": "HACK",
+      "group": "sector",
+      "session": "exchange",
+      "tradingViewSymbol": "HACK"
+    },
+    {
+      "symbol": "QQQ",
+      "name": "Nasdaq 100",
+      "providerSymbol": "QQQ",
+      "group": "equity",
+      "session": "exchange",
+      "tradingViewSymbol": "QQQ"
+    },
+    {
+      "symbol": "GLD",
+      "name": "黃金",
+      "providerSymbol": "GLD",
+      "group": "commodity",
+      "session": "exchange",
+      "tradingViewSymbol": "GLD"
+    },
+    {
+      "symbol": "EWY",
+      "name": "韓國",
+      "providerSymbol": "EWY",
+      "group": "region",
+      "session": "exchange",
+      "tradingViewSymbol": "EWY"
+    },
+    {
+      "symbol": "COPX",
+      "name": "銅礦商",
+      "providerSymbol": "COPX",
+      "group": "commodity",
+      "session": "exchange",
+      "tradingViewSymbol": "COPX"
+    },
+    {
+      "symbol": "SMH",
+      "name": "半導體",
+      "providerSymbol": "SMH",
+      "group": "sector",
+      "session": "exchange",
+      "tradingViewSymbol": "SMH"
+    },
+    {
+      "symbol": "SLV",
+      "name": "白銀",
+      "providerSymbol": "SLV",
+      "group": "commodity",
+      "session": "exchange",
+      "tradingViewSymbol": "SLV"
+    }
+  ]
+}
