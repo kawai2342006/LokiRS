@@ -1,4 +1,6 @@
-export const palette = ['#87e7bd','#edbf72','#8ba7fa','#ee91ad','#a7a0ed','#6ad3db','#d9d97b','#e58b68','#a6c6d6','#bbd9a8'];
+// Asset identities use neutral archive inks. Green/coral remain reserved for signed data.
+export const palette = ['#cdb477','#f0e6cb','#dba15d','#a5b1a1','#cdb477','#f0e6cb','#dba15d','#a5b1a1','#cdb477','#f0e6cb'];
+export const seriesDashes = ['', '', '', '', '7 4', '7 4', '7 4', '7 4', '2 4', '2 4'];
 export const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 export function sparkline(values, {width = 100, height = 28, className = '', color} = {}) {
@@ -30,22 +32,22 @@ export function comparisonChart(series, {width = 1040, height = 340, label = 'æ”
   let markup = `<svg xmlns="http://www.w3.org/2000/svg" class="comparison-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHTML(label)}"><title>${escapeHTML(label)}</title>`;
   for(let i=0;i<5;i++) {
     const value=lo+(hi-lo)*i/4;
-    markup+=`<line x1="${margin.left}" x2="${width-margin.right+4}" y1="${y(value)}" y2="${y(value)}" stroke="#46515b" opacity=".3"/><text x="${width-margin.right+14}" y="${y(value)+4}" fill="#89959e" font-family="system-ui,sans-serif" font-size="11">${value.toFixed(1)}</text>`;
+    markup+=`<line x1="${margin.left}" x2="${width-margin.right+4}" y1="${y(value)}" y2="${y(value)}" stroke="#cdb477" opacity=".16"/><text x="${width-margin.right+14}" y="${y(value)+4}" fill="#a5b1a1" font-family="IBM Plex Mono, Courier New, monospace" font-size="10">${value.toFixed(1)}</text>`;
   }
-  markup+=`<line x1="${margin.left}" x2="${width-margin.right}" y1="${y(100)}" y2="${y(100)}" stroke="#89959e" opacity=".45" stroke-dasharray="4 5"/>`;
+  markup+=`<line x1="${margin.left}" x2="${width-margin.right}" y1="${y(100)}" y2="${y(100)}" stroke="#a5b1a1" opacity=".45" stroke-dasharray="4 5"/>`;
   for(let i=0;i<Math.min(5,common.length);i++) {
     const index=Math.round(i/(Math.min(5,common.length)-1)*(common.length-1));
-    markup+=`<text x="${x(index)}" y="${height-8}" fill="#89959e" font-family="system-ui,sans-serif" font-size="11" text-anchor="${i===0?'start':i===4?'end':'middle'}">${common[index].slice(5).replace('-','/')}</text>`;
+    markup+=`<text x="${x(index)}" y="${height-8}" fill="#a5b1a1" font-family="IBM Plex Mono, Courier New, monospace" font-size="10" text-anchor="${i===0?'start':i===4?'end':'middle'}">${common[index].slice(5).replace('-','/')}</text>`;
   }
   normalized.forEach((s,i) => {
     const color=s.color||palette[i%palette.length];
     const path=s.values.map((v,j)=>`${j?'L':'M'}${x(j).toFixed(2)},${y(v).toFixed(2)}`).join(' ');
-    markup+=`<path d="${path}" fill="none" stroke="${color}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${x(common.length-1)}" cy="${y(s.values.at(-1))}" r="3" fill="${color}"/>`;
+    markup+=`<path d="${path}" fill="none" stroke="${color}" stroke-dasharray="${seriesDashes[i%seriesDashes.length]}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${x(common.length-1)}" cy="${y(s.values.at(-1))}" r="3" fill="${color}"/>`;
   });
   markup+='</svg><div class="chart-legend">';
   normalized.forEach((s,i) => {
     const delta=s.values.at(-1)-100;
-    markup+=`<span><i style="background:${s.color||palette[i%palette.length]}"></i><strong>${escapeHTML(s.name)}</strong><b class="${delta>=0?'positive':'negative'}">${delta>=0?'+':''}${delta.toFixed(2)}%</b></span>`;
+    markup+=`<span><i style="border-top-color:${s.color||palette[i%palette.length]};border-top-style:${i<4?'solid':i<8?'dashed':'dotted'}"></i><strong>${escapeHTML(s.name)}</strong><b class="${delta>=0?'positive':'negative'}">${delta>=0?'+':''}${delta.toFixed(2)}%</b></span>`;
   });
   return markup+'</div>';
 }

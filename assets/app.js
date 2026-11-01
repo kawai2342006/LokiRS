@@ -1,10 +1,15 @@
-import {sparkline, comparisonChart, palette, escapeHTML as esc} from './charts.js';
+import {sparkline, comparisonChart, palette, seriesDashes, escapeHTML as esc} from './charts.js?v=1.1.0';
 
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 const storage = {
-  get(key, fallback) { try { return JSON.parse(localStorage.getItem('openrs:'+key)) ?? fallback; } catch { return fallback; } },
-  set(key, value) { try { localStorage.setItem('openrs:'+key,JSON.stringify(value)); } catch { /* private browsing */ } }
+  get(key, fallback) {
+    try {
+      const current=localStorage.getItem('lokirs:'+key);
+      return JSON.parse(current===null?localStorage.getItem('openrs:'+key):current) ?? fallback;
+    } catch { return fallback; }
+  },
+  set(key, value) { try { localStorage.setItem('lokirs:'+key,JSON.stringify(value)); } catch { /* private browsing */ } }
 };
 const state = {data:null, view:'stocks', search:'', sector:'', sectorTop:0, metric:'score', operator:'gte', value:'', streak:false,
   long:false, resilient:false, perp:false, sort:'score', direction:-1, page:1, pageSize:50,
@@ -27,9 +32,14 @@ function download(text,name,type) {
   setTimeout(()=>URL.revokeObjectURL(url),2000);
 }
 function setTheme(theme) {
+  theme=theme==='reading'||theme==='light'?'reading':'dark';
   document.documentElement.dataset.theme=theme;
   storage.set('theme',theme);
-  $('#theme-toggle').setAttribute('aria-label',theme==='dark'?'切換淺色外觀':'切換深色外觀');
+  const reading=theme==='reading', label=reading?'切換至檔案紙紋模式':'切換至純色閱讀模式';
+  $('#theme-toggle').setAttribute('aria-label',label);
+  $('#theme-toggle').setAttribute('aria-pressed',String(reading));
+  $('#theme-toggle').title=label;
+  $('#theme-label').textContent=reading?'檔案模式':'閱讀模式';
 }
 setTheme(storage.get('theme','dark'));
 
@@ -61,6 +71,7 @@ async function loadData(manual=false) {
 function renderOverview() {
   const {data}=state, meta=data.meta;
   $('#asof-label').textContent=`收市數據 ${data.asOf} · 美國交易日`;
+  $('#archive-date').textContent=data.asOf.replaceAll('-','.');
   $('#coverage-label').textContent=`${meta.currentCount} / ${meta.universeCount} 隻有效 · ${(meta.coverage*100).toFixed(1)}%`;
   $('#generated-label').textContent=`計算時間 ${hkTime(meta.generatedAt)} HKT`;
   $('#spy-price').textContent=number(data.benchmark.price);
@@ -165,10 +176,12 @@ function resetFilters() {
 }
 function switchView(view) {
   state.view=view;state.page=1;
-  $$('[data-view]').forEach(b=>{b.classList.toggle('active',b.dataset.view===view);b.toggleAttribute('aria-current',b.dataset.view===view);});
+  $$('[data-view]').forEach(b=>{const active=b.dataset.view===view;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
   $('#overview-section').hidden=view!=='stocks'; $('#top-section').hidden=view!=='stocks';
   $('#rankings').hidden=view==='compare';$('#compare-section').hidden=view!=='compare';
-  $('#page-title').innerHTML=view==='stocks'?'找到市場中的<span>相對強者。</span>':view==='watchlist'?'你的觀察名單，<span>持續追蹤。</span>':'同一起跑線，<span>看清表現差距。</span>';
+  $('#page-title').innerHTML=view==='stocks'?'在市場分岔之間，<span>找到相對強者。</span>':view==='watchlist'?'每一個變異，<span>都值得持續追蹤。</span>':'讓不同時間線，<span>在同一起點交匯。</span>';
+  $('#view-file').textContent=view==='stocks'?'FIELD / 001':view==='watchlist'?'FILE / 002':'PATH / 003';
+  $('#view-kicker').textContent=view==='stocks'?'THE SACRED TIMELINE':view==='watchlist'?'VARIANT SURVEILLANCE':'TIMELINE COMPARISON';
   $('#page-subtitle').textContent=view==='stocks'?'以 SPY 為基準，從不同時段觀察個股與板塊的強弱變化。':view==='watchlist'?'自選清單只儲存在此瀏覽器。所有篩選及排序照常可用。':'用共同交易日的收市價比較，最多 10 隻，首日統一為 100。';
   renderTable();renderComparison();
 }
@@ -178,7 +191,7 @@ function showDetail(symbol) {
   const priceSeries=r.history.map(p=>({date:p.date,value:p.close}));
   const benchmarkSeries=r.history.map(p=>({date:p.date,value:p.benchmark}));
   const chart=comparisonChart([{name:symbol,points:priceSeries},{name:'SPY',points:benchmarkSeries}],{height:300,width:850});
-  $('#detail-content').innerHTML=`<div class="detail-heading"><div><h2>${esc(symbol)}<span>${esc(r.name)}</span></h2><p>${esc(r.sectorName)} · ${esc(r.sector)} · 收市 ${esc(r.asOf||'—')}</p></div><div><strong>${number(r.price)}</strong><span>USD</span></div></div><div class="detail-metrics"><div><span>OpenRS · 近似</span><b class="${cls(r.score)}">${signed(r.score)}</b></div><div><span>1D 超額</span><b class="${cls(r.d1)}">${pp(r.d1)}</b></div><div><span>一週超額</span><b class="${cls(r.week?.value)}">${pp(r.week?.value)}</b></div><div><span>一月超額</span><b class="${cls(r.month?.value)}">${pp(r.month?.value)}</b></div></div><div class="detail-chart">${chart}</div><div class="detail-meta"><p>小時線時點：${r.intra.asOf?esc(hkTime(r.intra.asOf))+' HKT':'無完整同步數據'}。日線超額和小時線超額使用各自時點。</p><p>1H／4H K 線格數的實際跨度：${number(r.intra.h1ElapsedHours,1)}／${number(r.intra.h4ElapsedHours,1)} 小時。<br>精確時鐘 1H 超額：${pp(r.intra.clockH1)}；精確時鐘 4H 超額：${pp(r.intra.clockH4)}。</p><p>一週：${esc(periodTitle(r.week))}<br>一個月：${esc(periodTitle(r.month))}</p></div><div class="dialog-bottom"><button class="button" data-add-compare="${esc(symbol)}">＋ 加入走勢比較</button><a class="external-link" target="_blank" rel="noopener" href="https://finance.yahoo.com/quote/${encodeURIComponent(symbol)}/">Yahoo Finance ↗</a></div>`;
+  $('#detail-content').innerHTML=`<div class="detail-heading"><div><h2>${esc(symbol)}<span>${esc(r.name)}</span></h2><p>${esc(r.sectorName)} · ${esc(r.sector)} · 收市 ${esc(r.asOf||'—')}</p></div><div><strong>${number(r.price)}</strong><span>USD</span></div></div><div class="detail-metrics"><div><span>LokiRS · 近似</span><b class="${cls(r.score)}">${signed(r.score)}</b></div><div><span>1D 超額</span><b class="${cls(r.d1)}">${pp(r.d1)}</b></div><div><span>一週超額</span><b class="${cls(r.week?.value)}">${pp(r.week?.value)}</b></div><div><span>一月超額</span><b class="${cls(r.month?.value)}">${pp(r.month?.value)}</b></div></div><div class="detail-chart">${chart}</div><div class="detail-meta"><p>小時線時點：${r.intra.asOf?esc(hkTime(r.intra.asOf))+' HKT':'無完整同步數據'}。日線超額和小時線超額使用各自時點。</p><p>1H／4H K 線格數的實際跨度：${number(r.intra.h1ElapsedHours,1)}／${number(r.intra.h4ElapsedHours,1)} 小時。<br>精確時鐘 1H 超額：${pp(r.intra.clockH1)}；精確時鐘 4H 超額：${pp(r.intra.clockH4)}。</p><p>一週：${esc(periodTitle(r.week))}<br>一個月：${esc(periodTitle(r.month))}</p></div><div class="dialog-bottom"><button class="button" data-add-compare="${esc(symbol)}">＋ 加入走勢比較</button><a class="external-link" target="_blank" rel="noopener" href="https://finance.yahoo.com/quote/${encodeURIComponent(symbol)}/">Yahoo Finance ↗</a></div>`;
   $('#detail-dialog').showModal();
 }
 function renderComparison() {
@@ -186,7 +199,7 @@ function renderComparison() {
   const rows=state.data.rows;
   const all=[{symbol:'SPY',name:'SPY',history:rows.find(r=>r.history.length>10)?.history.map(p=>({...p,close:p.benchmark}))||[]},...rows];
   const selected=state.compare.map(s=>all.find(r=>r.symbol===s)).filter(Boolean);
-  $('#compare-chips').innerHTML=selected.map((r,i)=>`<button class="compare-chip" data-remove-compare="${esc(r.symbol)}" title="移除 ${esc(r.symbol)}"><i style="background:${palette[i%palette.length]}"></i>${esc(r.symbol)}<span>×</span></button>`).join('')+`<span class="muted small">${selected.length} / 10</span>`;
+  $('#compare-chips').innerHTML=selected.map((r,i)=>`<button class="compare-chip" data-remove-compare="${esc(r.symbol)}" title="移除 ${esc(r.symbol)}"><i style="border-top-color:${palette[i%palette.length]};border-top-style:${i<4?'solid':i<8?'dashed':'dotted'}"></i>${esc(r.symbol)}<span>×</span></button>`).join('')+`<span class="muted small">${selected.length} / 10</span>`;
   $('#compare-chart').innerHTML=comparisonChart(selected.map((r,i)=>({name:r.symbol,color:palette[i%palette.length],points:r.history.slice(-state.period).map(p=>({date:p.date,value:p.close}))})));
 }
 function addCompare(symbol) {
@@ -212,10 +225,10 @@ function renderMethodStatus() {
   if(long)$('#long-formula').textContent='長線值 = '+Object.entries(long).map(([p,w])=>`${w} × 超額 ${p}D`).join(' + ');
 }
 function exportCSV() {
-  const headings=['rank','symbol','name','asOf','status','price_USD','OpenRS_approx','rank_delta','1h_excess_pp','4h_excess_pp','1d_excess_pp','week_excess_pp','month_excess_pp','week_from','month_from','streak_approx','long_RS_percentile_approx','sector','sector_rank_approx','vs_sector_approx','vs_sector_1d_pp','intraday_asOf','h1_elapsed_hours','h4_elapsed_hours','exact_clock_1h_excess_pp','exact_clock_4h_excess_pp'];
+  const headings=['rank','symbol','name','asOf','status','price_USD','LokiRS_approx','rank_delta','1h_excess_pp','4h_excess_pp','1d_excess_pp','week_excess_pp','month_excess_pp','week_from','month_from','streak_approx','long_RS_percentile_approx','sector','sector_rank_approx','vs_sector_approx','vs_sector_1d_pp','intraday_asOf','h1_elapsed_hours','h4_elapsed_hours','exact_clock_1h_excess_pp','exact_clock_4h_excess_pp'];
   const rows=filteredRows().map(r=>[r.rank,r.symbol,r.name,r.asOf,r.status,r.price,r.score,r.rankDelta,r.intra.h1,r.intra.h4,r.d1,r.week?.value,r.month?.value,r.week?.from,r.month?.from,r.streak,r.longRS,r.sector,r.sectorRank,r.vsSector,r.vsSectorDay,r.intra.asOf,r.intra.h1ElapsedHours,r.intra.h4ElapsedHours,r.intra.clockH1,r.intra.clockH4]);
   const quote=v=>{let value=String(v??'');if(typeof v==='string'&&/^[=+\-@]/.test(value))value="'"+value;return '"'+value.replaceAll('"','""')+'"';};
-  download('\ufeff'+[headings,...rows].map(r=>r.map(quote).join(',')).join('\r\n'),`openrs-${state.data.asOf}.csv`,'text/csv;charset=utf-8');
+  download('\ufeff'+[headings,...rows].map(r=>r.map(quote).join(',')).join('\r\n'),`lokirs-${state.data.asOf}.csv`,'text/csv;charset=utf-8');
 }
 
 function exportComparison() {
@@ -223,13 +236,19 @@ function exportComparison() {
   const clone=svg.cloneNode(true), box=clone.getAttribute('viewBox').split(' ').map(Number);
   const legends=$$('#compare-chart .chart-legend>span'), height=box[3]+Math.ceil(legends.length/4)*25+15;
   clone.setAttribute('viewBox',`0 0 ${box[2]} ${height}`);
-  const dark=document.documentElement.dataset.theme==='dark', ns='http://www.w3.org/2000/svg';
-  const background=document.createElementNS(ns,'rect');background.setAttribute('width',box[2]);background.setAttribute('height',height);background.setAttribute('fill',dark?'#11191f':'#ffffff');clone.insertBefore(background,clone.firstChild);
+  const ns='http://www.w3.org/2000/svg';
+  const background=document.createElementNS(ns,'rect');background.setAttribute('width',box[2]);background.setAttribute('height',height);background.setAttribute('fill','#07130f');clone.insertBefore(background,clone.firstChild);
   legends.forEach((entry,i)=>{
-    const text=document.createElementNS(ns,'text');text.setAttribute('x',22+(i%4)*(box[2]-40)/4);text.setAttribute('y',box[3]+22+Math.floor(i/4)*25);
-    text.setAttribute('fill',entry.querySelector('i').style.backgroundColor||palette[i%palette.length]);text.setAttribute('font-family','system-ui,sans-serif');text.setAttribute('font-size','12');text.textContent=entry.textContent;clone.append(text);
+    const color=entry.querySelector('i').style.borderTopColor||palette[i%palette.length];
+    const line=document.createElementNS(ns,'line'), x=22+(i%4)*(box[2]-40)/4, y=box[3]+18+Math.floor(i/4)*25;
+    line.setAttribute('x1',x);line.setAttribute('x2',x+15);line.setAttribute('y1',y);line.setAttribute('y2',y);line.setAttribute('stroke',color);line.setAttribute('stroke-width','2');line.setAttribute('stroke-dasharray',seriesDashes[i%seriesDashes.length]);clone.append(line);
+    const text=document.createElementNS(ns,'text');text.setAttribute('x',x+22);text.setAttribute('y',box[3]+22+Math.floor(i/4)*25);
+    text.setAttribute('fill',color);text.setAttribute('font-family','IBM Plex Mono, Courier New, monospace');text.setAttribute('font-size','12');
+    text.textContent=entry.querySelector('strong').textContent+' ';
+    const change=document.createElementNS(ns,'tspan'), value=entry.querySelector('b');
+    change.setAttribute('fill',value.classList.contains('negative')?'#f18a73':'#8ddd9b');change.textContent=value.textContent;text.append(change);clone.append(text);
   });
-  download(clone.outerHTML,`openrs-comparison-${state.data.asOf}.svg`,'image/svg+xml');
+  download(clone.outerHTML,`lokirs-comparison-${state.data.asOf}.svg`,'image/svg+xml');
 }
 
 document.addEventListener('click',event=>{
@@ -244,7 +263,7 @@ document.addEventListener('click',event=>{
 });
 ['method-open','notice-method','footer-method'].forEach(id=>$('#'+id).addEventListener('click',()=>$('#method-dialog').showModal()));
 $$('dialog').forEach(dialog=>dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}}));
-$('#theme-toggle').addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'));
+$('#theme-toggle').addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='dark'?'reading':'dark'));
 $('#refresh').addEventListener('click',()=>loadData(true));
 $('#overview-toggle').addEventListener('click',()=>{const expanded=$('#overview-toggle').getAttribute('aria-expanded')==='true';$('#overview-grid').hidden=expanded;$('#overview-toggle').setAttribute('aria-expanded',!expanded);$('#overview-toggle').textContent=expanded?'展開 ＋':'收起 −';});
 $('#search').addEventListener('input',event=>{state.search=event.target.value.trim();state.page=1;renderTable();});
