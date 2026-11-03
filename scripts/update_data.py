@@ -22,6 +22,7 @@ def run():
     parser.add_argument("--refresh", action="store_true", help="Ignore cache TTLs")
     parser.add_argument("--workers", type=int, help="Download concurrency, 1–8")
     parser.add_argument("--skip-optional", action="store_true", help="Skip sentiment sources and Binance")
+    parser.add_argument("--rankings-only", action="store_true", help="Update equities and sectors; retain dated optional data and homepage")
     args = parser.parse_args()
     settings = json.loads((ROOT / "config/settings.json").read_text())
     universe = json.loads((ROOT / "config/universe.json").read_text())
@@ -58,31 +59,39 @@ def run():
     coverage = valid / len(universe["stocks"])
     if coverage < settings["minimumCoverage"]:
         raise RuntimeError(f"Only {coverage:.1%} current coverage, below safety threshold. Existing snapshot preserved.")
-    try:
-        result["macro"] = macro_summary(fetch_fred(cache, args.refresh), now.astimezone(ZoneInfo("Asia/Hong_Kong")).date())
-        macro_error = None
-    except Exception as exc:
+    if args.rankings_only:
         result["macro"] = [{**row, "status": "stale"} for row in prior.get("macro", [])]
-        macro_error = str(exc)[:180]
-    if not args.skip_optional:
+        macro_error = prior.get("meta", {}).get("macroError")
+        macro_status = "retained"
+    else:
+        try:
+            result["macro"] = macro_summary(fetch_fred(cache, args.refresh), now.astimezone(ZoneInfo("Asia/Hong_Kong")).date())
+            macro_error, macro_status = None, "updated"
+        except Exception as exc:
+            result["macro"] = [{**row, "status": "stale"} for row in prior.get("macro", [])]
+            macro_error, macro_status = str(exc)[:180], "stale"
+    if not args.skip_optional and not args.rankings_only:
         from update_sentiment import update_sentiment_snapshot
         result["sentiment"] = update_sentiment_snapshot(ROOT, previous=prior.get("sentiment"))
     else:
         result["sentiment"] = prior.get("sentiment") or {"status":"unavailable","value":None,"reason":"Skipped by configuration"}
-    result["contracts"] = fetch_contracts({s["symbol"] for s in universe["stocks"]}) if not args.skip_optional else {"status": "unavailable", "symbols": []}
+    result["contracts"] = prior.get("contracts", {"status":"unavailable","symbols":[]}) if args.rankings_only else fetch_contracts({s["symbol"] for s in universe["stocks"]}) if not args.skip_optional else {"status": "unavailable", "symbols": []}
     result["meta"] = {"schemaVersion": 1, "generatedAt": datetime.now(timezone.utc).isoformat(), "downloadStartedAt": now.isoformat(), "source": "Yahoo Finance public chart / FRED / CNN index via MacroMicro or CNN / Binance",
                       "universeDate": universe["capturedAt"], "universeCount": len(universe["stocks"]), "currentCount": valid,
                       "coverage": round(coverage, 4), "intradayCount": sum(r["intra"]["h1"] is not None for r in result["rows"]),
-                      "scoreFormula": "0.5 × excess(1 trading day) + 0.3 × excess(5 trading days) + 0.2 × excess(20 trading days)",
+                      "scoreFormula": " + ".join(f"{w} × excess({p[1:]+'H' if p in ('h1','h4') else p+'D'})" for p,w in settings["scoreWeights"].items()),
+                      "scoreModel": settings.get("scoreModel", "daily-three-period-v1"), "calibrationReferenceDates":settings.get("calibrationReferenceDates", []),
                       "scoreWeights": settings["scoreWeights"], "longTermWeights": settings["longTermWeights"],
                       "approximation": True, "priceBasis": "Daily returns/indicators: Yahoo Adj Close (splits and dividends). Displayed prices/intraday: Yahoo Close.",
-                      "errors": errors, "macroError": macro_error, "streakWindow": 65,
-                      "notice": "Independent open formula. LazyRS weights, long-term formula and original archived ranks are not publicly verified. No original-site numeric feed is used."}
+                      "errors": errors, "macroError": macro_error, "macroUpdateStatus":macro_status, "streakWindow": result["rankHistorySessions"],
+                      "notice": "Five-period weights inferred from two public reference snapshots; not an officially confirmed formula. Prices and runtime rankings are independently calculated from Yahoo. Long-term RS and historical ranks remain independent approximations."}
     output.parent.mkdir(parents=True, exist_ok=True)
     temp = output.with_suffix(".tmp")
     temp.write_text(json.dumps(result, ensure_ascii=False, separators=(",", ":"), allow_nan=False) + "\n")
     temp.replace(output)
     print(f"Saved {output.name}: {valid}/{len(universe['stocks'])}, market date {result['asOf']}", flush=True)
+    if args.rankings_only:
+        return
     # The homepage is independently atomic: a failed optional refresh preserves its prior file.
     from update_home import refresh_home
     try:

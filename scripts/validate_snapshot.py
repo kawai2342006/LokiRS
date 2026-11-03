@@ -3,6 +3,7 @@ import math
 from datetime import datetime
 from pathlib import Path
 import json
+from zoneinfo import ZoneInfo
 
 
 def validate(data):
@@ -16,10 +17,21 @@ def validate(data):
     assert all(a["score"] >= b["score"] - 0.0001 for a, b in zip(ranked, ranked[1:]))
     assert len(ranked) == meta["currentCount"]
     assert abs(meta["coverage"] - len(ranked) / len(rows)) < 0.0001
+    calibrated = meta.get("scoreModel") == "five-period-public-calibration-v1"
+    if calibrated:
+        assert 0 < meta["streakWindow"] <= 65
+        assert set(meta["scoreWeights"]) == {"h1", "h4", "1", "5", "20"}
     benchmark_prices = {}
     for row in rows:
         if row["rank"] is not None:
             assert row["asOf"] == data["asOf"] and row["status"] == "ok"
+            if calibrated:
+                parts = row["scoreInputs"]
+                assert all(v is not None and math.isfinite(v) for v in parts.values())
+                expected = sum(parts[k]*w for k,w in meta["scoreWeights"].items())
+                assert abs(expected-row["score"]) <= .000051, (row["symbol"], "score components")
+                assert datetime.fromisoformat(row["intra"]["asOf"]).astimezone(ZoneInfo("America/New_York")).date().isoformat() == data["asOf"]
+                assert parts["h1"] == row["intra"]["h1"] and parts["h4"] == row["intra"]["h4"]
         for field in ["price", "score", "d1", "longRS", "vsSector", "vsSectorDay"]:
             assert row[field] is None or math.isfinite(row[field]), (row["symbol"], field)
         if row["longRS"] is not None:

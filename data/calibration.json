@@ -1,0 +1,304 @@
+{
+  "version": 1,
+  "model": "five-period-public-calibration-v1",
+  "weights": {
+    "h1": 0.25,
+    "h4": 0.25,
+    "1": 0.25,
+    "5": 0.15,
+    "20": 0.1
+  },
+  "trainingDate": "2026-10-30",
+  "secondDateCheck": "2026-11-02",
+  "unroundedFitOnFirstDate": [
+    0.24999907001238705,
+    0.25000278437510115,
+    0.2499990608189246,
+    0.15000009336026396,
+    0.10000027962992152
+  ],
+  "officiallyConfirmed": false,
+  "referenceFormulaChecks": {
+    "2026-10-30": {
+      "observations": 589,
+      "meanAbsoluteScoreError": 2.6986417657054126e-05,
+      "maxAbsoluteScoreError": 8.000000000008001e-05,
+      "within0001": 589
+    },
+    "2026-11-02": {
+      "observations": 591,
+      "meanAbsoluteScoreError": 2.6641285956001358e-05,
+      "maxAbsoluteScoreError": 7.500000000004725e-05,
+      "within0001": 591
+    }
+  },
+  "independentYahooChecks": {
+    "2026-10-30": {
+      "baseline": {
+        "asOf": "2026-10-30",
+        "referenceUrl": "https://lazyrs.trade/?tab=stocks",
+        "referenceUniverse": 589,
+        "lokiUniverse": 589,
+        "commonRanked": 589,
+        "referenceOnly": [],
+        "lokiOnly": [],
+        "method": "Re-rank both visible default orders within the same common-symbol cohort; no unmatched symbols shift ranks.",
+        "meanAbsoluteRankDifference": 17.249575551782684,
+        "medianAbsoluteRankDifference": 12,
+        "maxAbsoluteRankDifference": 156,
+        "spearman": 0.9881802256167639,
+        "topOverlap": {
+          "10": 8,
+          "20": 17,
+          "50": 45,
+          "100": 91
+        },
+        "scoreMeanAbsoluteError": 2.326523429541596
+      },
+      "calibrated": {
+        "asOf": "2026-10-30",
+        "referenceUrl": "https://lazyrs.trade/?tab=stocks",
+        "referenceUniverse": 589,
+        "lokiUniverse": 589,
+        "commonRanked": 589,
+        "referenceOnly": [],
+        "lokiOnly": [],
+        "method": "Re-rank both visible default orders within the same common-symbol cohort; no unmatched symbols shift ranks.",
+        "meanAbsoluteRankDifference": 1.2801358234295417,
+        "medianAbsoluteRankDifference": 1,
+        "maxAbsoluteRankDifference": 19,
+        "spearman": 0.9999068592358816,
+        "topOverlap": {
+          "10": 10,
+          "20": 20,
+          "50": 49,
+          "100": 100
+        },
+        "scoreMeanAbsoluteError": 0.012850933786078093
+      },
+      "largestRemainingDifferences": [
+        {
+          "symbol": "SWKS",
+          "referenceRankCommon": 273,
+          "lokiRankCommon": 254,
+          "referenceDisplayRank": 273,
+          "lokiDisplayRank": 254,
+          "rankDifference": -19,
+          "referenceScore": 1.4919,
+          "lokiScore": 1.6499
+        },
+        {
+          "symbol": "SKYD",
+          "referenceRankCommon": 435,
+          "lokiRankCommon": 422,
+          "referenceDisplayRank": 435,
+          "lokiDisplayRank": 422,
+          "rankDifference": -13,
+          "referenceScore": -0.2378,
+          "lokiScore": -0.003
+        },
+        {
+          "symbol": "CAH",
+          "referenceRankCommon": 283,
+          "lokiRankCommon": 294,
+          "referenceDisplayRank": 283,
+          "lokiDisplayRank": 294,
+          "rankDifference": 11,
+          "referenceScore": 1.3589,
+          "lokiScore": 1.3305
+        },
+        {
+          "symbol": "BRK-B",
+          "referenceRankCommon": 284,
+          "lokiRankCommon": 295,
+          "referenceDisplayRank": 284,
+          "lokiDisplayRank": 295,
+          "rankDifference": 11,
+          "referenceScore": 1.3525,
+          "lokiScore": 1.3298
+        },
+        {
+          "symbol": "CI",
+          "referenceRankCommon": 322,
+          "lokiRankCommon": 311,
+          "referenceDisplayRank": 322,
+          "lokiDisplayRank": 311,
+          "rankDifference": -11,
+          "referenceScore": 1.1521,
+          "lokiScore": 1.1911
+        },
+        {
+          "symbol": "NOC",
+          "referenceRankCommon": 225,
+          "lokiRankCommon": 215,
+          "referenceDisplayRank": 225,
+          "lokiDisplayRank": 215,
+          "rankDifference": -10,
+          "referenceScore": 1.8949,
+          "lokiScore": 1.9336
+        },
+        {
+          "symbol": "MCO",
+          "referenceRankCommon": 154,
+          "lokiRankCommon": 145,
+          "referenceDisplayRank": 154,
+          "lokiDisplayRank": 145,
+          "rankDifference": -9,
+          "referenceScore": 2.3722,
+          "lokiScore": 2.4173
+        },
+        {
+          "symbol": "L",
+          "referenceRankCommon": 350,
+          "lokiRankCommon": 359,
+          "referenceDisplayRank": 350,
+          "lokiDisplayRank": 359,
+          "rankDifference": 9,
+          "referenceScore": 0.8687,
+          "lokiScore": 0.7606
+        }
+      ]
+    },
+    "2026-11-02": {
+      "baseline": {
+        "asOf": "2026-11-02",
+        "referenceUrl": "https://lazyrs.trade/?tab=stocks",
+        "referenceUniverse": 591,
+        "lokiUniverse": 589,
+        "commonRanked": 588,
+        "referenceOnly": [
+          "GOOGM",
+          "GOOGN",
+          "VYLR"
+        ],
+        "lokiOnly": [],
+        "method": "Re-rank both visible default orders within the same common-symbol cohort; no unmatched symbols shift ranks.",
+        "meanAbsoluteRankDifference": 14.70748299319728,
+        "medianAbsoluteRankDifference": 9.0,
+        "maxAbsoluteRankDifference": 161,
+        "spearman": 0.9909141548868993,
+        "topOverlap": {
+          "10": 9,
+          "20": 18,
+          "50": 44,
+          "100": 93
+        },
+        "scoreMeanAbsoluteError": 2.3523328231292515
+      },
+      "calibrated": {
+        "asOf": "2026-11-02",
+        "referenceUrl": "https://lazyrs.trade/?tab=stocks",
+        "referenceUniverse": 591,
+        "lokiUniverse": 589,
+        "commonRanked": 588,
+        "referenceOnly": [
+          "GOOGM",
+          "GOOGN",
+          "VYLR"
+        ],
+        "lokiOnly": [],
+        "method": "Re-rank both visible default orders within the same common-symbol cohort; no unmatched symbols shift ranks.",
+        "meanAbsoluteRankDifference": 0.7142857142857143,
+        "medianAbsoluteRankDifference": 0.0,
+        "maxAbsoluteRankDifference": 7,
+        "spearman": 0.9999706045666691,
+        "topOverlap": {
+          "10": 10,
+          "20": 20,
+          "50": 49,
+          "100": 100
+        },
+        "scoreMeanAbsoluteError": 0.007773809523809519
+      },
+      "largestRemainingDifferences": [
+        {
+          "symbol": "RL",
+          "referenceRankCommon": 287,
+          "lokiRankCommon": 280,
+          "referenceDisplayRank": 287,
+          "lokiDisplayRank": 280,
+          "rankDifference": -7,
+          "referenceScore": 2.1833,
+          "lokiScore": 2.2128
+        },
+        {
+          "symbol": "AAPL",
+          "referenceRankCommon": 399,
+          "lokiRankCommon": 406,
+          "referenceDisplayRank": 400,
+          "lokiDisplayRank": 406,
+          "rankDifference": 7,
+          "referenceScore": 0.7203,
+          "lokiScore": 0.5775
+        },
+        {
+          "symbol": "LLY",
+          "referenceRankCommon": 49,
+          "lokiRankCommon": 55,
+          "referenceDisplayRank": 49,
+          "lokiDisplayRank": 55,
+          "rankDifference": 6,
+          "referenceScore": 4.7879,
+          "lokiScore": 4.7637
+        },
+        {
+          "symbol": "PNW",
+          "referenceRankCommon": 234,
+          "lokiRankCommon": 240,
+          "referenceDisplayRank": 234,
+          "lokiDisplayRank": 240,
+          "rankDifference": 6,
+          "referenceScore": 2.6482,
+          "lokiScore": 2.6219
+        },
+        {
+          "symbol": "NVR",
+          "referenceRankCommon": 72,
+          "lokiRankCommon": 77,
+          "referenceDisplayRank": 72,
+          "lokiDisplayRank": 77,
+          "rankDifference": 5,
+          "referenceScore": 4.466,
+          "lokiScore": 4.4011
+        },
+        {
+          "symbol": "OMC",
+          "referenceRankCommon": 76,
+          "lokiRankCommon": 71,
+          "referenceDisplayRank": 76,
+          "lokiDisplayRank": 71,
+          "rankDifference": -5,
+          "referenceScore": 4.4528,
+          "lokiScore": 4.4744
+        },
+        {
+          "symbol": "LUV",
+          "referenceRankCommon": 225,
+          "lokiRankCommon": 230,
+          "referenceDisplayRank": 225,
+          "lokiDisplayRank": 230,
+          "rankDifference": 5,
+          "referenceScore": 2.7064,
+          "lokiScore": 2.6856
+        },
+        {
+          "symbol": "SOMN",
+          "referenceRankCommon": 271,
+          "lokiRankCommon": 266,
+          "referenceDisplayRank": 271,
+          "lokiDisplayRank": 266,
+          "rankDifference": -5,
+          "referenceScore": 2.3047,
+          "lokiScore": 2.3424
+        }
+      ]
+    }
+  },
+  "limits": [
+    "Two observed dates only; no long-run validation.",
+    "Reference public table has 591 symbols on Nov 2; LokiRS fixed universe remains 589.",
+    "Common symbols are reranked for comparisons; unmatched symbols are reported separately.",
+    "Hourly and daily observations are independently sourced from Yahoo; provider differences remain."
+  ],
+  "checkedAt": "2026-11-03T05:44:39.893821+00:00"
+}

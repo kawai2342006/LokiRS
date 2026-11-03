@@ -4,6 +4,10 @@
 
 現有網站：https://kawai2342006.github.io/LokiRS/
 
+## v1.3 美股排名校準
+
+美股綜合分數改為 1H／4H／1D／5D／20D 五時段權重，已用兩日公開快照與獨立行情核對。安裝、更新及比較命令見 [README_CALIBRATION.md](README_CALIBRATION.md)，完整結果見 [校準紀錄](docs/CALIBRATION.md)。
+
 ## v1.2 主頁更新
 
 詳細安裝與更新步驟見 [README_HOME.md](README_HOME.md)。更新包的預設入口是跨市場主頁，原有美股排名、自選及走勢比較保留。

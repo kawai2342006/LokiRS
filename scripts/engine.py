@@ -1,4 +1,4 @@
-"""Transparent calculations, intentionally independent of the reference site's private formulas."""
+"""Transparent calculations from independent prices and public calibration."""
 from __future__ import annotations
 
 import calendar
@@ -22,17 +22,21 @@ def excess(asset: dict, benchmark: dict, start, end):
     return a - b if a is not None and b is not None else None
 
 
-def weighted_score(asset, benchmark, sessions, at, weights):
-    parts = []
-    for period, weight in weights.items():
-        period = int(period)
-        if at < period:
-            return None
-        value = excess(asset, benchmark, sessions[at - period], sessions[at])
-        if value is None:
-            return None
-        parts.append(value * weight)
-    return sum(parts)
+def score_inputs(asset, benchmark, sessions, at, weights, intraday=None):
+    parts = {}
+    for period in weights:
+        if period in ("h1", "h4"):
+            value = (intraday or {}).get(period)
+            parts[period] = value if value is not None and math.isfinite(value) else None
+            continue
+        count = int(period)
+        parts[period] = excess(asset, benchmark, sessions[at-count], sessions[at]) if at >= count else None
+    return parts
+
+
+def weighted_score(asset, benchmark, sessions, at, weights, intraday=None):
+    parts = score_inputs(asset, benchmark, sessions, at, weights, intraday)
+    return sum(value * weights[key] for key, value in parts.items()) if all(v is not None for v in parts.values()) else None
 
 
 def month_before(value: str) -> str:
@@ -67,11 +71,14 @@ def percentiles(values: dict) -> dict:
     return result
 
 
-def intraday_clock_excess(asset: dict, benchmark: dict):
-    common = sorted(set(asset) & set(benchmark))
-    if not common:
+def intraday_clock_excess(asset: dict, benchmark: dict, end=None):
+    if end is None:
+        common = sorted(set(asset) & set(benchmark))
+        if not common:
+            return {"h1": None, "h4": None, "asOf": None}
+        end = common[-1]
+    elif end not in asset or end not in benchmark:
         return {"h1": None, "h4": None, "asOf": None}
-    end = common[-1]
     result = {"asOf": datetime.fromtimestamp(end, timezone.utc).isoformat()}
     for hours, name in [(1, "h1"), (4, "h4")]:
         start = end - hours * 3600
@@ -81,7 +88,7 @@ def intraday_clock_excess(asset: dict, benchmark: dict):
     return result
 
 
-def intraday_excess(asset: dict, benchmark: dict):
+def intraday_excess(asset: dict, benchmark: dict, end=None, grid=None):
     """Reference-style 1H candle steps, reconstructed from completed 30m closes.
 
     NY regular hours create hourly candle ends at 10:30..15:30 and 16:00.
@@ -89,19 +96,21 @@ def intraday_excess(asset: dict, benchmark: dict):
     rather than pretending that N bars are always N clock hours.
     """
     tz = ZoneInfo("America/New_York")
-    grid = sorted(t for t in benchmark if (lambda d: d.minute == 30 or (d.hour == 16 and d.minute == 0))(datetime.fromtimestamp(t, tz)))
+    if grid is None:
+        grid = sorted(t for t in benchmark if (lambda d: d.minute == 30 or (d.hour == 16 and d.minute == 0))(datetime.fromtimestamp(t, tz)))
+    stop = bisect_right(grid, end) if end is not None else len(grid)
     result = {"h1": None, "h4": None, "asOf": None, "basis": "completed 1H candle steps, reconstructed from 30m bars"}
-    if not grid or grid[-1] not in asset:
+    if not stop or grid[stop-1] not in asset or (end is not None and grid[stop-1] != end):
         return result
-    end = grid[-1]
+    end = grid[stop-1]
     result["asOf"] = datetime.fromtimestamp(end, timezone.utc).isoformat()
     for n in [1, 4]:
-        if len(grid) > n:
-            start = grid[-1 - n]
+        if stop > n:
+            start = grid[stop-1-n]
             result[f"h{n}"] = rnd(excess(asset, benchmark, start, end))
             result[f"h{n}Start"] = datetime.fromtimestamp(start, timezone.utc).isoformat()
             result[f"h{n}ElapsedHours"] = (end - start) / 3600
-    clock = intraday_clock_excess(asset, benchmark)
+    clock = intraday_clock_excess(asset, benchmark, end)
     result["clockH1"], result["clockH4"] = clock["h1"], clock["h4"]
     return result
 
@@ -139,17 +148,38 @@ def build_equities(universe, settings, daily, intra, prior=None):
     end, at = sessions[-1], len(sessions) - 1
     stocks = universe["stocks"]
     weights = settings["scoreWeights"]
+    uses_intraday = any(key in weights for key in ("h1", "h4"))
+    hourly_benchmark = intra.get(benchmark_symbol, {}).get("bars", {})
+    closing_points = {}
+    ny = ZoneInfo("America/New_York")
+    hourly_grid = sorted(t for t in hourly_benchmark if (lambda d: d.minute == 30 or (d.hour == 16 and d.minute == 0))(datetime.fromtimestamp(t, ny)))
+    for stamp in sorted(hourly_benchmark):
+        day = datetime.fromtimestamp(stamp, ny).date().isoformat()
+        closing_points[day] = intra.get(benchmark_symbol, {}).get("sessionEnds", {}).get(day) or int(datetime.fromisoformat(day+'T16:00:00').replace(tzinfo=ny).timestamp())
+    intraday_cache = {}
+
+    def hourly_for(symbol, ix):
+        day = sessions[ix]
+        key = (symbol, day)
+        if key not in intraday_cache:
+            stamp = closing_points.get(day)
+            intraday_cache[key] = intraday_excess(intra.get(symbol, {}).get("bars", {}), hourly_benchmark, stamp, hourly_grid) if stamp else {"h1":None,"h4":None,"asOf":None}
+        return intraday_cache[key]
+
+    def composite(symbol, ix):
+        return weighted_score(daily.get(symbol, {}).get("bars", {}), benchmark, sessions, ix, weights,
+                              hourly_for(symbol, ix) if uses_intraday else None)
+
     scores, ranks = {}, {}
     # Reconstruct daily ranks with today's fixed universe; no claim of a point-in-time backtest.
     for ix in range(max(20, at - 64), at + 1):
-        values = {s["symbol"]: weighted_score(daily.get(s["symbol"], {}).get("bars", {}), benchmark, sessions, ix, weights) for s in stocks}
+        values = {s["symbol"]: composite(s["symbol"], ix) for s in stocks}
         ordered = sorted(((-v, symbol) for symbol, v in values.items() if v is not None))
         scores[ix] = values
         ranks[ix] = {symbol: i + 1 for i, (_, symbol) in enumerate(ordered)}
     sector_values = {}
     for sector in universe["sectors"]:
-        bars = daily.get(sector["symbol"], {}).get("bars", {})
-        sector_values[sector["symbol"]] = weighted_score(bars, benchmark, sessions, at, weights)
+        sector_values[sector["symbol"]] = composite(sector["symbol"], at)
     sector_ranks = {symbol: i + 1 for i, (_, symbol) in enumerate(sorted((-v, s) for s, v in sector_values.items() if v is not None))}
     long_values = {s["symbol"]: weighted_score(daily.get(s["symbol"], {}).get("bars", {}), benchmark, sessions, at, settings["longTermWeights"]) for s in stocks}
     long_percentiles = percentiles(long_values)
@@ -163,17 +193,22 @@ def build_equities(universe, settings, daily, intra, prior=None):
         score = scores[at].get(symbol)
         rank = ranks[at].get(symbol)
         previous = ranks[at - 1].get(symbol)
-        streak = 0
+        streak, streak_capped = 0, False
         for ix in range(at, max(19, at - 65), -1):
+            if symbol not in ranks.get(ix, {}):
+                streak_capped = streak > 0
+                break
             if ranks.get(ix, {}).get(symbol, math.inf) <= math.ceil(len(ranks.get(ix, {})) * settings["topFraction"]):
                 streak += 1
             else:
                 break
+        else:
+            streak_capped = streak > 0
         sector_bars = daily.get(sector, {}).get("bars", {})
         week_target = (date.fromisoformat(end) - timedelta(days=7)).isoformat()
         week = rolling_excess(bars, benchmark, sessions, end, week_target)
         month = rolling_excess(bars, benchmark, sessions, end, month_before(end))
-        intraday = intraday_excess(intra.get(symbol, {}).get("bars", {}), intra.get(benchmark_symbol, {}).get("bars", {}))
+        intraday = hourly_for(symbol, at) if uses_intraday else intraday_excess(intra.get(symbol, {}).get("bars", {}), hourly_benchmark)
         history = [{"date": day, "close": rnd(bars[day]["close"]), "benchmark": rnd(benchmark[day]["close"])}
                    for day in sessions[-settings["historySessions"]:] if day in bars]
         ratios = [point["close"] / point["benchmark"] for point in history[-21:]]
@@ -182,16 +217,22 @@ def build_equities(universe, settings, daily, intra, prior=None):
         rows.append({**stock, "rank": rank, "rankDelta": previous - rank if previous and rank else None,
                      "price": rnd(bars[latest].get("price", bars[latest]["close"]) if bars and latest else old.get(symbol, {}).get("price")),
                      "currency": daily.get(symbol, {}).get("currency", "USD"), "asOf": latest,
-                     "status": "ok" if valid else "stale" if latest else "unavailable", "score": rnd(score),
+                     "status": "ok" if valid and score is not None else "partial" if valid else "stale" if latest else "unavailable", "score": rnd(score),
+                     "scoreInputs": score_inputs(bars, benchmark, sessions, at, weights, intraday),
                      "d1": rnd(excess(bars, benchmark, sessions[at - 1], end)), "week": week, "month": month,
                      "intra": intraday, "longRS": long_percentiles.get(symbol), "streak": streak if score is not None else None,
-                     "streakCapped": streak == 65, "sectorRank": sector_ranks.get(sector), "sectorScore": rnd(sector_score),
+                     "streakCapped": streak_capped, "sectorRank": sector_ranks.get(sector), "sectorScore": rnd(sector_score),
                      "vsSector": rnd(score - sector_score) if score is not None and sector_score is not None else None,
                      "vsSectorDay": rnd(excess(bars, sector_bars, sessions[at - 1], end)), "rsLine": rs_line,
                      "history": history})
     rows.sort(key=lambda row: (row["rank"] is None, row["rank"] or 99999, row["symbol"]))
     sectors = [{**s, "rank": sector_ranks.get(s["symbol"]), "score": rnd(sector_values[s["symbol"]])} for s in universe["sectors"]]
-    return {"asOf": end, "rows": rows, "sectors": sectors, "breadth": breadth(daily, sessions, stocks),
+    trailing_rank_days = 0
+    for ix in range(at, max(19, at - 65), -1):
+        if not ranks.get(ix):
+            break
+        trailing_rank_days += 1
+    return {"asOf": end, "rows": rows, "sectors": sectors, "breadth": breadth(daily, sessions, stocks), "rankHistorySessions":trailing_rank_days,
             "benchmark": {"symbol": benchmark_symbol, "price": rnd(benchmark[end].get("price", benchmark[end]["close"])), "asOf": end,
                           "d1": rnd(change(benchmark, sessions[at - 1], end))}}
 

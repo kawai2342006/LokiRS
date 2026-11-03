@@ -15,7 +15,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 UTC = timezone.utc
-HEADERS = {"User-Agent": "LokiRS/1.2.1 (public market research dashboard)"}
+HEADERS = {"User-Agent": "LokiRS/1.3.0 (public market research dashboard)"}
 FRED_IDS = ["WALCL", "WTREGEN", "RRPONTSYD", "BAMLH0A0HYM2", "BAMLC0A0CM", "NFCI", "DTWEXBGS", "DFII10"]
 
 
@@ -39,12 +39,20 @@ def fetch_bytes(url: str, attempts: int = 3) -> bytes:
 
 def cached_chart(symbol: str, interval: str, cache: Path, refresh: bool = False) -> tuple[dict, bool]:
     safe = urllib.parse.quote(symbol, safe="")
-    path = cache / f"{safe}.{interval}.json"
+    # A new cache key prevents an older 5-day intraday cache limiting calibrated history.
+    suffix = "30m58d" if interval == "30m" else interval
+    path = cache / f"{safe}.{suffix}.json"
     ttl = 6 * 3600 if interval == "1d" else 1800
     if path.exists() and not refresh and time.time() - path.stat().st_mtime < ttl:
         return json.loads(path.read_text()), True
-    period = "2y" if interval == "1d" else "5d"
-    query = urllib.parse.urlencode({"range": period, "interval": interval, "includePrePost": "false", "events": "splits"})
+    params = {"interval": interval, "includePrePost": "false", "events": "splits"}
+    if interval == "1d":
+        params["range"] = "2y"
+    else:
+        # Yahoo limits 30m history to 60 days. Stay inside that window and retain
+        # actual hourly inputs for historical ranks instead of mixing formulas.
+        params.update({"period1": int(time.time() - 58 * 86400), "period2": int(time.time())})
+    query = urllib.parse.urlencode(params)
     url = f"https://query1.finance.yahoo.com/v8/finance/chart/{safe}?{query}"
     data = json.loads(fetch_bytes(url))
     if data.get("chart", {}).get("error") or not data.get("chart", {}).get("result"):
@@ -74,6 +82,18 @@ def parse_chart(data: dict, interval: str, now: datetime | None = None) -> dict:
     if interval == "1d" and not adjusted:
         raise ValueError("Daily dividend-adjusted close history is missing")
     volumes = quote.get("volume", [])
+    session_ends = {}
+    def collect_sessions(periods):
+        if isinstance(periods, list):
+            for item in periods:
+                collect_sessions(item)
+        elif isinstance(periods, dict):
+            if "start" in periods and "end" in periods:
+                day = datetime.fromtimestamp(periods["start"], tz).date().isoformat()
+                session_ends[day] = int(periods["end"])
+            elif "regular" in periods:
+                collect_sessions(periods["regular"])
+    collect_sessions(meta.get("tradingPeriods", []))
     bars = {}
     for i, timestamp in enumerate(result.get("timestamp", [])):
         value = closes[i] if i < len(closes) else None
@@ -81,7 +101,7 @@ def parse_chart(data: dict, interval: str, now: datetime | None = None) -> dict:
             continue
         stamp = datetime.fromtimestamp(timestamp, tz)
         # Yahoo daily candles are labelled by session start. Do not treat an open session as a close.
-        session_end = stamp.replace(hour=16, minute=0, second=0, microsecond=0)
+        session_end = datetime.fromtimestamp(session_ends[stamp.date().isoformat()], tz) if stamp.date().isoformat() in session_ends else stamp.replace(hour=16, minute=0, second=0, microsecond=0)
         if interval == "1d":
             if now < session_end:
                 continue
@@ -97,7 +117,7 @@ def parse_chart(data: dict, interval: str, now: datetime | None = None) -> dict:
         raw_price = raw_closes[i] if i < len(raw_closes) else None
         bars[key] = {"close": float(value), "price": float(raw_price) if raw_price is not None and math.isfinite(raw_price) else None,
                      "volume": volumes[i] if i < len(volumes) else None}
-    return {"bars": dict(sorted(bars.items())), "currency": meta.get("currency", "USD"), "timezone": str(tz)}
+    return {"bars": dict(sorted(bars.items())), "currency": meta.get("currency", "USD"), "timezone": str(tz), "sessionEnds":session_ends}
 
 
 def parse_fred(payload: bytes) -> dict[str, dict[str, float]]:
