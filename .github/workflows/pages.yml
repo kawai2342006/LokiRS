@@ -53,7 +53,7 @@ jobs:
           restore-keys: lokirs-data-v2-
       - name: Fetch free data and recalculate
         if: github.event_name != 'workflow_dispatch' || inputs.refresh_data
-        run: python -u scripts/update_data.py --workers 4
+        run: python -u scripts/update_data.py --refresh --workers 4
       - name: Retain the calculated snapshot
         if: github.event_name != 'workflow_dispatch' || inputs.refresh_data
         run: |
