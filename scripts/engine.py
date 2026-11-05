@@ -188,7 +188,11 @@ def build_equities(universe, settings, daily, intra, prior=None):
     for stock in stocks:
         symbol, sector = stock["symbol"], stock["sector"]
         bars = daily.get(symbol, {}).get("bars", {})
-        latest = max(bars) if bars else old.get(symbol, {}).get("asOf")
+        # Displayed price/date must use the same observation day as the score.
+        # Some providers publish an individual stock's next day before SPY.
+        eligible_dates = [day for day in bars if day <= end]
+        prior_date = old.get(symbol, {}).get("asOf")
+        latest = max(eligible_dates) if eligible_dates else prior_date if prior_date and prior_date <= end else None
         valid = end in bars
         score = scores[at].get(symbol)
         rank = ranks[at].get(symbol)
@@ -215,8 +219,10 @@ def build_equities(universe, settings, daily, intra, prior=None):
         rs_line = [rnd(value / ratios[0] * 100) for value in ratios] if ratios else []
         sector_score = sector_values.get(sector)
         rows.append({**stock, "rank": rank, "rankDelta": previous - rank if previous and rank else None,
-                     "price": rnd(bars[latest].get("price", bars[latest]["close"]) if bars and latest else old.get(symbol, {}).get("price")),
+                     "price": rnd(bars[latest].get("price", bars[latest]["close"]) if latest in bars else old.get(symbol, {}).get("price") if latest else None),
                      "currency": daily.get(symbol, {}).get("currency", "USD"), "asOf": latest,
+                     "dailyCloseReconstructed":bool(bars.get(latest, {}).get("reconstructed")),
+                     "dailyCloseSourceTime":bars.get(latest, {}).get("sourceTime"),
                      "status": "ok" if valid and score is not None else "partial" if valid else "stale" if latest else "unavailable", "score": rnd(score),
                      "scoreInputs": score_inputs(bars, benchmark, sessions, at, weights, intraday),
                      "d1": rnd(excess(bars, benchmark, sessions[at - 1], end)), "week": week, "month": month,
@@ -234,6 +240,7 @@ def build_equities(universe, settings, daily, intra, prior=None):
         trailing_rank_days += 1
     return {"asOf": end, "rows": rows, "sectors": sectors, "breadth": breadth(daily, sessions, stocks), "rankHistorySessions":trailing_rank_days,
             "benchmark": {"symbol": benchmark_symbol, "price": rnd(benchmark[end].get("price", benchmark[end]["close"])), "asOf": end,
+                          "dailyCloseReconstructed":bool(benchmark[end].get("reconstructed")),
                           "d1": rnd(change(benchmark, sessions[at - 1], end))}}
 
 

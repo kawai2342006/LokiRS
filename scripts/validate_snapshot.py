@@ -24,7 +24,7 @@ def validate(data):
     benchmark_prices = {}
     for row in rows:
         if row["rank"] is not None:
-            assert row["asOf"] == data["asOf"] and row["status"] == "ok"
+            assert row["asOf"] == data["asOf"] and row["status"] == "ok", (row["symbol"], "ranked observation date/status", row["asOf"], data["asOf"], row["status"])
             if calibrated:
                 parts = row["scoreInputs"]
                 assert all(v is not None and math.isfinite(v) for v in parts.values())
@@ -32,6 +32,9 @@ def validate(data):
                 assert abs(expected-row["score"]) <= .000051, (row["symbol"], "score components")
                 assert datetime.fromisoformat(row["intra"]["asOf"]).astimezone(ZoneInfo("America/New_York")).date().isoformat() == data["asOf"]
                 assert parts["h1"] == row["intra"]["h1"] and parts["h4"] == row["intra"]["h4"]
+                if row.get("dailyCloseReconstructed"):
+                    assert datetime.fromisoformat(row["dailyCloseSourceTime"]).astimezone(ZoneInfo("America/New_York")).date().isoformat() == data["asOf"]
+                    assert row["dailyCloseSourceTime"] == row["intra"]["asOf"]
         for field in ["price", "score", "d1", "longRS", "vsSector", "vsSectorDay"]:
             assert row[field] is None or math.isfinite(row[field]), (row["symbol"], field)
         if row["longRS"] is not None:
@@ -57,6 +60,8 @@ def validate(data):
                 duration = (datetime.fromisoformat(intra["asOf"]) - datetime.fromisoformat(intra[f"h{n}Start"])).total_seconds() / 3600
                 assert abs(duration - intra[f"h{n}ElapsedHours"]) < 0.00001
     assert len({row["id"] for row in data["macro"]}) == len(data["macro"])
+    if "reconstructedDailyCount" in meta:
+        assert meta["reconstructedDailyCount"] == sum(bool(r.get("dailyCloseReconstructed")) for r in rows)
     for item in data["macro"]:
         if item.get("asOf"):
             assert item["asOf"] <= meta["generatedAt"][:10]

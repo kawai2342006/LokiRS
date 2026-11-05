@@ -1,9 +1,24 @@
 {
   "benchmark": "SPY",
-  "scoreWeights": {"h1": 0.25, "h4": 0.25, "1": 0.25, "5": 0.15, "20": 0.10},
+  "scoreWeights": {
+    "h1": 0.25,
+    "h4": 0.25,
+    "1": 0.25,
+    "5": 0.15,
+    "20": 0.1
+  },
   "scoreModel": "five-period-public-calibration-v1",
-  "calibrationReferenceDates": ["2026-10-30", "2026-11-02"],
-  "longTermWeights": {"63": 0.4, "126": 0.2, "189": 0.2, "252": 0.2},
+  "calibrationReferenceDates": [
+    "2026-10-30",
+    "2026-11-02",
+    "2026-11-04"
+  ],
+  "longTermWeights": {
+    "63": 0.4,
+    "126": 0.2,
+    "189": 0.2,
+    "252": 0.2
+  },
   "topFraction": 0.2,
   "historySessions": 64,
   "minimumCoverage": 0.8,

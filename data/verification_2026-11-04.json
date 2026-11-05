@@ -1,0 +1,233 @@
+{
+  "checkedAt": "2026-11-05T02:49:36.324664+00:00",
+  "referenceDate": "2026-11-04",
+  "referenceUrl": "https://lazyrs.trade/?tab=stocks",
+  "weights": {
+    "h1": 0.25,
+    "h4": 0.25,
+    "1": 0.25,
+    "5": 0.15,
+    "20": 0.1
+  },
+  "weightsChanged": false,
+  "referenceObservedAt": "2026-11-05T04:36:00+08:00",
+  "independentSessionClose": "2026-11-04T21:00:00+00:00",
+  "inputDifferences": {
+    "h1": {
+      "meanAbsoluteDifferencePP": 0.4706175170068027,
+      "meanDifferencePP": 0.21747704081632654
+    },
+    "h4": {
+      "meanAbsoluteDifferencePP": 0.47048673469387753,
+      "meanDifferencePP": 0.21860272108843537
+    },
+    "1": {
+      "meanAbsoluteDifferencePP": 0.4680914751698393,
+      "meanDifferencePP": 0.1907541481463124
+    },
+    "5": {
+      "meanAbsoluteDifferencePP": 0.46642041951834773,
+      "meanDifferencePP": 0.17364025373983485
+    },
+    "20": {
+      "meanAbsoluteDifferencePP": 0.4709315619117934,
+      "meanDifferencePP": 0.15437543634176903
+    }
+  },
+  "referenceFormula": {
+    "observations": 591,
+    "meanAbsoluteScoreError": 2.7834179357026398e-05,
+    "maxAbsoluteScoreError": 8.000000000010776e-05,
+    "within0001": 591
+  },
+  "independentComparison": {
+    "asOf": "2026-11-04",
+    "referenceUrl": "https://lazyrs.trade/?tab=stocks",
+    "referenceUniverse": 591,
+    "lokiUniverse": 589,
+    "commonRanked": 588,
+    "referenceOnly": [
+      "GOOGM",
+      "GOOGN",
+      "VYLR"
+    ],
+    "lokiOnly": [],
+    "method": "Re-rank both visible default orders within the same common-symbol cohort; no unmatched symbols shift ranks.",
+    "meanAbsoluteRankDifference": 19.306122448979593,
+    "medianAbsoluteRankDifference": 12.0,
+    "maxAbsoluteRankDifference": 154,
+    "spearman": 0.9859031189086007,
+    "topOverlap": {
+      "10": 8,
+      "20": 16,
+      "50": 43,
+      "100": 91
+    },
+    "scoreMeanAbsoluteError": 0.4685068027210884
+  },
+  "nativeDailyRows": 588,
+  "reconstructedDailyRows": 0,
+  "largestDifferences": [
+    {
+      "symbol": "QCOM",
+      "referenceRankCommon": 458,
+      "lokiRankCommon": 304,
+      "referenceDisplayRank": 460,
+      "lokiDisplayRank": 304,
+      "rankDifference": -154,
+      "referenceScore": -1.8227,
+      "lokiScore": 1.9937
+    },
+    {
+      "symbol": "RIVN",
+      "referenceRankCommon": 230,
+      "lokiRankCommon": 101,
+      "referenceDisplayRank": 230,
+      "lokiDisplayRank": 101,
+      "rankDifference": -129,
+      "referenceScore": 2.6667,
+      "lokiScore": 4.3092
+    },
+    {
+      "symbol": "DD",
+      "referenceRankCommon": 263,
+      "lokiRankCommon": 366,
+      "referenceDisplayRank": 263,
+      "lokiDisplayRank": 366,
+      "rankDifference": 103,
+      "referenceScore": 2.3401,
+      "lokiScore": 1.1349
+    },
+    {
+      "symbol": "GRMN",
+      "referenceRankCommon": 147,
+      "lokiRankCommon": 246,
+      "referenceDisplayRank": 147,
+      "lokiDisplayRank": 246,
+      "rankDifference": 99,
+      "referenceScore": 3.5804,
+      "lokiScore": 2.6251
+    },
+    {
+      "symbol": "UNH",
+      "referenceRankCommon": 281,
+      "lokiRankCommon": 378,
+      "referenceDisplayRank": 281,
+      "lokiDisplayRank": 378,
+      "rankDifference": 97,
+      "referenceScore": 2.1456,
+      "lokiScore": 0.8945
+    },
+    {
+      "symbol": "ABNB",
+      "referenceRankCommon": 157,
+      "lokiRankCommon": 253,
+      "referenceDisplayRank": 157,
+      "lokiDisplayRank": 253,
+      "rankDifference": 96,
+      "referenceScore": 3.509,
+      "lokiScore": 2.5783
+    },
+    {
+      "symbol": "MSI",
+      "referenceRankCommon": 367,
+      "lokiRankCommon": 275,
+      "referenceDisplayRank": 367,
+      "lokiDisplayRank": 275,
+      "rankDifference": -92,
+      "referenceScore": 1.0072,
+      "lokiScore": 2.2696
+    },
+    {
+      "symbol": "HUM",
+      "referenceRankCommon": 318,
+      "lokiRankCommon": 409,
+      "referenceDisplayRank": 318,
+      "lokiDisplayRank": 409,
+      "rankDifference": 91,
+      "referenceScore": 1.6501,
+      "lokiScore": 0.1182
+    },
+    {
+      "symbol": "UBER",
+      "referenceRankCommon": 238,
+      "lokiRankCommon": 326,
+      "referenceDisplayRank": 238,
+      "lokiDisplayRank": 326,
+      "rankDifference": 88,
+      "referenceScore": 2.5456,
+      "lokiScore": 1.6885
+    },
+    {
+      "symbol": "DTE",
+      "referenceRankCommon": 345,
+      "lokiRankCommon": 258,
+      "referenceDisplayRank": 345,
+      "lokiDisplayRank": 258,
+      "rankDifference": -87,
+      "referenceScore": 1.3239,
+      "lokiScore": 2.4854
+    },
+    {
+      "symbol": "TTD",
+      "referenceRankCommon": 253,
+      "lokiRankCommon": 339,
+      "referenceDisplayRank": 253,
+      "lokiDisplayRank": 339,
+      "rankDifference": 86,
+      "referenceScore": 2.4177,
+      "lokiScore": 1.5192
+    },
+    {
+      "symbol": "INFY",
+      "referenceRankCommon": 201,
+      "lokiRankCommon": 286,
+      "referenceDisplayRank": 201,
+      "lokiDisplayRank": 286,
+      "rankDifference": 85,
+      "referenceScore": 3.0721,
+      "lokiScore": 2.1848
+    }
+  ],
+  "deploymentDiagnosis": {
+    "failedRun": 41953388196,
+    "failureStage": "Build static files",
+    "oldBenchmarkDate": "2026-11-03",
+    "mismatchedSymbol": "SOMN",
+    "mismatchedPriceDate": "2026-11-04",
+    "scheduledRunFound": false,
+    "note": "No schedule-event run was listed at the inspection time; public records do not establish why GitHub did not trigger it."
+  },
+  "limits": [
+    "Single additional day, source timings and price precision can differ.",
+    "Formula replication using reference inputs is distinct from independent-price ranking agreement.",
+    "Conservative intraday reconstruction is provisional and flagged when actually used."
+  ],
+  "homepage": {
+    "asOf": "2026-11-04",
+    "currentCount": 27,
+    "reconstructedDailyCount": 0,
+    "unranked": [
+      {
+        "symbol": "2800",
+        "asOf": "2026-11-03"
+      },
+      {
+        "symbol": "3033",
+        "asOf": "2026-11-03"
+      },
+      {
+        "symbol": "BTC",
+        "asOf": "2026-11-03"
+      },
+      {
+        "symbol": "ETH",
+        "asOf": "2026-11-03"
+      },
+      {
+        "symbol": "SOL",
+        "asOf": "2026-11-03"
+      }
+    ]
+  }
+}

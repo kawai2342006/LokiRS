@@ -10,12 +10,12 @@ from pathlib import Path
 
 from home_engine import build_cross_markets, build_pulse, parse_market_daily, vix_summary
 from home_providers import fetch_southbound, optional, parse_articles, parse_crypto_global, parse_stablecoins, public_payload
-from providers import cached_chart
+from providers import cached_chart, parse_chart, reconcile_latest_daily
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def refresh_home(root=ROOT, equities=None, workers=4, refresh=False):
+def refresh_home(root=ROOT, equities=None, workers=4, refresh=False, daily_overrides=None):
     root = Path(root)
     config = json.loads((root/"config/home_markets.json").read_text())
     output = root/"data/home.json"
@@ -27,17 +27,42 @@ def refresh_home(root=ROOT, equities=None, workers=4, refresh=False):
     tasks = config["markets"] + [{"symbol":"VIX", "providerSymbol":"^VIX", "session":"exchange"}]
     def get(market):
         try:
+            symbol = market["providerSymbol"]
+            if daily_overrides and symbol in daily_overrides and market["session"] == "exchange":
+                return market["symbol"], daily_overrides[symbol], None
             payload,_ = cached_chart(market["providerSymbol"], "1d", cache, refresh)
-            return market["symbol"], parse_market_daily(payload, market["session"], now), None
+            zone = payload["chart"]["result"][0]["meta"].get("exchangeTimezoneName")
+            us_exchange = market["session"] == "exchange" and zone in ("America/New_York", "US/Eastern")
+            def parse(raw):
+                return parse_chart(raw, "1d", now) if us_exchange else parse_market_daily(raw, market["session"], now)
+            parsed = parse(payload)
+            warning = None
+            latest_source = max(parsed.get("dailySourceDates", []), default="")
+            if latest_source and latest_source in parsed.get("pendingDailyDates", []):
+                try:
+                    native,_ = cached_chart(symbol, "1d", cache, True)
+                    retry = parse(native)
+                    if max(retry["bars"], default="") < max(parsed["bars"], default=""):
+                        raise ValueError("Retry returned an older observation")
+                    parsed = retry
+                except Exception as exc:
+                    warning = "Latest daily retry failed; retained dated source: " + str(exc)[:130]
+            if us_exchange:
+                if parsed.get("pendingDailyDates"):
+                    hourly,_ = cached_chart(symbol, "30m", cache, refresh)
+                    reconcile_latest_daily(parsed, parse_chart(hourly, "30m", now), now)
+            return market["symbol"], parsed, warning
         except Exception as exc:
             return market["symbol"], None, str(exc)[:180]
     with concurrent.futures.ThreadPoolExecutor(max_workers=max(1,min(8,workers))) as pool:
         for symbol,series,error in pool.map(get,tasks):
             if series is not None:
                 daily[symbol] = series
-            else:
+            if error:
                 errors.append({"symbol":symbol,"error":error})
     result = build_cross_markets(config,daily)
+    if prior.get("asOf") and result["asOf"] < prior["asOf"]:
+        raise ValueError("Homepage source date regressed; existing snapshot preserved")
     market_by_symbol = {m["symbol"]:m for m in config["markets"]}
     result["tiles"] = []
     for symbol in ["SPY","QQQ","BTC","UUP","GLD","USO"]:
@@ -47,6 +72,7 @@ def refresh_home(root=ROOT, equities=None, workers=4, refresh=False):
         for period in [1,5]:
             returns[str(period)] = (bars[latest]["close"]/bars[dates[-1-period]]["close"]-1)*100 if len(dates)>period else None
         result["tiles"].append({"symbol":symbol,"name":market_by_symbol[symbol]["name"],"asOf":latest,
+            "dailyCloseReconstructed":bool(bars.get(latest,{}).get("reconstructed")),
             "price":bars.get(latest,{}).get("price"),"currency":series.get("currency"),"returns":returns,
             "history":[bars[date]["close"] for date in dates[-21:]],"session":market_by_symbol[symbol]["session"]})
     result["stockAsOf"] = equities.get("asOf")
@@ -68,8 +94,9 @@ def refresh_home(root=ROOT, equities=None, workers=4, refresh=False):
         "universeCount":len(config["markets"]), "currentCount":sum(r["rank"] is not None for r in result["rows"]),
         "scoreWeights":config["scoreWeights"], "approximation":True, "source":"Yahoo Finance / CoinGecko / DefiLlama / HKEX / publisher RSS",
         "errors":errors, "calendar":"SPY completed trading sessions; exact dates without forward fill",
-        "priceBasis":"Adjusted daily close for returns; unadjusted quoted close for displayed price. Native quote currency; no FX conversion.",
+        "priceBasis":"Adjusted daily close for returns; unit-factor/no-action missing latest US closes may be reconstructed from complete regular-session 30m observations, explicitly flagged. Native currency; no FX conversion.",
         "stockGeneratedAt":equities.get("meta",{}).get("generatedAt"),
+        "reconstructedDailyCount":sum(bool(r.get("dailyCloseReconstructed")) for r in result["rows"]),
         "notice":"Independent open formula; original LazyRS score weights and home-pulse selection are not verified. No original-site numerical feed is used.",
     }
     validate_home(result)

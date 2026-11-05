@@ -61,6 +61,22 @@ class HomeCalculationTests(unittest.TestCase):
         result=parse_market_daily(chart(stamp,'UTC'),'utc24h',datetime(2026,11,1,12,tzinfo=timezone.utc))
         self.assertEqual(result['bars'],{})
 
+    def test_completed_missing_daily_is_reported_for_retry_but_open_daily_is_not(self):
+        stamp=int(datetime(2026,11,4,tzinfo=timezone.utc).timestamp())
+        payload=chart(stamp,'UTC',price=None)
+        completed=parse_market_daily(payload,'utc24h',datetime(2026,11,5,2,tzinfo=timezone.utc))
+        self.assertEqual(completed['pendingDailyDates'],['2026-11-04'])
+        self.assertEqual(completed['bars'],{})
+        open_day=parse_market_daily(payload,'utc24h',datetime(2026,11,4,23,tzinfo=timezone.utc))
+        self.assertEqual(open_day['pendingDailyDates'],[])
+
+    def test_open_crypto_captured_in_cache_cannot_be_promoted_after_midnight(self):
+        stamp=int(datetime(2026,11,4,tzinfo=timezone.utc).timestamp())
+        payload=chart(stamp,'UTC')
+        payload['_lokirsFetchedAt']=datetime(2026,11,4,23,tzinfo=timezone.utc).timestamp()
+        actual=parse_market_daily(payload,'utc24h',datetime(2026,11,5,2,tzinfo=timezone.utc))
+        self.assertEqual(actual['bars'],{})
+
     def test_hong_kong_open_session_is_excluded(self):
         stamp=int(datetime(2026,10,30,1,30,tzinfo=timezone.utc).timestamp())
         result=parse_market_daily(chart(stamp,'Asia/Hong_Kong'),'exchange',datetime(2026,10,30,7,59,tzinfo=timezone.utc))

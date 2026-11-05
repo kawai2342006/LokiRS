@@ -18,10 +18,13 @@ def parse_market_daily(payload, session="exchange", now=None):
     meta = result["meta"]
     tz = ZoneInfo(meta.get("exchangeTimezoneName", "America/New_York"))
     now = now or datetime.now(timezone.utc)
+    captured = payload.get("_lokirsFetchedAt")
+    if isinstance(captured, (int,float)) and not isinstance(captured, bool):
+        now = min(now, datetime.fromtimestamp(captured, timezone.utc))
     quote = result["indicators"]["quote"][0]
     raw = quote.get("close", [])
     adjusted = result["indicators"].get("adjclose", [{}])[0].get("adjclose", [])
-    bars = {}
+    bars, pending, source_dates = {}, [], []
     for i, stamp in enumerate(result.get("timestamp", [])):
         local = datetime.fromtimestamp(stamp, tz)
         # Preserve FX exchange-date labels across London DST; crypto uses UTC calendar days.
@@ -33,15 +36,20 @@ def parse_market_daily(payload, session="exchange", now=None):
             end = local.replace(hour=16, minute=0, second=0, microsecond=0)
         if now < end:
             continue
+        day = label.date().isoformat()
+        source_dates.append(day)
         price = raw[i] if i < len(raw) else None
         close = adjusted[i] if i < len(adjusted) else None
         # Some FX sources omit Adj Close; FX has no distributions to adjust.
         if not finite(close) and session in ("utc24h", "fx"):
             close = price
         if not finite(close) or close <= 0 or not finite(price) or price <= 0:
+            pending.append(day)
             continue
-        bars[label.date().isoformat()] = {"close": float(close), "price": float(price)}
-    return {"bars": dict(sorted(bars.items())), "currency": meta.get("currency", "USD"), "timezone": str(tz)}
+        bars[day] = {"close": float(close), "price": float(price)}
+    return {"bars": dict(sorted(bars.items())), "currency": meta.get("currency", "USD"), "timezone": str(tz),
+            "pendingDailyDates": sorted(set(pending)), "dailySourceDates": sorted(set(source_dates)),
+            "observedThrough": now.isoformat()}
 
 
 def absolute_return(bars, start, end):
@@ -99,6 +107,8 @@ def build_cross_markets(config, daily):
         observed = [d for d in bars if d <= calendar[end]]
         as_of = max(observed) if observed else None
         row.update({"asOf": as_of, "status": "ok" if as_of == calendar[end] and finite(row["score"]) else "stale" if as_of else "unavailable",
+                    "dailyCloseReconstructed":bool(bars.get(as_of, {}).get("reconstructed")),
+                    "dailyCloseSourceTime":bars.get(as_of, {}).get("sourceTime"),
                     "currency": series.get("currency"), "timezone": series.get("timezone"),
                     "price": bars.get(as_of, {}).get("price"), "rankDelta5d": previous_ranks.get(row["symbol"])-row["rank"] if previous_ranks.get(row["symbol"]) is not None and row["rank"] is not None else None})
         row["history"] = [{"date": day, **bars[day]} for day in calendar[-64:] if day in bars]

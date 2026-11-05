@@ -1,6 +1,6 @@
 {
   "source": "https://lazyrs.trade/?tab=stocks",
-  "description": "Selected public numerical observations, used as independent calculation fixtures; two snapshot dates, unadjusted mode.",
+  "description": "Selected public numerical observations, three snapshot dates, unadjusted public mode.",
   "observations": [
     {
       "date": "2026-10-30",
@@ -201,6 +201,106 @@
       "d5": -31.979,
       "d20": -45.4527,
       "referenceScore": -12.1267
+    },
+    {
+      "date": "2026-11-04",
+      "symbol": "LB:FISV.US",
+      "h1": 0.3216,
+      "h4": 0.8052,
+      "d1": 5.4064,
+      "d5": 31.3944,
+      "d20": 39.3881,
+      "referenceScore": 10.2813
+    },
+    {
+      "date": "2026-11-04",
+      "symbol": "LB:CVNA.US",
+      "h1": -0.1114,
+      "h4": 0.1592,
+      "d1": 6.7686,
+      "d5": 31.6323,
+      "d20": 24.5104,
+      "referenceScore": 8.9
+    },
+    {
+      "date": "2026-11-04",
+      "symbol": "LB:BLDR.US",
+      "h1": -0.1474,
+      "h4": -0.3125,
+      "d1": 7.54,
+      "d5": 25.0399,
+      "d20": 31.0862,
+      "referenceScore": 8.6346
+    },
+    {
+      "date": "2026-11-04",
+      "symbol": "LB:EXPE.US",
+      "h1": 0.0966,
+      "h4": -0.1215,
+      "d1": 10.4933,
+      "d5": 17.0367,
+      "d20": 25.1684,
+      "referenceScore": 7.6894
+    },
+    {
+      "date": "2026-11-04",
+      "symbol": "LB:TYL.US",
+      "h1": -0.1706,
+      "h4": 1.0356,
+      "d1": 3.028,
+      "d5": 17.9905,
+      "d20": 28.7137,
+      "referenceScore": 6.5432
+    },
+    {
+      "date": "2026-11-04",
+      "symbol": "LB:AIZ.US",
+      "h1": 0.0527,
+      "h4": 0.3372,
+      "d1": 3.3855,
+      "d5": 9.8673,
+      "d20": 17.9813,
+      "referenceScore": 4.2221
+    },
+    {
+      "date": "2026-11-04",
+      "symbol": "LB:FOXA.US",
+      "h1": 0.5523,
+      "h4": 0.1678,
+      "d1": 1.9923,
+      "d5": 10.4379,
+      "d20": 12.2759,
+      "referenceScore": 3.4714
+    },
+    {
+      "date": "2026-11-04",
+      "symbol": "LB:BCS.US",
+      "h1": 0.0166,
+      "h4": -0.2025,
+      "d1": 3.7351,
+      "d5": 3.8433,
+      "d20": 3.9776,
+      "referenceScore": 1.8616
+    },
+    {
+      "date": "2026-11-04",
+      "symbol": "LB:ZS.US",
+      "h1": -1.296,
+      "h4": 0.8703,
+      "d1": -1.5676,
+      "d5": -11.238,
+      "d20": 6.8481,
+      "referenceScore": -1.4992
+    },
+    {
+      "date": "2026-11-04",
+      "symbol": "LB:CLSK.US",
+      "h1": -0.7822,
+      "h4": -4.1704,
+      "d1": -19.0232,
+      "d5": -20.8056,
+      "d20": -40.2547,
+      "referenceScore": -13.1403
     }
   ]
 }

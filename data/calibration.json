@@ -30,6 +30,12 @@
       "meanAbsoluteScoreError": 2.6641285956001358e-05,
       "maxAbsoluteScoreError": 7.500000000004725e-05,
       "within0001": 591
+    },
+    "2026-11-04": {
+      "observations": 591,
+      "meanAbsoluteScoreError": 2.7834179357026398e-05,
+      "maxAbsoluteScoreError": 8.000000000010776e-05,
+      "within0001": 591
     }
   },
   "independentYahooChecks": {
@@ -292,13 +298,164 @@
           "lokiScore": 2.3424
         }
       ]
+    },
+    "2026-11-04": {
+      "calibrated": {
+        "asOf": "2026-11-04",
+        "referenceUrl": "https://lazyrs.trade/?tab=stocks",
+        "referenceUniverse": 591,
+        "lokiUniverse": 589,
+        "commonRanked": 588,
+        "referenceOnly": [
+          "GOOGM",
+          "GOOGN",
+          "VYLR"
+        ],
+        "lokiOnly": [],
+        "method": "Re-rank both visible default orders within the same common-symbol cohort; no unmatched symbols shift ranks.",
+        "meanAbsoluteRankDifference": 19.306122448979593,
+        "medianAbsoluteRankDifference": 12.0,
+        "maxAbsoluteRankDifference": 154,
+        "spearman": 0.9859031189086007,
+        "topOverlap": {
+          "10": 8,
+          "20": 16,
+          "50": 43,
+          "100": 91
+        },
+        "scoreMeanAbsoluteError": 0.4685068027210884
+      },
+      "largestRemainingDifferences": [
+        {
+          "symbol": "QCOM",
+          "referenceRankCommon": 458,
+          "lokiRankCommon": 304,
+          "referenceDisplayRank": 460,
+          "lokiDisplayRank": 304,
+          "rankDifference": -154,
+          "referenceScore": -1.8227,
+          "lokiScore": 1.9937
+        },
+        {
+          "symbol": "RIVN",
+          "referenceRankCommon": 230,
+          "lokiRankCommon": 101,
+          "referenceDisplayRank": 230,
+          "lokiDisplayRank": 101,
+          "rankDifference": -129,
+          "referenceScore": 2.6667,
+          "lokiScore": 4.3092
+        },
+        {
+          "symbol": "DD",
+          "referenceRankCommon": 263,
+          "lokiRankCommon": 366,
+          "referenceDisplayRank": 263,
+          "lokiDisplayRank": 366,
+          "rankDifference": 103,
+          "referenceScore": 2.3401,
+          "lokiScore": 1.1349
+        },
+        {
+          "symbol": "GRMN",
+          "referenceRankCommon": 147,
+          "lokiRankCommon": 246,
+          "referenceDisplayRank": 147,
+          "lokiDisplayRank": 246,
+          "rankDifference": 99,
+          "referenceScore": 3.5804,
+          "lokiScore": 2.6251
+        },
+        {
+          "symbol": "UNH",
+          "referenceRankCommon": 281,
+          "lokiRankCommon": 378,
+          "referenceDisplayRank": 281,
+          "lokiDisplayRank": 378,
+          "rankDifference": 97,
+          "referenceScore": 2.1456,
+          "lokiScore": 0.8945
+        },
+        {
+          "symbol": "ABNB",
+          "referenceRankCommon": 157,
+          "lokiRankCommon": 253,
+          "referenceDisplayRank": 157,
+          "lokiDisplayRank": 253,
+          "rankDifference": 96,
+          "referenceScore": 3.509,
+          "lokiScore": 2.5783
+        },
+        {
+          "symbol": "MSI",
+          "referenceRankCommon": 367,
+          "lokiRankCommon": 275,
+          "referenceDisplayRank": 367,
+          "lokiDisplayRank": 275,
+          "rankDifference": -92,
+          "referenceScore": 1.0072,
+          "lokiScore": 2.2696
+        },
+        {
+          "symbol": "HUM",
+          "referenceRankCommon": 318,
+          "lokiRankCommon": 409,
+          "referenceDisplayRank": 318,
+          "lokiDisplayRank": 409,
+          "rankDifference": 91,
+          "referenceScore": 1.6501,
+          "lokiScore": 0.1182
+        },
+        {
+          "symbol": "UBER",
+          "referenceRankCommon": 238,
+          "lokiRankCommon": 326,
+          "referenceDisplayRank": 238,
+          "lokiDisplayRank": 326,
+          "rankDifference": 88,
+          "referenceScore": 2.5456,
+          "lokiScore": 1.6885
+        },
+        {
+          "symbol": "DTE",
+          "referenceRankCommon": 345,
+          "lokiRankCommon": 258,
+          "referenceDisplayRank": 345,
+          "lokiDisplayRank": 258,
+          "rankDifference": -87,
+          "referenceScore": 1.3239,
+          "lokiScore": 2.4854
+        },
+        {
+          "symbol": "TTD",
+          "referenceRankCommon": 253,
+          "lokiRankCommon": 339,
+          "referenceDisplayRank": 253,
+          "lokiDisplayRank": 339,
+          "rankDifference": 86,
+          "referenceScore": 2.4177,
+          "lokiScore": 1.5192
+        },
+        {
+          "symbol": "INFY",
+          "referenceRankCommon": 201,
+          "lokiRankCommon": 286,
+          "referenceDisplayRank": 201,
+          "lokiDisplayRank": 286,
+          "rankDifference": 85,
+          "referenceScore": 3.0721,
+          "lokiScore": 2.1848
+        }
+      ],
+      "reconstructedDailyCount": 0
     }
   },
   "limits": [
-    "Two observed dates only; no long-run validation.",
+    "Three observed dates, including an additional unchanged-weight check on Nov 4; no long-run validation.",
     "Reference public table has 591 symbols on Nov 2; LokiRS fixed universe remains 589.",
     "Common symbols are reranked for comparisons; unmatched symbols are reported separately.",
     "Hourly and daily observations are independently sourced from Yahoo; provider differences remain."
   ],
-  "checkedAt": "2026-11-03T05:44:39.893821+00:00"
+  "checkedAt": "2026-11-05T02:49:36.324664+00:00",
+  "thirdDateCheck": "2026-11-04"
 }

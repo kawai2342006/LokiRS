@@ -107,7 +107,7 @@ class CalibratedScoreTests(unittest.TestCase):
             cached_chart('SPY', '30m', cache)
             query = parse_qs(urlparse(fetch.call_args.args[0]).query)
             self.assertEqual(int(query['period2'][0])-int(query['period1'][0]), 58*86400)
-            self.assertTrue((cache/'SPY.30m58d.json').exists())
+            self.assertTrue((cache/'SPY.30m58d-v2.json').exists())
 
     def test_source_session_end_metadata_handles_an_early_close(self):
         ny = ZoneInfo('America/New_York')
