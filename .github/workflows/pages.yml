@@ -13,6 +13,8 @@ on:
     # 22:17 UTC = 06:17 HKT next day. After the US close in both DST and standard time.
     # GitHub schedules run from the default branch and may be delayed.
     - cron: '17 22 * * 1-5'
+    # Backup at 08:17 HKT after UTC-day markets close; GitHub cron is best-effort.
+    - cron: '17 0 * * 2-6'
 
 permissions:
   contents: read
@@ -54,6 +56,10 @@ jobs:
       - name: Fetch free data and recalculate
         if: github.event_name != 'workflow_dispatch' || inputs.refresh_data
         run: python -u scripts/update_data.py --refresh --workers 4
+      - name: Build static files
+        run: |
+          touch .nojekyll
+          python scripts/build.py
       - name: Retain the calculated snapshot
         if: github.event_name != 'workflow_dispatch' || inputs.refresh_data
         run: |
@@ -64,10 +70,6 @@ jobs:
             git commit -m "Update public market snapshot"
             git push
           fi
-      - name: Build static files
-        run: |
-          touch .nojekyll
-          python scripts/build.py
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
