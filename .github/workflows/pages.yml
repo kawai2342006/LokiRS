@@ -42,7 +42,7 @@ jobs:
       - name: Verify calculations
         run: |
           python -m unittest discover -s tests -v
-          node --test tests/charts.test.js
+          node --test tests/*.test.js
           node --check assets/app.js
           node --check assets/home.js
           node --check assets/sentiment.js

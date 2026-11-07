@@ -1,0 +1,70 @@
+name: Update sentiment and deploy Pages
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 01:47 UTC Tue-Sat = 09:47 HKT Tue-Sat, after the US close and the
+    # public CNN mirror's 23:00 UTC daily publication attempt.
+    - cron: '47 1 * * 2-6'
+
+permissions:
+  contents: read
+
+# Share the Pages lock with the main stock update. Do not cancel a running deploy.
+concurrency:
+  group: lokirs-pages
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      pages: read
+    outputs:
+      publish: ${{ steps.gate.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Fetch CNN sentiment without redownloading stock prices
+        run: python -u scripts/update_sentiment.py
+      - name: Check for a new completed market observation
+        id: gate
+        run: python scripts/sentiment_gate.py
+      - name: Build current site with the new sentiment
+        if: steps.gate.outputs.publish == 'true'
+        run: |
+          touch .nojekyll
+          python scripts/build.py
+      - name: Retain the new sentiment snapshot
+        if: steps.gate.outputs.publish == 'true'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/sentiment.json
+          git commit -m "Update public CNN sentiment"
+          git push
+      - uses: actions/configure-pages@v6
+        if: steps.gate.outputs.publish == 'true'
+      - uses: actions/upload-pages-artifact@v5
+        if: steps.gate.outputs.publish == 'true'
+        with:
+          path: _site
+
+  deploy:
+    needs: prepare
+    if: needs.prepare.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy updated sentiment
+        id: deployment
+        uses: actions/deploy-pages@v5
