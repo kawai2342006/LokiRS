@@ -120,11 +120,11 @@ def run():
             macro_error, macro_status = str(exc)[:180], "stale"
     if not args.skip_optional and not args.rankings_only:
         from update_sentiment import update_sentiment_snapshot
-        result["sentiment"] = update_sentiment_snapshot(ROOT, previous=prior.get("sentiment"))
+        result["sentiment"] = update_sentiment_snapshot(ROOT, previous=prior.get("sentiment"), market_date=result["asOf"])
     else:
         result["sentiment"] = prior.get("sentiment") or {"status":"unavailable","value":None,"reason":"Skipped by configuration"}
     result["contracts"] = prior.get("contracts", {"status":"unavailable","symbols":[]}) if args.rankings_only else fetch_contracts({s["symbol"] for s in universe["stocks"]}) if not args.skip_optional else {"status": "unavailable", "symbols": []}
-    result["meta"] = {"schemaVersion": 1, "generatedAt": datetime.now(timezone.utc).isoformat(), "downloadStartedAt": now.isoformat(), "source": "Yahoo Finance public chart / FRED / CNN index via MacroMicro or CNN / Binance",
+    result["meta"] = {"schemaVersion": 1, "generatedAt": datetime.now(timezone.utc).isoformat(), "downloadStartedAt": now.isoformat(), "source": "Yahoo Finance public chart / FRED / CNN index via MacroMicro, CNN or public CNN mirror / Binance",
                       "universeDate": universe["capturedAt"], "universeCount": len(universe["stocks"]), "currentCount": valid,
                       "coverage": round(coverage, 4), "intradayCount": sum(r["intra"]["h1"] is not None for r in result["rows"]),
                       "scoreFormula": " + ".join(f"{w} × excess({p[1:]+'H' if p in ('h1','h4') else p+'D'})" for p,w in settings["scoreWeights"].items()),

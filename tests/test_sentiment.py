@@ -7,8 +7,9 @@ from pathlib import Path
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
-from sentiment_sources import INDEX_ID, MACROMICRO_URL, CNN_URL, fetch_index, parse_macromicro, parse_cnn
+from sentiment_sources import INDEX_ID, MACROMICRO_URL, CNN_URL, MIRROR_URL, fetch_index, parse_macromicro, parse_cnn, parse_cnn_mirror
 from update_sentiment import update_sentiment_snapshot
+from sentiment_gate import should_publish
 
 NOW = datetime(2026, 11, 1, 16, tzinfo=timezone.utc)
 
@@ -25,6 +26,13 @@ def public_page(points=None, reverse=False, chart_id=50108, stat_id=22748, name=
 
 def cnn_page(**fields):
     return json.dumps({'fear_and_greed': {'score': 26.2, 'timestamp': '2026-10-30T20:00:00Z', 'previous_close': 31.0, **fields}}).encode()
+
+
+def mirror_csv():
+    return ("Date,Fear Greed,Rating\n"
+            "2026-10-30,26.3193277310924,fear\n"
+            "2026-11-05,19.9911468812877,extreme fear\n"
+            "2026-11-06,22.0792756539235,extreme fear\n").encode()
 
 
 class SentimentSourceTests(unittest.TestCase):
@@ -113,6 +121,53 @@ class SentimentSourceTests(unittest.TestCase):
             with self.subTest(stamp=stamp), self.assertRaises(ValueError):
                 parse_cnn(cnn_page(timestamp=stamp), NOW)
 
+    def test_public_cnn_mirror_retains_actual_dates_value_and_provenance(self):
+        now = datetime(2026,11,7,2,tzinfo=timezone.utc)
+        result = parse_cnn_mirror(mirror_csv(), now)
+        self.assertEqual(result['observationDate'], '2026-11-06')
+        self.assertEqual(result['value'], 22.0792756539235)
+        self.assertEqual((result['previousClose'],result['previousAsOf']), (19.9911468812877,'2026-11-05'))
+        self.assertEqual((result['weekAgo'],result['weekAgoAsOf']), (26.3193277310924,'2026-10-30'))
+        self.assertEqual(result['source'], 'CNN Mirror')
+        self.assertTrue(result['url'].startswith('https://github.com/whit3rabbit/'))
+
+    def test_mirror_rejects_invalid_schema_duplicate_future_and_wrong_index(self):
+        now = datetime(2026,11,7,2,tzinfo=timezone.utc)
+        for payload in (b'Date,Bitcoin Fear Greed,Rating\n2026-11-06,22,extreme fear\n',
+                        mirror_csv()+b'2026-11-06,22,extreme fear\n',
+                        mirror_csv()+b'2026-11-08,22,extreme fear\n',
+                        mirror_csv().replace(b'22.0792756539235',b'101')):
+            with self.subTest(payload=payload[-50:]), self.assertRaises(ValueError):
+                parse_cnn_mirror(payload,now)
+
+    def test_github_runner_denials_use_dated_mirror_instead_of_stale_week_old_value(self):
+        now = datetime(2026,11,7,2,tzinfo=timezone.utc)
+        prior = parse_macromicro(public_page(),now)
+        def load(url):
+            if url == MIRROR_URL:
+                return mirror_csv()
+            raise RuntimeError('HTTP Error 403 / 418')
+        result = fetch_index(load,prior,now,required_day='2026-11-06')
+        self.assertEqual((result['source'],result['status'],result['observationDate']),('CNN Mirror','ok','2026-11-06'))
+        self.assertEqual(len(result['attempts']),2)
+
+    def test_old_primary_reading_does_not_hide_newer_mirror_reading(self):
+        now = datetime(2026,11,7,2,tzinfo=timezone.utc)
+        def load(url):
+            return public_page() if url == MACROMICRO_URL else mirror_csv() if url == MIRROR_URL else cnn_page()
+        result = fetch_index(load,now=now,required_day='2026-11-06')
+        self.assertEqual(result['source'],'CNN Mirror')
+        self.assertEqual(result['observationDate'],'2026-11-06')
+
+    def test_all_sources_older_than_market_are_explicitly_stale(self):
+        now = datetime(2026,11,7,2,tzinfo=timezone.utc)
+        old_mirror=b'Date,Fear Greed,Rating\n2026-10-30,26.3193277310924,fear\n'
+        def load(url):
+            return old_mirror if url == MIRROR_URL else public_page() if url == MACROMICRO_URL else cnn_page()
+        result = fetch_index(load,now=now,required_day='2026-11-06')
+        self.assertEqual(result['status'],'stale')
+        self.assertEqual(result['observationDate'],'2026-10-30')
+
     def test_both_sources_failing_preserves_original_value_date_and_fetch_time(self):
         prior = {**parse_macromicro(public_page(), NOW), 'fetchedAt': '2026-10-31T10:00:00Z'}
         def fail(url):
@@ -121,7 +176,7 @@ class SentimentSourceTests(unittest.TestCase):
         for key in ['value', 'asOf', 'observationDate', 'source', 'fetchedAt']:
             self.assertEqual(result[key], prior[key])
         self.assertEqual(result['status'], 'stale')
-        self.assertEqual(len(result['attempts']), 2)
+        self.assertEqual(len(result['attempts']), 3)
 
     def test_older_provider_result_does_not_regress_the_retained_day(self):
         prior = parse_macromicro(public_page([['2026-10-31', '28']]), NOW)
@@ -166,6 +221,35 @@ class SentimentSnapshotTests(unittest.TestCase):
             with patch('update_sentiment.fetch_sentiment', return_value=prior) as fetch:
                 update_sentiment_snapshot(root)
                 self.assertEqual(fetch.call_args.args[0]['observationDate'], '2026-10-30')
+
+    def test_standalone_refresh_uses_stock_market_date_as_freshness_target(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);(root/'data').mkdir()
+            (root/'data/latest.json').write_text(json.dumps({'asOf':'2026-11-06'}))
+            current=parse_cnn_mirror(mirror_csv(),datetime(2026,11,7,2,tzinfo=timezone.utc))
+            with patch('update_sentiment.fetch_sentiment',return_value=current) as fetch:
+                update_sentiment_snapshot(root)
+                self.assertEqual(fetch.call_args.kwargs['required_day'],'2026-11-06')
+
+    def test_newer_embedded_value_survives_failed_standalone_sources(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);(root/'data').mkdir()
+            old=parse_macromicro(public_page(),datetime(2026,11,7,2,tzinfo=timezone.utc))
+            newer=parse_cnn_mirror(mirror_csv(),datetime(2026,11,7,2,tzinfo=timezone.utc))
+            (root/'data/sentiment.json').write_text(json.dumps(old))
+            (root/'data/latest.json').write_text(json.dumps({'asOf':'2026-11-06','sentiment':newer}))
+            with patch('update_sentiment.fetch_sentiment',return_value=newer) as fetch:
+                update_sentiment_snapshot(root)
+                self.assertEqual(fetch.call_args.args[0]['observationDate'],'2026-11-06')
+
+    def test_separate_deploy_requires_new_complete_observation(self):
+        current={'status':'ok','indexId':INDEX_ID,'source':'CNN Mirror','observationDate':'2026-11-06','value':22.0793}
+        previous={'status':'stale','indexId':INDEX_ID,'source':'MacroMicro','observationDate':'2026-10-30','value':26.2387}
+        self.assertTrue(should_publish(current,previous,'2026-11-06'))
+        self.assertFalse(should_publish({**current,'status':'stale'},previous,'2026-11-06'))
+        self.assertFalse(should_publish(current,previous,'2026-11-09'))
+        self.assertFalse(should_publish(current,current,'2026-11-06'))
+        self.assertTrue(should_publish({**current,'value':22.1},current,'2026-11-06'))
 
 
 if __name__ == '__main__':

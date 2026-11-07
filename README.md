@@ -4,6 +4,10 @@
 
 現有網站：https://kawai2342006.github.io/LokiRS/
 
+## v1.3.3 — 收市後更新恐懼與貪婪
+
+原定時更新已運作，但 GitHub runner 讀取 MacroMicro／CNN 端點遇到 403／418，令情緒資料保留 10 月 30 日。新增有日期的公開 CNN 數據鏡像後備，並加獨立收市後情緒更新與 Pages 部署工作流程。詳見 [README_SENTIMENT_AUTO.md](README_SENTIMENT_AUTO.md)。
+
 ## v1.3.2 — 2026-11-06 美股核對
 
 同一交易日對比 LazyRS 591 筆公開排名，LokiRS 589 股之中 588 股可排名。五時段權重毋須修改；修補 10 隻股票已核實派息但 Yahoo 調整價暫缺的日線。共同股票的平均分數差距由 0.01827 減至 0.01226，平均名次差距由 1.91 減至 1.01。完整結果、來源與安裝方式見 [README_NOV06_DIVIDENDS.md](README_NOV06_DIVIDENDS.md)，逐股差異見 [reports/comparison-2026-11-06.csv](reports/comparison-2026-11-06.csv)。
@@ -52,7 +56,7 @@ GitHub 更新工作流程隨新版提供，設定方法見 README_HOME。頁面�
 
 ```bash
 python -m unittest discover -s tests -v
-node --test tests/charts.test.js
+node --test tests/*.test.js
 node --check assets/app.js
 node --check assets/home.js
 python scripts/build.py

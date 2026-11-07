@@ -5,13 +5,14 @@ export function createSentiment(options) {
   const state={file:null,fallback:null,error:false,loading:false};
   const macroURL='https://en.macromicro.me/charts/50108/cnn-fear-and-greed';
   const cnnURL='https://www.cnn.com/markets/fear-and-greed';
+  const mirrorURL='https://github.com/whit3rabbit/fear-greed-data';
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const numeric=value=>Number.isFinite(value)&&value>=0&&value<=100;
   const format=value=>numeric(value)?value.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2}):'—';
   const day=data=>data?.observationDate||data?.asOf?.slice(0,10);
   function usable(data){
     const observed=day(data),stamp=Date.parse(observed),today=new Date().toISOString().slice(0,10);
-    return data&&['ok','stale'].includes(data.status)&&numeric(data.value)&&['MacroMicro','CNN'].includes(data.source)&&
+    return data&&['ok','stale'].includes(data.status)&&numeric(data.value)&&['MacroMicro','CNN','CNN Mirror'].includes(data.source)&&
       (data.indexId==='cnn-us-fear-greed'||(!data.indexId&&data.source==='CNN'))&&
       typeof observed==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(observed)&&Number.isFinite(stamp)&&
       new Date(stamp).toISOString().slice(0,10)===observed&&observed<=today;
@@ -23,7 +24,7 @@ export function createSentiment(options) {
     const old=Math.floor(Date.now()/86400000)-Math.floor(Date.parse(day(result))/86400000)>7;
     return state.error||old?{...result,status:'stale'}:result;
   }
-  function sourceLabel(data){return data?.source==='MacroMicro'?'MacroMicro（轉載 CNN）':'CNN';}
+  function sourceLabel(data){return data?.source==='MacroMicro'?'MacroMicro（轉載 CNN）':data?.source==='CNN Mirror'?'公開鏡像（轉載 CNN）':'CNN';}
   function dateLabel(data){
     const observed=day(data);
     if(data.asOfPrecision==='date'||/^\d{4}-\d{2}-\d{2}$/.test(data.asOf||''))return '資料日期 '+observed;
@@ -40,7 +41,7 @@ export function createSentiment(options) {
       const value=data.value;
       const labels={'extreme fear':'極度恐懼',fear:'恐懼',neutral:'中性',greed:'貪婪','extreme greed':'極度貪婪'};
       const label=labels[String(data.rating||'').toLowerCase()]||(value<=25?'極度恐懼':value<45?'恐懼':value<=55?'中性':value<=75?'貪婪':'極度貪婪');
-      const url=data.source==='MacroMicro'?macroURL:cnnURL;
+      const url=data.source==='MacroMicro'?macroURL:data.source==='CNN Mirror'?mirrorURL:cnnURL;
       const stale=data.status==='stale'||state.error;
       const previousLabel=data.previousLabel==='上一筆'?'上一筆':'前收';
       const history=[

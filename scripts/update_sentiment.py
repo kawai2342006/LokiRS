@@ -9,7 +9,7 @@ from sentiment_sources import valid_previous
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def update_sentiment_snapshot(root=ROOT, previous=None):
+def update_sentiment_snapshot(root=ROOT, previous=None, market_date=None):
     root = Path(root)
     output = root/"data/sentiment.json"
     now = datetime.now(timezone.utc)
@@ -21,13 +21,18 @@ def update_sentiment_snapshot(root=ROOT, previous=None):
                 prior = candidate
         except (ValueError, OSError):
             pass
-    if prior is None and (root/"data/latest.json").exists():
+    if (root/"data/latest.json").exists():
         try:
             latest = json.loads((root/"data/latest.json").read_text())
-            prior = valid_previous(latest.get("sentiment"), now) if isinstance(latest, dict) else None
+            if isinstance(latest, dict):
+                if market_date is None:
+                    market_date = latest.get("asOf")
+                embedded = valid_previous(latest.get("sentiment"), now)
+                if embedded and (prior is None or embedded["observationDate"] > prior["observationDate"]):
+                    prior = embedded
         except (ValueError, OSError):
             pass
-    result = fetch_sentiment(prior)
+    result = fetch_sentiment(prior, required_day=market_date)
     output.parent.mkdir(parents=True, exist_ok=True)
     temporary = output.with_suffix(".tmp")
     temporary.write_text(json.dumps(result,ensure_ascii=False,separators=(",",":"),allow_nan=False)+"\n")

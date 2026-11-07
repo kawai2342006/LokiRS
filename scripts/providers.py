@@ -233,9 +233,9 @@ def fetch_fred(cache: Path, refresh: bool = False) -> dict:
     return parse_fred(path.read_bytes())
 
 
-def fetch_sentiment(previous=None) -> dict:
+def fetch_sentiment(previous=None, required_day=None) -> dict:
     from sentiment_sources import fetch_index
-    return fetch_index(lambda url: fetch_bytes(url, attempts=1), previous=previous)
+    return fetch_index(lambda url: fetch_bytes(url, attempts=1), previous=previous, required_day=required_day)
 
 
 def stock_contract_symbols(data: dict, symbols: set[str]) -> list[str]:

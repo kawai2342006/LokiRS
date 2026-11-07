@@ -1,6 +1,6 @@
 import {sparkline, comparisonChart, palette, seriesDashes, escapeHTML as esc} from './charts.js?v=1.2.0';
 import {createHome} from './home.js?v=1.3.1';
-import {createSentiment} from './sentiment.js?v=1.2.1';
+import {createSentiment} from './sentiment.js?v=1.3.3';
 
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];

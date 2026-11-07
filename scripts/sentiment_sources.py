@@ -6,6 +6,8 @@ subscription download, proxy, or browser fingerprint spoofing is used.
 from __future__ import annotations
 
 import calendar
+import csv
+import io
 import json
 import math
 import re
@@ -15,6 +17,8 @@ from zoneinfo import ZoneInfo
 INDEX_ID = "cnn-us-fear-greed"
 MACROMICRO_URL = "https://en.macromicro.me/charts/50108/cnn-fear-and-greed"
 CNN_URL = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
+MIRROR_URL = "https://raw.githubusercontent.com/whit3rabbit/fear-greed-data/main/fear-greed.csv"
+MIRROR_PAGE = "https://github.com/whit3rabbit/fear-greed-data"
 MAX_AGE_DAYS = 7
 
 
@@ -120,8 +124,51 @@ def parse_cnn(payload, now=None):
             "monthAgo":optional("previous_1_month"), "yearAgo":optional("previous_1_year")}
 
 
+def parse_cnn_mirror(payload, now=None):
+    """Read a dated, public copy of CNN readings when the primary sites deny access.
+
+    This is a third-party published dataset, not a different sentiment formula.
+    Its source is always identified separately in the published snapshot.
+    """
+    now = now or datetime.now(timezone.utc)
+    if len(payload) > 2_000_000:
+        raise ValueError("CNN mirror payload too large")
+    text = payload.decode("utf-8-sig") if isinstance(payload, bytes) else payload
+    reader = csv.DictReader(io.StringIO(text))
+    if reader.fieldnames != ["Date", "Fear Greed", "Rating"]:
+        raise ValueError("CNN mirror CSV columns changed")
+    points = {}
+    for item in reader:
+        day = observed_day(item["Date"], now)
+        if day in points:
+            raise ValueError("Duplicate CNN mirror observation date")
+        value = score(item["Fear Greed"])
+        label = str(item["Rating"]).strip().lower()
+        if label not in ("extreme fear", "fear", "neutral", "greed", "extreme greed"):
+            raise ValueError("Unknown CNN mirror rating")
+        points[day] = (value, label)
+    if not points:
+        raise ValueError("No CNN mirror observations")
+    days = sorted(points)
+    latest = days[-1]
+    def historical(target):
+        eligible = [d for d in days if 0 <= (target-date.fromisoformat(d)).days <= 3]
+        return (points[eligible[-1]][0], eligible[-1]) if eligible else (None, None)
+    week, week_day = historical(date.fromisoformat(latest)-timedelta(days=7))
+    month, month_day = historical(previous_month(date.fromisoformat(latest)))
+    value, label = points[latest]
+    return {"schemaVersion":1,"indexId":INDEX_ID,"status":"ok","source":"CNN Mirror","upstream":"CNN",
+            "url":MIRROR_PAGE,"dataUrl":MIRROR_URL,"value":value,"rating":label,"asOf":latest,
+            "observationDate":latest,"asOfPrecision":"date","previousLabel":"上一筆",
+            "previousClose":points[days[-2]][0] if len(days)>1 else None,
+            "previousAsOf":days[-2] if len(days)>1 else None,
+            "weekAgo":week,"weekAgoAsOf":week_day,"monthAgo":month,"monthAgoAsOf":month_day,
+            "yearAgo":None,"history":[{"date":d,"value":points[d][0],"provider":"CNN Mirror"} for d in days[-400:]],
+            "historyNote":"Published CNN mirror observations, not a site-generated index; absent dates are not synthesized."}
+
+
 def valid_previous(previous, now):
-    if not isinstance(previous, dict) or previous.get("source") not in ("MacroMicro", "CNN"):
+    if not isinstance(previous, dict) or previous.get("source") not in ("MacroMicro", "CNN", "CNN Mirror"):
         return None
     if previous.get("indexId", INDEX_ID) != INDEX_ID or previous.get("status") not in ("ok", "stale"):
         return None
@@ -137,19 +184,21 @@ def valid_previous(previous, now):
         return None
 
 
-def fetch_index(loader, previous=None, now=None):
+def fetch_index(loader, previous=None, now=None, required_day=None):
     now = now or datetime.now(timezone.utc)
     prior = valid_previous(previous, now)
     candidates, errors = [], []
-    for source, url in [("MacroMicro", MACROMICRO_URL), ("CNN", CNN_URL)]:
+    if required_day is not None:
+        required_day = observed_day(required_day, now)
+    for source, url in [("MacroMicro", MACROMICRO_URL), ("CNN", CNN_URL), ("CNN Mirror", MIRROR_URL)]:
         try:
             raw = loader(url)
-            result = parse_macromicro(raw, now, prior) if source == "MacroMicro" else parse_cnn(raw, now)
+            result = parse_macromicro(raw, now, prior) if source == "MacroMicro" else parse_cnn(raw, now) if source == "CNN" else parse_cnn_mirror(raw, now)
             if prior and result["observationDate"] < prior["observationDate"]:
                 errors.append({"source":source,"error":"Source observation predates retained snapshot"})
                 continue
             age = (now.date()-date.fromisoformat(result["observationDate"])).days
-            result["status"] = "stale" if age > MAX_AGE_DAYS else "ok"
+            result["status"] = "stale" if age > MAX_AGE_DAYS or required_day and result["observationDate"] < required_day else "ok"
             result["fetchedAt"] = now.isoformat()
             result["attempts"] = list(errors)
             if result["status"] == "ok":
