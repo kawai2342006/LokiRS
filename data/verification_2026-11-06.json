@@ -1,0 +1,491 @@
+{
+  "checkedAt": "2026-11-07T01:08:48.607409+00:00",
+  "referenceDate": "2026-11-06",
+  "referenceUrl": "https://lazyrs.trade/?tab=stocks",
+  "referenceObservedAtHKT": "2026-11-07 08:15",
+  "independentGeneratedAt": "2026-11-07T01:05:25.971676+00:00",
+  "weights": {
+    "h1": 0.25,
+    "h4": 0.25,
+    "1": 0.25,
+    "5": 0.15,
+    "20": 0.1
+  },
+  "weightsChanged": false,
+  "referenceFormula": {
+    "observations": 591,
+    "meanAbsoluteScoreError": 2.7715736040625416e-05,
+    "maxAbsoluteScoreError": 7.500000000002296e-05,
+    "within0001": 591
+  },
+  "universe": {
+    "reference": 591,
+    "loki": 589,
+    "commonRanked": 588,
+    "referenceOnly": [
+      "GOOGM",
+      "GOOGN",
+      "VYLR"
+    ],
+    "unrankedLoki": [
+      "KVUE"
+    ]
+  },
+  "beforeVerifiedDividends": {
+    "scoreMeanAbsoluteError": 0.01827244897959184,
+    "meanAbsoluteRankDifference": 1.9149659863945578,
+    "medianAbsoluteRankDifference": 1,
+    "maxAbsoluteRankDifference": 86,
+    "topOverlap": {
+      "10": 10,
+      "20": 20,
+      "50": 49,
+      "100": 98
+    }
+  },
+  "afterVerifiedDividends": {
+    "scoreMeanAbsoluteError": 0.012262414965986396,
+    "meanAbsoluteRankDifference": 1.010204081632653,
+    "medianAbsoluteRankDifference": 1.0,
+    "maxAbsoluteRankDifference": 57,
+    "spearman": 0.999864769201283,
+    "topOverlap": {
+      "10": 10,
+      "20": 20,
+      "50": 49,
+      "100": 99
+    },
+    "inputDifferences": {
+      "h1": {
+        "n": 588,
+        "maePP": 0.022391496598639454,
+        "biasPP": 0.012756462585034012,
+        "medianAbsPP": 0.013600000000000001
+      },
+      "h4": {
+        "n": 588,
+        "maePP": 0.02287431972789115,
+        "biasPP": 0.014181802721088432,
+        "medianAbsPP": 0.013599999999999945
+      },
+      "1": {
+        "n": 588,
+        "maePP": 0.00040666440280663917,
+        "biasPP": -0.0002669687537896505,
+        "medianAbsPP": 2.5495267647945852e-05
+      },
+      "5": {
+        "n": 588,
+        "maePP": 0.00547727034962389,
+        "biasPP": -0.005243848156426899,
+        "medianAbsPP": 2.508989028671138e-05
+      },
+      "20": {
+        "n": 588,
+        "maePP": 0.006609735445363114,
+        "biasPP": -0.006118721031569473,
+        "medianAbsPP": 2.9603245188525307e-05
+      }
+    }
+  },
+  "appliedVerifiedDividends": [
+    {
+      "symbol": "CCL",
+      "exDate": "2026-11-06",
+      "amountUSD": 0.15,
+      "source": "https://www.carnivalcorp.com/media-center/news-releases/carnival-corporation-declares-dividend-3/",
+      "basis": "verified cash distribution absent from source adjustment"
+    },
+    {
+      "symbol": "CMS",
+      "exDate": "2026-11-06",
+      "amountUSD": 0.57,
+      "source": "https://www.cmsenergy.com/investor-relations/news-releases/news-release-details/2026/CMS-Energys-Board-of-Directors-Declares-Quarterly-Dividend-on-Common-Stock-8d680ca10/default.aspx",
+      "basis": "verified cash distribution absent from source adjustment"
+    },
+    {
+      "symbol": "ET",
+      "exDate": "2026-11-06",
+      "amountUSD": 0.3425,
+      "source": "https://www.txse.com/alerts/829b6521-1320-4b6f-a2b3-d603a21997ed",
+      "basis": "verified cash distribution absent from source adjustment"
+    },
+    {
+      "symbol": "FE",
+      "exDate": "2026-11-06",
+      "amountUSD": 0.465,
+      "source": "https://www.firstenergycorp.com/newsroom/news_articles/firstenergy-corp-declares-common-stock-dividend-of-46-5-cents-per-share.html",
+      "basis": "verified cash distribution absent from source adjustment"
+    },
+    {
+      "symbol": "HSBC",
+      "exDate": "2026-11-06",
+      "amountUSD": 0.5,
+      "source": "https://www.hsbc.com/investors/shareholder-and-dividend-information/dividend-information-and-timetable",
+      "basis": "verified cash distribution absent from source adjustment"
+    },
+    {
+      "symbol": "JBHT",
+      "exDate": "2026-11-06",
+      "amountUSD": 0.45,
+      "source": "https://api.nasdaq.com/api/calendar/dividends?date=2026-11-06",
+      "basis": "verified cash distribution absent from source adjustment"
+    },
+    {
+      "symbol": "MAS",
+      "exDate": "2026-11-06",
+      "amountUSD": 0.32,
+      "source": "https://investor.masco.com/news-stream/news-details/2026/Masco-Corporation-Reports-Third-Quarter-2026-Results/default.aspx",
+      "basis": "verified cash distribution absent from source adjustment"
+    },
+    {
+      "symbol": "NSC",
+      "exDate": "2026-11-06",
+      "amountUSD": 1.35,
+      "source": "https://norfolksouthern.com/en/newsroom/news-releases/norfolk-southern-declares-quarterly-dividend-10-21-2026",
+      "basis": "verified cash distribution absent from source adjustment"
+    },
+    {
+      "symbol": "PFE",
+      "exDate": "2026-11-06",
+      "amountUSD": 0.43,
+      "source": "https://investors.pfizer.com/Investors/stock-dividend/dividend-split-history/default.aspx",
+      "basis": "verified cash distribution absent from source adjustment"
+    },
+    {
+      "symbol": "WFC",
+      "exDate": "2026-11-06",
+      "amountUSD": 0.5,
+      "source": "https://www.wellsfargo.com/about/investor-relations/shareholder-information/",
+      "basis": "verified cash distribution absent from source adjustment"
+    }
+  ],
+  "largestRemainingScoreDifferences": [
+    {
+      "symbol": "INFY",
+      "reference": 2.9667,
+      "loki": 2.3377,
+      "referencePrice": 12.5,
+      "lokiPrice": 12.5,
+      "asOf": "2026-11-06",
+      "scoreDifference": -0.629,
+      "inputDifferences": {
+        "h1": -0.06670000000000009,
+        "h4": -0.06709999999999994,
+        "1": 3.680847238385354e-05,
+        "5": -2.2314265475666217,
+        "20": -2.608475886056244
+      }
+    },
+    {
+      "symbol": "SCCO",
+      "reference": -1.2756,
+      "loki": -1.4573,
+      "referencePrice": 167.27,
+      "lokiPrice": 167.27,
+      "asOf": "2026-11-06",
+      "scoreDifference": -0.18169999999999997,
+      "inputDifferences": {
+        "h1": 0.004900000000000002,
+        "h4": -0.0221,
+        "1": 1.045126006626873e-05,
+        "5": -0.7554145110873589,
+        "20": -0.6410950804207243
+      }
+    },
+    {
+      "symbol": "QCOM",
+      "reference": 1.8593,
+      "loki": 1.9354,
+      "referencePrice": 165.41,
+      "lokiPrice": 165.41,
+      "asOf": "2026-11-06",
+      "scoreDifference": 0.07610000000000006,
+      "inputDifferences": {
+        "h1": 0.1519,
+        "h4": 0.15259999999999996,
+        "1": 1.1493079746571766e-05,
+        "5": 2.4074606279622657e-05,
+        "20": 2.7330400685365852e-05
+      }
+    },
+    {
+      "symbol": "ALAB",
+      "reference": -4.8297,
+      "loki": -4.903,
+      "referencePrice": 190.71,
+      "lokiPrice": 190.71,
+      "asOf": "2026-11-06",
+      "scoreDifference": -0.0732999999999997,
+      "inputDifferences": {
+        "h1": -0.14500000000000002,
+        "h4": -0.1480999999999999,
+        "1": -2.355629889727595e-05,
+        "5": -2.657775223013914e-05,
+        "20": 5.4717648005464525e-05
+      }
+    },
+    {
+      "symbol": "INTC",
+      "reference": -3.9415,
+      "loki": -3.8816,
+      "referencePrice": 56.28,
+      "lokiPrice": 56.28,
+      "asOf": "2026-11-06",
+      "scoreDifference": 0.05989999999999984,
+      "inputDifferences": {
+        "h1": 0.1189,
+        "h4": 0.1208999999999999,
+        "1": 4.587677048029093e-06,
+        "5": 1.83100029715888e-05,
+        "20": -4.944208008339501e-06
+      }
+    },
+    {
+      "symbol": "SMR",
+      "reference": 1.816,
+      "loki": 1.8731,
+      "referencePrice": 5.08,
+      "lokiPrice": 5.08,
+      "asOf": "2026-11-06",
+      "scoreDifference": 0.05709999999999993,
+      "inputDifferences": {
+        "h1": 0.11500000000000021,
+        "h4": 0.11330000000000018,
+        "1": 2.915017073235049e-05,
+        "5": 4.0898524756194377e-05,
+        "20": -3.064198219959735e-05
+      }
+    },
+    {
+      "symbol": "SOMN",
+      "reference": 1.4468,
+      "loki": 1.5,
+      "referencePrice": 48.26,
+      "lokiPrice": 48.26,
+      "asOf": "2026-11-06",
+      "scoreDifference": 0.053199999999999914,
+      "inputDifferences": {
+        "h1": 0.10629999999999998,
+        "h4": 0.10669999999999999,
+        "1": -1.5157810199228905e-05,
+        "5": 2.2070250325523233e-05,
+        "20": 1.268125371822748e-06
+      }
+    },
+    {
+      "symbol": "CAT",
+      "reference": -3.3929,
+      "loki": -3.3399,
+      "referencePrice": 558.63,
+      "lokiPrice": 558.63,
+      "asOf": "2026-11-06",
+      "scoreDifference": 0.052999999999999936,
+      "inputDifferences": {
+        "h1": 0.10640000000000002,
+        "h4": 0.10629999999999998,
+        "1": -5.815097089412191e-06,
+        "5": 1.5565138131279355e-05,
+        "20": -0.0018587924450166327
+      }
+    },
+    {
+      "symbol": "RGTI",
+      "reference": 4.9663,
+      "loki": 5.0163,
+      "referencePrice": 11.75,
+      "lokiPrice": 11.75,
+      "asOf": "2026-11-06",
+      "scoreDifference": 0.04999999999999982,
+      "inputDifferences": {
+        "h1": 0.09820000000000001,
+        "h4": 0.10210000000000008,
+        "1": 2.3745362348392973e-05,
+        "5": 2.5785124527999415e-05,
+        "20": 2.3639019650190107e-05
+      }
+    },
+    {
+      "symbol": "DPZ",
+      "reference": 2.183,
+      "loki": 2.2301,
+      "referencePrice": 334.28,
+      "lokiPrice": 334.28,
+      "asOf": "2026-11-06",
+      "scoreDifference": 0.047100000000000364,
+      "inputDifferences": {
+        "h1": 0.0941,
+        "h4": 0.09409999999999996,
+        "1": 3.610827230904334e-05,
+        "5": -4.8935775414094e-06,
+        "20": 5.777182316712981e-05
+      }
+    },
+    {
+      "symbol": "ADI",
+      "reference": -1.9522,
+      "loki": -1.9981,
+      "referencePrice": 363.56,
+      "lokiPrice": 363.56,
+      "asOf": "2026-11-06",
+      "scoreDifference": -0.04590000000000005,
+      "inputDifferences": {
+        "h1": -0.0919,
+        "h4": -0.0918,
+        "1": 3.648780987614009e-05,
+        "5": 4.381015225618512e-05,
+        "20": 2.3348617326668375e-05
+      }
+    },
+    {
+      "symbol": "SOLV",
+      "reference": 3.3607,
+      "loki": 3.4056,
+      "referencePrice": 90.38,
+      "lokiPrice": 90.38,
+      "asOf": "2026-11-06",
+      "scoreDifference": 0.04490000000000016,
+      "inputDifferences": {
+        "h1": 0.04620000000000002,
+        "h4": 0.13339999999999996,
+        "1": -4.860598452616216e-05,
+        "5": -1.9312691765804857e-05,
+        "20": 3.31505163604362e-05
+      }
+    },
+    {
+      "symbol": "NOC",
+      "reference": 1.0055,
+      "loki": 0.962,
+      "referencePrice": 525.01,
+      "lokiPrice": 525.01,
+      "asOf": "2026-11-06",
+      "scoreDifference": -0.043500000000000094,
+      "inputDifferences": {
+        "h1": -0.0804,
+        "h4": -0.0937,
+        "1": -2.404470339611997e-06,
+        "5": 2.7847885819554108e-05,
+        "20": -2.1814677184650577e-05
+      }
+    },
+    {
+      "symbol": "TKO",
+      "reference": 3.2527,
+      "loki": 3.21,
+      "referencePrice": 191,
+      "lokiPrice": 191.0,
+      "asOf": "2026-11-06",
+      "scoreDifference": -0.04269999999999996,
+      "inputDifferences": {
+        "h1": -0.06010000000000004,
+        "h4": -0.11080000000000001,
+        "1": -1.2869700950046692e-05,
+        "5": 4.1215907305769406e-05,
+        "20": -4.0850015283311336e-05
+      }
+    },
+    {
+      "symbol": "Q",
+      "reference": 1.973,
+      "loki": 1.9317,
+      "referencePrice": 117,
+      "lokiPrice": 117.0,
+      "asOf": "2026-11-06",
+      "scoreDifference": -0.041300000000000114,
+      "inputDifferences": {
+        "h1": -0.1012,
+        "h4": -0.06379999999999997,
+        "1": -3.9883768142345843e-05,
+        "5": 3.197600521565036e-05,
+        "20": -2.4281728853381424e-05
+      }
+    },
+    {
+      "symbol": "GWW",
+      "reference": 2.7718,
+      "loki": 2.8128,
+      "referencePrice": 1440.7,
+      "lokiPrice": 1440.7,
+      "asOf": "2026-11-06",
+      "scoreDifference": 0.04100000000000037,
+      "inputDifferences": {
+        "h1": 0.08189999999999999,
+        "h4": 0.08200000000000002,
+        "1": 4.857628345122933e-05,
+        "5": -1.1880145860843072e-05,
+        "20": -3.985442951304208e-05
+      }
+    },
+    {
+      "symbol": "GLW",
+      "reference": -3.7292,
+      "loki": -3.6896,
+      "referencePrice": 106.13,
+      "lokiPrice": 106.13,
+      "asOf": "2026-11-06",
+      "scoreDifference": 0.03960000000000008,
+      "inputDifferences": {
+        "h1": 0.0792,
+        "h4": 0.07929999999999998,
+        "1": 4.648688316510885e-05,
+        "5": 1.5234669669794698e-05,
+        "20": 2.7649136846719102e-06
+      }
+    },
+    {
+      "symbol": "ITUB",
+      "reference": -0.9042,
+      "loki": -0.8662,
+      "referencePrice": 7.39,
+      "lokiPrice": 7.39,
+      "asOf": "2026-11-06",
+      "scoreDifference": 0.038000000000000034,
+      "inputDifferences": {
+        "h1": 0.08130000000000001,
+        "h4": 0.0809,
+        "1": 2.9075129533762123e-05,
+        "5": -0.014033634346227508,
+        "20": -0.0048048521162442626
+      }
+    },
+    {
+      "symbol": "SKYD",
+      "reference": -0.9755,
+      "loki": -0.9381,
+      "referencePrice": 8.01,
+      "lokiPrice": 8.01,
+      "asOf": "2026-11-06",
+      "scoreDifference": 0.03739999999999999,
+      "inputDifferences": {
+        "h1": 0.07429999999999998,
+        "h4": 0.07520000000000004,
+        "1": 4.261194392896073e-06,
+        "5": 3.6181167701876404e-06,
+        "20": 3.179555961363434e-05
+      }
+    },
+    {
+      "symbol": "TEL",
+      "reference": -0.1314,
+      "loki": -0.095,
+      "referencePrice": 207.01,
+      "lokiPrice": 207.01,
+      "asOf": "2026-11-06",
+      "scoreDifference": 0.03639999999999999,
+      "inputDifferences": {
+        "h1": 0.044800000000000006,
+        "h4": 0.10099999999999998,
+        "1": -3.117103185863203e-05,
+        "5": -1.3747784802620178e-05,
+        "20": -2.4418789768276827e-05
+      }
+    }
+  ],
+  "home": {
+    "asOf": "2026-11-06",
+    "currentCount": 27,
+    "universeCount": 32
+  },
+  "method": "Compare public displayed free-table order and independent same-date Yahoo snapshot, re-ranked on 588 shared valid symbols. Baseline rerun without verified actions, then rerun with 10 independent dated issuer/exchange events; fixed universe and weights. Reference values never enter production output."
+}

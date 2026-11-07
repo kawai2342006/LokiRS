@@ -12,6 +12,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from engine import build_equities, macro_summary
+from dividend_backfill import load_verified, backfill_verified
 from providers import cached_chart, fetch_contracts, fetch_fred, parse_chart, reconcile_latest_daily
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -84,8 +85,15 @@ def run():
     if settings["benchmark"] not in daily:
         raise RuntimeError("Benchmark fetch failed. Existing snapshot preserved.")
     errors.extend(retry_pending_daily(daily, intra, cache, now, workers))
+    verified_actions = load_verified(ROOT / "config/verified_dividends.json")
+    dividend_repairs = []
     for symbol in daily:
+        # A missing daily bar on a known ex-date must not be reconstructed from
+        # unadjusted intraday prices as if no corporate action happened.
+        known_dates = {item["exDate"] for item in verified_actions.get(symbol, [])}
+        daily[symbol]["corporateActionDates"] = sorted(set(daily[symbol].get("corporateActionDates", [])) | known_dates)
         reconcile_latest_daily(daily[symbol], intra.get(symbol, {}), now)
+        dividend_repairs.extend({"symbol":symbol, **item} for item in backfill_verified(daily[symbol], verified_actions.get(symbol, [])))
     benchmark_daily_day = max(daily[settings["benchmark"]]["bars"], default="")
     benchmark_intra = intra.get(settings["benchmark"], {})
     observed_closes = [day for day,end in benchmark_intra.get("sessionEnds", {}).items()
@@ -122,12 +130,13 @@ def run():
                       "scoreFormula": " + ".join(f"{w} × excess({p[1:]+'H' if p in ('h1','h4') else p+'D'})" for p,w in settings["scoreWeights"].items()),
                       "scoreModel": settings.get("scoreModel", "daily-three-period-v1"), "calibrationReferenceDates":settings.get("calibrationReferenceDates", []),
                       "scoreWeights": settings["scoreWeights"], "longTermWeights": settings["longTermWeights"],
-                      "approximation": True, "priceBasis": "Yahoo Adj Close; missing latest daily closes may use an observed completed regular-session 30m close after unit-factor/no-action checks, explicitly flagged as provisional. Intraday: Yahoo Close.",
+                      "approximation": True, "priceBasis": "Yahoo Adj Close; independently verified cash distributions are backfilled only when the source lacks the ex-date adjustment. Raw quoted prices unchanged. Missing latest daily closes may use a complete observed regular-session 30m close only on action-free days, explicitly flagged. Intraday: Yahoo Close.",
                       "errors": errors, "macroError": macro_error, "macroUpdateStatus":macro_status, "streakWindow": result["rankHistorySessions"],
                       "reconstructedDailyCount":sum(bool(r.get("dailyCloseReconstructed")) for r in result["rows"]),
+                      "verifiedDividendBackfills": dividend_repairs,
                       "benchmarkCloseReconstructed":bool(daily[settings["benchmark"]]["bars"][result["asOf"]].get("reconstructed")),
                       "dailyReconstructionPolicy":"Only a complete regular session's observed 30m close; latest daily missing; unit prior adjustment factor; corporate-action dates excluded; provisional provenance retained.",
-                      "notice": "Five-period weights inferred from public reference snapshots and rechecked on 2026-11-04; not an officially confirmed formula. Prices and runtime rankings are independently calculated from Yahoo. Long-term RS and historical ranks remain independent approximations."}
+                      "notice": "Five-period weights inferred from public reference snapshots and rechecked through 2026-11-06; not an officially confirmed formula. Prices and runtime rankings are independently calculated from Yahoo. Long-term RS and historical ranks remain independent approximations."}
     from validate_snapshot import validate
     validate(result)
     output.parent.mkdir(parents=True, exist_ok=True)

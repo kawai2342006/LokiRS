@@ -108,6 +108,7 @@ class FreshnessTests(unittest.TestCase):
             root=Path(folder);(root/'config').mkdir();(root/'data').mkdir()
             (root/'config/settings.json').write_text(json.dumps(settings))
             (root/'config/universe.json').write_text(json.dumps(universe))
+            (root/'config/verified_dividends.json').write_text(json.dumps({'actions':[]}))
             published=root/'data/latest.json';published.write_text(json.dumps(prior));original=published.read_bytes()
             def downloaded(symbol,interval,*args):return {'symbol':symbol,'interval':interval},False
             def parsed(raw,interval,*args):return (daily if interval=='1d' else hourly)[raw['symbol']]

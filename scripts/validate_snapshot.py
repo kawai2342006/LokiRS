@@ -62,6 +62,10 @@ def validate(data):
     assert len({row["id"] for row in data["macro"]}) == len(data["macro"])
     if "reconstructedDailyCount" in meta:
         assert meta["reconstructedDailyCount"] == sum(bool(r.get("dailyCloseReconstructed")) for r in rows)
+    if "verifiedDividendBackfills" in meta:
+        for event in meta["verifiedDividendBackfills"]:
+            assert event["exDate"] <= data["asOf"] and event["amountUSD"] > 0
+            assert event["source"].startswith("https://")
     for item in data["macro"]:
         if item.get("asOf"):
             assert item["asOf"] <= meta["generatedAt"][:10]

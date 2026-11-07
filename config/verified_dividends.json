@@ -1,0 +1,15 @@
+{
+  "purpose": "Dated, independently verified cash dividends missing from a newly fetched Yahoo Adj Close history. Keep raw quoted prices unchanged.",
+  "actions": [
+    {"symbol":"CCL","exDate":"2026-11-06","amountUSD":0.15,"source":"https://www.carnivalcorp.com/media-center/news-releases/carnival-corporation-declares-dividend-3/"},
+    {"symbol":"CMS","exDate":"2026-11-06","amountUSD":0.57,"source":"https://www.cmsenergy.com/investor-relations/news-releases/news-release-details/2026/CMS-Energys-Board-of-Directors-Declares-Quarterly-Dividend-on-Common-Stock-8d680ca10/default.aspx"},
+    {"symbol":"ET","exDate":"2026-11-06","amountUSD":0.3425,"source":"https://www.txse.com/alerts/829b6521-1320-4b6f-a2b3-d603a21997ed"},
+    {"symbol":"FE","exDate":"2026-11-06","amountUSD":0.465,"source":"https://www.firstenergycorp.com/newsroom/news_articles/firstenergy-corp-declares-common-stock-dividend-of-46-5-cents-per-share.html"},
+    {"symbol":"HSBC","exDate":"2026-11-06","amountUSD":0.50,"source":"https://www.hsbc.com/investors/shareholder-and-dividend-information/dividend-information-and-timetable","note":"US$0.10 per ordinary share; each New York ADS represents five ordinary shares."},
+    {"symbol":"JBHT","exDate":"2026-11-06","amountUSD":0.45,"source":"https://api.nasdaq.com/api/calendar/dividends?date=2026-11-06"},
+    {"symbol":"MAS","exDate":"2026-11-06","amountUSD":0.32,"source":"https://investor.masco.com/news-stream/news-details/2026/Masco-Corporation-Reports-Third-Quarter-2026-Results/default.aspx"},
+    {"symbol":"NSC","exDate":"2026-11-06","amountUSD":1.35,"source":"https://norfolksouthern.com/en/newsroom/news-releases/norfolk-southern-declares-quarterly-dividend-10-21-2026"},
+    {"symbol":"PFE","exDate":"2026-11-06","amountUSD":0.43,"source":"https://investors.pfizer.com/Investors/stock-dividend/dividend-split-history/default.aspx"},
+    {"symbol":"WFC","exDate":"2026-11-06","amountUSD":0.50,"source":"https://www.wellsfargo.com/about/investor-relations/shareholder-information/"}
+  ]
+}

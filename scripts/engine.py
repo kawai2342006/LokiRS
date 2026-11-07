@@ -223,6 +223,7 @@ def build_equities(universe, settings, daily, intra, prior=None):
                      "currency": daily.get(symbol, {}).get("currency", "USD"), "asOf": latest,
                      "dailyCloseReconstructed":bool(bars.get(latest, {}).get("reconstructed")),
                      "dailyCloseSourceTime":bars.get(latest, {}).get("sourceTime"),
+                     "dividendBackfill":bars.get(latest, {}).get("dividendBackfill"),
                      "status": "ok" if valid and score is not None else "partial" if valid else "stale" if latest else "unavailable", "score": rnd(score),
                      "scoreInputs": score_inputs(bars, benchmark, sessions, at, weights, intraday),
                      "d1": rnd(excess(bars, benchmark, sessions[at - 1], end)), "week": week, "month": month,

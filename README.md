@@ -4,6 +4,10 @@
 
 現有網站：https://kawai2342006.github.io/LokiRS/
 
+## v1.3.2 — 2026-11-06 美股核對
+
+同一交易日對比 LazyRS 591 筆公開排名，LokiRS 589 股之中 588 股可排名。五時段權重毋須修改；修補 10 隻股票已核實派息但 Yahoo 調整價暫缺的日線。共同股票的平均分數差距由 0.01827 減至 0.01226，平均名次差距由 1.91 減至 1.01。完整結果、來源與安裝方式見 [README_NOV06_DIVIDENDS.md](README_NOV06_DIVIDENDS.md)，逐股差異見 [reports/comparison-2026-11-06.csv](reports/comparison-2026-11-06.csv)。
+
 ## v1.3.1 日期與發佈修正
 
 修正跨日報價與排名基準不一致，新增日線完整性及寫出前驗證。11 月 4 日公式覆核與安裝方式見 [README_NOV04_FIX.md](README_NOV04_FIX.md)。
