@@ -5,6 +5,7 @@ This diagnostic reads the public page's existing serialized free-table props.
 It never requests member/history endpoints or feeds reference rows into LokiRS.
 """
 import argparse
+import csv
 import json
 import math
 import statistics
@@ -66,12 +67,18 @@ def symbol(raw):
     return raw.removeprefix('LB:').removesuffix('.US').replace('.', '-')
 
 
-def compare(snapshot, reference):
+def compare(snapshot, reference, allow_date_mismatch=False):
     source = reference['rows']
     dates = {r.get('rollingExcess', {}).get('w1', {}).get('to') for r in source}
-    if dates != {snapshot['asOf']}:
+    if len(dates) != 1 or not all(isinstance(day, str) for day in dates):
+        raise ValueError('Reference has mixed or missing observation dates')
+    reference_date = next(iter(dates))
+    same_date = dates == {snapshot['asOf']}
+    if not same_date and not allow_date_mismatch:
         raise ValueError(f'Different observation dates: reference {dates}, LokiRS {snapshot["asOf"]}; comparison stopped')
     target = {symbol(r['symbol']): r for r in source}
+    if len(target) != len(source):
+        raise ValueError('Reference contains duplicate normalized symbols')
     actual = {r['symbol']: r for r in snapshot['rows'] if r.get('rank') is not None and isinstance(r.get('score'), (int, float)) and math.isfinite(r['score'])}
     common = set(target) & set(actual)
     if len(common) < 2:
@@ -85,15 +92,37 @@ def compare(snapshot, reference):
              'referenceDisplayRank':next(i+1 for i,r in enumerate(source) if symbol(r['symbol']) == s),
              'lokiDisplayRank':actual[s]['rank'],'rankDifference':rank_b[s]-rank_a[s],
              'referenceScore':target[s]['score'],'lokiScore':actual[s]['score']} for s in target_order]
+    for row in rows:
+        s = row['symbol']
+        row['scoreDifference'] = row['lokiScore'] - row['referenceScore']
+        row['referencePrice'] = target[s].get('price')
+        row['lokiPrice'] = actual[s].get('price')
+        reference_parts = {**(target[s].get('intra') or {}),
+                           **{key: target[s].get('excess', {}).get(name) for key, name in [('1','d1'),('5','d5'),('20','d20')]}}
+        row['inputDifferences'] = {key: actual[s].get('scoreInputs', {}).get(key) - value
+                                  for key, value in reference_parts.items()
+                                  if isinstance(value, (int,float)) and isinstance(actual[s].get('scoreInputs', {}).get(key), (int,float))}
     differences = [abs(r['rankDifference']) for r in rows]
     n = len(rows)
-    return {'asOf':snapshot['asOf'],'referenceUrl':REFERENCE_URL,'referenceUniverse':len(source),'lokiUniverse':len(snapshot['rows']),
+    score_errors = [abs(r['scoreDifference']) for r in rows]
+    input_summary = {}
+    for key in ['h1','h4','1','5','20']:
+        values = [r['inputDifferences'][key] for r in rows if key in r['inputDifferences']]
+        if values:
+            input_summary[key] = {'n':len(values), 'maePP':statistics.mean(map(abs,values)), 'biasPP':statistics.mean(values)}
+    return {'asOf':snapshot['asOf'],'referenceAsOf':reference_date,'lokiAsOf':snapshot['asOf'],
+            'comparisonType':'same-session-independent-prices' if same_date else 'cross-date-published-snapshots',
+            'formulaAccuracyComparable':same_date,
+            'referenceUrl':REFERENCE_URL,'referenceUniverse':len(source),'lokiUniverse':len(snapshot['rows']),
             'commonRanked':n,'referenceOnly':sorted(set(target)-common),'lokiOnly':sorted(set(actual)-common),
             'method':'Re-rank both visible default orders within the same common-symbol cohort; no unmatched symbols shift ranks.',
             'meanAbsoluteRankDifference':statistics.mean(differences),'medianAbsoluteRankDifference':statistics.median(differences),
             'maxAbsoluteRankDifference':max(differences),'spearman':1-6*sum(r['rankDifference']**2 for r in rows)/(n*(n*n-1)),
             'topOverlap':{str(k):len(set(target_order[:k]) & set(actual_order[:k])) for k in [10,20,50,100] if n >= k},
-            'scoreMeanAbsoluteError':statistics.mean(abs(r['lokiScore']-r['referenceScore']) for r in rows),
+            'scoreMeanAbsoluteError':statistics.mean(score_errors),'scoreMedianAbsoluteError':statistics.median(score_errors),
+            'scoreMaxAbsoluteError':max(score_errors),'scoreP95AbsoluteError':sorted(score_errors)[math.ceil(.95*n)-1],
+            'scoreWithin005':sum(e<=.05 for e in score_errors),'scoreWithin010':sum(e<=.1 for e in score_errors),
+            'inputDifferences':input_summary,
             'rows':rows}
 
 
@@ -102,17 +131,27 @@ def main():
     parser.add_argument('--snapshot', type=Path, default=ROOT/'data/latest.json')
     parser.add_argument('--reference-html', type=Path, help='Use a locally saved public page instead of downloading it')
     parser.add_argument('--output', type=Path, help='Optional JSON report path')
+    parser.add_argument('--csv', type=Path, help='Optional per-stock CSV report')
+    parser.add_argument('--allow-date-mismatch', action='store_true', help='Describe stale published snapshots; explicitly not a formula accuracy test')
     args = parser.parse_args()
     if args.reference_html:
         raw = args.reference_html.read_bytes()
     else:
         with urlopen(Request(REFERENCE_URL, headers={'User-Agent':'LokiRS/1.3.0 (public ranking comparison)'}), timeout=30) as response:
             raw = response.read()
-    report = compare(json.loads(args.snapshot.read_text()), read_public_reference(raw))
+    report = compare(json.loads(args.snapshot.read_text()), read_public_reference(raw),args.allow_date_mismatch)
     report['checkedAt'] = datetime.now(timezone.utc).isoformat()
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False)+'\n')
+    if args.csv:
+        args.csv.parent.mkdir(parents=True, exist_ok=True)
+        fields=['symbol','referenceAsOf','lokiAsOf','comparisonType','referenceRankCommon','lokiRankCommon','referenceDisplayRank','lokiDisplayRank','rankDifference','referenceScore','lokiScore','scoreDifference','referencePrice','lokiPrice','h1DifferencePP','h4DifferencePP','d1DifferencePP','d5DifferencePP','d20DifferencePP']
+        with args.csv.open('w',encoding='utf-8-sig',newline='') as output:
+            writer=csv.DictWriter(output,fieldnames=fields,extrasaction='ignore');writer.writeheader()
+            for row in report['rows']:
+                writer.writerow({**row,**{key:report[key] for key in ['referenceAsOf','lokiAsOf','comparisonType']},
+                                 **{f'{label}DifferencePP':row['inputDifferences'].get(key) for key,label in [('h1','h1'),('h4','h4'),('1','d1'),('5','d5'),('20','d20')]}})
     print(json.dumps({k:v for k,v in report.items() if k != 'rows'}, ensure_ascii=False, indent=2))
 
 

@@ -218,12 +218,14 @@ def build_equities(universe, settings, daily, intra, prior=None):
         ratios = [point["close"] / point["benchmark"] for point in history[-21:]]
         rs_line = [rnd(value / ratios[0] * 100) for value in ratios] if ratios else []
         sector_score = sector_values.get(sector)
+        applied_cash=[bar["dividendBackfill"] for day,bar in sorted(bars.items()) if day<=end and bar.get("dividendBackfill")]
         rows.append({**stock, "rank": rank, "rankDelta": previous - rank if previous and rank else None,
                      "price": rnd(bars[latest].get("price", bars[latest]["close"]) if latest in bars else old.get(symbol, {}).get("price") if latest else None),
                      "currency": daily.get(symbol, {}).get("currency", "USD"), "asOf": latest,
                      "dailyCloseReconstructed":bool(bars.get(latest, {}).get("reconstructed")),
+                     "dailyCloseSource":bars.get(latest, {}).get("basis", "native-daily"),
                      "dailyCloseSourceTime":bars.get(latest, {}).get("sourceTime"),
-                     "dividendBackfill":bars.get(latest, {}).get("dividendBackfill"),
+                     "dividendBackfill":applied_cash[-1] if applied_cash else None,
                      "status": "ok" if valid and score is not None else "partial" if valid else "stale" if latest else "unavailable", "score": rnd(score),
                      "scoreInputs": score_inputs(bars, benchmark, sessions, at, weights, intraday),
                      "d1": rnd(excess(bars, benchmark, sessions[at - 1], end)), "week": week, "month": month,

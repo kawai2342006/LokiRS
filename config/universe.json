@@ -1,7 +1,7 @@
 {
   "source": "https://lazyrs.trade/?tab=stocks",
-  "capturedAt": "2026-11-01",
-  "description": "Only public symbol, name and sector metadata. Prices and calculations are independently fetched. This is a fixed universe snapshot; edit to add/remove symbols.",
+  "capturedAt": "2026-11-10",
+  "description": "Public symbol, name and sector metadata captured 2026-11-10 (US session 2026-11-09); prices and scores are fetched and calculated independently. Fixed universe; review membership explicitly.",
   "stocks": [
     {
       "symbol": "A",
@@ -946,6 +946,12 @@
       "sectorName": "科技"
     },
     {
+      "symbol": "DEO",
+      "name": "Diageo plc",
+      "sector": "XLP",
+      "sectorName": "必需消費"
+    },
+    {
       "symbol": "DG",
       "name": "Dollar General",
       "sector": "XRT",
@@ -1444,6 +1450,18 @@
       "sectorName": "通訊服務"
     },
     {
+      "symbol": "GOOGM",
+      "name": "Alphabet Inc. Depositary Shares representing a 1/20th Interest in a Share of Series A Mandatory Convertible Preferred Stock",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
+      "symbol": "GOOGN",
+      "name": "Alphabet Inc. Depositary Shares representing a 1/20th Interest in a Share of Series B Mandatory Convertible Preferred Stock",
+      "sector": "XLK",
+      "sectorName": "科技"
+    },
+    {
       "symbol": "GPC",
       "name": "Genuine Parts Company",
       "sector": "XRT",
@@ -1870,12 +1888,6 @@
       "sectorName": "零售"
     },
     {
-      "symbol": "KVUE",
-      "name": "Kenvue",
-      "sector": "XLP",
-      "sectorName": "必需消費"
-    },
-    {
       "symbol": "L",
       "name": "Loews Corporation",
       "sector": "KIE",
@@ -2054,6 +2066,12 @@
       "name": "MongoDB",
       "sector": "IGV",
       "sectorName": "軟件"
+    },
+    {
+      "symbol": "MDLN",
+      "name": "Medline Inc. Class A",
+      "sector": "XLV",
+      "sectorName": "醫療"
     },
     {
       "symbol": "MDLZ",
@@ -2396,6 +2414,12 @@
       "name": "Oklo",
       "sector": "URA",
       "sectorName": "鈾礦"
+    },
+    {
+      "symbol": "OKTA",
+      "name": "Okta, Inc.",
+      "sector": "XLK",
+      "sectorName": "科技"
     },
     {
       "symbol": "OMC",
@@ -2914,6 +2938,12 @@
       "sectorName": "公用事業"
     },
     {
+      "symbol": "SONY",
+      "name": "Sony Group Corporation",
+      "sector": "XLP",
+      "sectorName": "必需消費"
+    },
+    {
       "symbol": "SPCX",
       "name": "SpaceX",
       "sector": "ITA",
@@ -3086,6 +3116,12 @@
       "name": "TKO Group Holdings",
       "sector": "XLC",
       "sectorName": "通訊服務"
+    },
+    {
+      "symbol": "TM",
+      "name": "Toyota Motor Corporation",
+      "sector": "XLI",
+      "sectorName": "工業"
     },
     {
       "symbol": "TMO",
@@ -3380,6 +3416,12 @@
       "name": "Viatris",
       "sector": "PPH",
       "sectorName": "製藥"
+    },
+    {
+      "symbol": "VYLR",
+      "name": "Vylor",
+      "sector": "XLP",
+      "sectorName": "必需消費"
     },
     {
       "symbol": "VZ",

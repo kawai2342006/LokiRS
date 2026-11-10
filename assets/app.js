@@ -1,6 +1,7 @@
 import {sparkline, comparisonChart, palette, seriesDashes, escapeHTML as esc} from './charts.js?v=1.2.0';
-import {createHome} from './home.js?v=1.3.1';
+import {createHome} from './home.js?v=1.4.0';
 import {createSentiment} from './sentiment.js?v=1.3.3';
+import {validatePublishedSnapshot, publicationAge, reloadMessage, createAutoRefresh} from './publication.js?v=1.4.0';
 
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
@@ -16,7 +17,8 @@ const storage = {
 const readView = () => {const tab=new URLSearchParams(location.search).get('tab');return ['home','stocks','watchlist','compare'].includes(tab)?tab:location.hash==='#rankings'?'stocks':'home';};
 const state = {data:null, view:readView(), search:'', exactSymbol:null, sector:'', sectorTop:0, metric:'score', operator:'gte', value:'', streak:false,
   long:false, resilient:false, perp:false, sort:'score', direction:-1, page:1, pageSize:50,
-  watched:new Set(storage.get('watchlist',[])), compare:storage.get('compare',['SPY','NVDA','AAPL']), period:64};
+  watched:new Set(storage.get('watchlist',[])), compare:storage.get('compare',['SPY','NVDA','AAPL']), period:64,
+  auto:storage.get('stocks-auto',true)};
 const number = (v, digits=2) => Number.isFinite(v) ? v.toLocaleString('en-US',{minimumFractionDigits:digits,maximumFractionDigits:digits}) : '—';
 const signed = (v,digits=2) => Number.isFinite(v) ? (v>0?'+':'')+number(v,digits) : '—';
 const cls = v => Number.isFinite(v) ? v>0?'positive':v<0?'negative':'muted' : 'muted';
@@ -51,19 +53,19 @@ async function loadData(manual=false) {
   try {
     const response=await fetch(`./data/latest.json?t=${Date.now()}`,{cache:'no-store',signal:AbortSignal.timeout(20000)});
     if(!response.ok) throw new Error(`HTTP ${response.status}`);
-    const data=await response.json();
-    if(data.meta?.schemaVersion!==1||!Array.isArray(data.rows)||!data.rows.length) throw new Error('數據格式不相容');
-    const unchanged=state.data?.meta.generatedAt===data.meta.generatedAt;
+    const previous=state.data;
+    const data=validatePublishedSnapshot(await response.json(),previous);
     state.data=data;
     $('#loading-state').hidden=true; $('#dashboard').hidden=false;
     renderOverview(); renderLeaders(); renderFilters(); renderTable(); renderComparison(); renderMethodStatus(); updateWatchCount();
-    const end=new Date(data.asOf+'T16:00:00-04:00'), old=(Date.now()-end.getTime())/86400000>4;
+    const age=publicationAge(data), old=age!==null&&age>=36;
     const issues=data.meta.universeCount-data.meta.currentCount;
     const reconstructed=data.meta.reconstructedDailyCount||0;
     $('#error-banner').hidden=!old&&!issues&&!reconstructed;
-    $('#error-banner').textContent=[old?'目前顯示的是 '+data.asOf+' 的舊快照；請檢查資料更新工作流程。':'',issues?`${issues} 隻股票缺少當期有效分數，已顯示缺值並排除於當期排名。`:'',reconstructed?`${reconstructed} 隻股票日線缺值，使用同日已完成小時線重建收市價。`:''].filter(Boolean).join(' ');
+    $('#error-banner').textContent=[old?`美股快照已 ${age} 小時未發布新版本（行情 ${data.asOf}）；如已有新交易日，請按「抓取最新行情」檢查更新流程。`:'',issues?`${issues} 隻股票缺少當期有效分數，已顯示缺值並排除於當期排名。`:'',reconstructed?`${reconstructed} 隻股票日線缺值，以同日完整小時線核對，並優先採用已確認收市時點的常規報價。`:''].filter(Boolean).join(' ');
     $('#status-dot').classList.toggle('warning',old||issues>0||reconstructed>0);
-    if(manual) toast(unchanged?'已是最新發布快照。抓價排程與頁面刷新分開運作。':'已載入最新發布數據');
+    if(state.view!=='home')$('#publication-status').textContent=`已檢查 ${hkTime(new Date().toISOString())} HKT · 行情 ${data.asOf} · 發布 ${hkTime(data.meta.generatedAt)} HKT`;
+    if(manual) toast(reloadMessage(data,previous));
   } catch(error) {
     $('#loading-state').hidden=true;
     $('#error-banner').hidden=false;
@@ -98,9 +100,14 @@ function renderOverview() {
 }
 
 function renderHeader() {
+  $('#stocks-auto').hidden=state.view==='home';
+  $('#stocks-auto').setAttribute('aria-pressed',String(state.auto));
+  $('#stocks-auto').textContent=state.auto?'美股自動檢查 60s':'美股自動檢查已暫停';
   const d=state.view==='home'?home.data:state.data;
   if(!d){$('#asof-label').textContent=state.view==='home'?'讀取跨市場資料…':'讀取美股資料…';$('#coverage-label').textContent='正在載入';return;}
   $('#asof-label').textContent=(state.view==='home'?'跨市場資料 ':'美股收市數據 ')+d.asOf;
+  if(state.view==='home')$('#publication-status').textContent=`首頁發布 ${hkTime(d.meta.generatedAt)} HKT · 美股行情 ${d.stockAsOf}`;
+  else $('#publication-status').textContent=`美股行情 ${d.asOf} · 發布 ${hkTime(d.meta.generatedAt)} HKT`;
   $('#archive-date').textContent=d.asOf.replaceAll('-','.');
   $('#coverage-label').textContent=state.view==='home'?`${d.meta.currentCount} / ${d.meta.universeCount} 項有效 · 美股 ${d.stockAsOf}`:`${d.meta.currentCount} / ${d.meta.universeCount} 隻有效 · ${(d.meta.coverage*100).toFixed(1)}%`;
   $('#generated-label').textContent=`計算時間 ${hkTime(d.meta.generatedAt)} HKT`;
@@ -154,7 +161,7 @@ function renderTable() {
     const watch=state.watched.has(r.symbol), delta=r.rankDelta;
     const scoreMax=Math.max(10,...state.data.rows.map(a=>Math.abs(a.score||0)));
     const range=Number.isFinite(r.score)?Math.min(100,Math.abs(r.score)/scoreMax*100):0;
-    return `<tr${r.status!=='ok'?' class="stale-row"':''}><td class="numeric rank-col">${r.rank??'—'}</td><td class="numeric rank-delta ${cls(delta)}">${delta>0?'↑ '+delta:delta<0?'↓ '+Math.abs(delta):delta===0?'·':'—'}</td><td class="asset-col"><div class="asset-cell"><button class="watch-button ${watch?'watched':''}" data-watch="${esc(r.symbol)}" aria-label="${watch?'移除自選':'加入自選'} ${esc(r.symbol)}" aria-pressed="${watch}">${watch?'★':'☆'}</button><div><button class="stock-link" data-symbol="${esc(r.symbol)}">${esc(r.symbol)}</button><span class="asset-name" title="${esc(r.name)}">${esc(r.name)}</span>${r.dailyCloseReconstructed?'<span class="stale-badge" title="日線缺值，使用同日已完成小時線收市價。">收市重建</span>':''}${r.dividendBackfill?'<span class="stale-badge" title="獨立來源核實派息，Yahoo 日線尚未調整。">派息補正</span>':''}${r.status!=='ok'?`<span class="stale-badge">${r.asOf?esc(r.asOf):'缺數據'}</span>`:''}</div></div></td><td class="numeric price-cell">${number(r.price)}</td><td class="numeric score-col"><span class="score-cell ${cls(r.score)}"><i style="width:${range}%"></i><b>${signed(r.score)}</b></span></td>${cell(r.intra.h1,r.intra.asOf?'小時線時點 '+hkTime(r.intra.asOf)+' HKT；1H 格實際跨度 '+(r.intra.h1ElapsedHours??'—')+' 小時':'缺少完整且同步的小時數據')}${cell(r.intra.h4)}${cell(r.d1)}${cell(r.week?.value,periodTitle(r.week))}${cell(r.month?.value,periodTitle(r.month))}<td class="numeric ${r.streak>=7?'streak-good':'muted'}">${r.streak===null?'—':r.streakCapped?r.streak+'+':r.streak?r.streak+' 日':'·'}</td><td class="numeric"><span class="percentile ${r.longRS>=50?'positive':'muted'}">${number(r.longRS,0)}</span></td><td class="sector-cell"><span title="${esc(r.sectorName)} · ${esc(r.sector)}">${esc(r.sectorName)}</span><b class="${r.sectorRank<=3?'sector-top':''}">${r.sectorRank?'#'+r.sectorRank:'—'}</b></td>${cell(state.resilient?r.vsSectorDay:r.vsSector)}<td class="spark-col">${sparkline(r.rsLine)}</td></tr>`;
+    return `<tr${r.status!=='ok'?' class="stale-row"':''}><td class="numeric rank-col">${r.rank??'—'}</td><td class="numeric rank-delta ${cls(delta)}">${delta>0?'↑ '+delta:delta<0?'↓ '+Math.abs(delta):delta===0?'·':'—'}</td><td class="asset-col"><div class="asset-cell"><button class="watch-button ${watch?'watched':''}" data-watch="${esc(r.symbol)}" aria-label="${watch?'移除自選':'加入自選'} ${esc(r.symbol)}" aria-pressed="${watch}">${watch?'★':'☆'}</button><div><button class="stock-link" data-symbol="${esc(r.symbol)}">${esc(r.symbol)}</button><span class="asset-name" title="${esc(r.name)}">${esc(r.name)}</span>${r.dailyCloseReconstructed?'<span class="stale-badge" title="日線缺值，使用完整小時線核對的同日收市資料；來源詳見 CSV。">收市重建</span>':''}${r.dividendBackfill?`<span class="stale-badge" title="${r.dividendBackfill.sourceStatus==='provisional'?'存託銀行公開的暫定總派息，尚未定案。':'獨立來源核實派息，Yahoo 日線尚未調整。'}">${r.dividendBackfill.sourceStatus==='provisional'?'暫定派息':'派息補正'}</span>`:''}${r.status!=='ok'?`<span class="stale-badge">${r.asOf?esc(r.asOf):'缺數據'}</span>`:''}</div></div></td><td class="numeric price-cell">${number(r.price)}</td><td class="numeric score-col"><span class="score-cell ${cls(r.score)}"><i style="width:${range}%"></i><b>${signed(r.score)}</b></span></td>${cell(r.intra.h1,r.intra.asOf?'小時線時點 '+hkTime(r.intra.asOf)+' HKT；1H 格實際跨度 '+(r.intra.h1ElapsedHours??'—')+' 小時':'缺少完整且同步的小時數據')}${cell(r.intra.h4)}${cell(r.d1)}${cell(r.week?.value,periodTitle(r.week))}${cell(r.month?.value,periodTitle(r.month))}<td class="numeric ${r.streak>=7?'streak-good':'muted'}">${r.streak===null?'—':r.streakCapped?r.streak+'+':r.streak?r.streak+' 日':'·'}</td><td class="numeric"><span class="percentile ${r.longRS>=50?'positive':'muted'}">${number(r.longRS,0)}</span></td><td class="sector-cell"><span title="${esc(r.sectorName)} · ${esc(r.sector)}">${esc(r.sectorName)}</span><b class="${r.sectorRank<=3?'sector-top':''}">${r.sectorRank?'#'+r.sectorRank:'—'}</b></td>${cell(state.resilient?r.vsSectorDay:r.vsSector)}<td class="spark-col">${sparkline(r.rsLine)}</td></tr>`;
   }).join('');
   $('#result-count').textContent=`${rows.length} 隻 / ${state.data.rows.length}`;
   $('#ranking-title').textContent=state.view==='watchlist'?'我的自選清單':'全部排名';
@@ -203,7 +210,7 @@ function showDetail(symbol) {
   const priceSeries=r.history.map(p=>({date:p.date,value:p.close}));
   const benchmarkSeries=r.history.map(p=>({date:p.date,value:p.benchmark}));
   const chart=comparisonChart([{name:symbol,points:priceSeries},{name:'SPY',points:benchmarkSeries}],{height:300,width:850});
-  $('#detail-content').innerHTML=`<div class="detail-heading"><div><h2>${esc(symbol)}<span>${esc(r.name)}</span></h2><p>${esc(r.sectorName)} · ${esc(r.sector)} · 收市 ${esc(r.asOf||'—')}</p></div><div><strong>${number(r.price)}</strong><span>USD</span></div></div><div class="detail-metrics"><div><span>LokiRS · 近似</span><b class="${cls(r.score)}">${signed(r.score)}</b></div><div><span>1D 超額</span><b class="${cls(r.d1)}">${pp(r.d1)}</b></div><div><span>一週超額</span><b class="${cls(r.week?.value)}">${pp(r.week?.value)}</b></div><div><span>一月超額</span><b class="${cls(r.month?.value)}">${pp(r.month?.value)}</b></div></div><div class="detail-chart">${chart}</div><div class="detail-meta"><p>小時線時點：${r.intra.asOf?esc(hkTime(r.intra.asOf))+' HKT':'無完整同步數據'}。日線超額和小時線超額使用各自時點。</p>${r.dailyCloseReconstructed?'<p class="panel-footnote">收市重建：日線缺值，使用同日已完成小時線收市價。</p>':''}${r.dividendBackfill?`<p class="panel-footnote">派息補正：${number(r.dividendBackfill.amountUSD,4)} USD／股；除淨日 ${esc(r.dividendBackfill.exDate)}。來源網址記錄於 CSV。</p>`:''}<p>1H／4H K 線格數的實際跨度：${number(r.intra.h1ElapsedHours,1)}／${number(r.intra.h4ElapsedHours,1)} 小時。<br>精確時鐘 1H 超額：${pp(r.intra.clockH1)}；精確時鐘 4H 超額：${pp(r.intra.clockH4)}。</p><p>一週：${esc(periodTitle(r.week))}<br>一個月：${esc(periodTitle(r.month))}</p></div><div class="dialog-bottom"><button class="button" data-add-compare="${esc(symbol)}">＋ 加入走勢比較</button><a class="external-link" target="_blank" rel="noopener" href="https://finance.yahoo.com/quote/${encodeURIComponent(symbol)}/">Yahoo Finance ↗</a></div>`;
+  $('#detail-content').innerHTML=`<div class="detail-heading"><div><h2>${esc(symbol)}<span>${esc(r.name)}</span></h2><p>${esc(r.sectorName)} · ${esc(r.sector)} · 收市 ${esc(r.asOf||'—')}</p></div><div><strong>${number(r.price)}</strong><span>USD</span></div></div><div class="detail-metrics"><div><span>LokiRS · 近似</span><b class="${cls(r.score)}">${signed(r.score)}</b></div><div><span>1D 超額</span><b class="${cls(r.d1)}">${pp(r.d1)}</b></div><div><span>一週超額</span><b class="${cls(r.week?.value)}">${pp(r.week?.value)}</b></div><div><span>一月超額</span><b class="${cls(r.month?.value)}">${pp(r.month?.value)}</b></div></div><div class="detail-chart">${chart}</div><div class="detail-meta"><p>小時線時點：${r.intra.asOf?esc(hkTime(r.intra.asOf))+' HKT':'無完整同步數據'}。日線超額和小時線超額使用各自時點。</p>${r.dailyCloseReconstructed?'<p class="panel-footnote">收市重建：日線缺值，使用完整小時線核對的同日收市資料；來源詳見 CSV。</p>':''}${r.dividendBackfill?`<p class="panel-footnote">${r.dividendBackfill.sourceStatus==='provisional'?'暫定派息補正（存託銀行未定案）':'派息補正'}：${number(r.dividendBackfill.amountUSD,6)} USD／股；除淨日 ${esc(r.dividendBackfill.exDate)}。來源網址記錄於 CSV。</p>`:''}<p>1H／4H K 線格數的實際跨度：${number(r.intra.h1ElapsedHours,1)}／${number(r.intra.h4ElapsedHours,1)} 小時。<br>精確時鐘 1H 超額：${pp(r.intra.clockH1)}；精確時鐘 4H 超額：${pp(r.intra.clockH4)}。</p><p>一週：${esc(periodTitle(r.week))}<br>一個月：${esc(periodTitle(r.month))}</p></div><div class="dialog-bottom"><button class="button" data-add-compare="${esc(symbol)}">＋ 加入走勢比較</button><a class="external-link" target="_blank" rel="noopener" href="https://finance.yahoo.com/quote/${encodeURIComponent(symbol)}/">Yahoo Finance ↗</a></div>`;
   $('#detail-dialog').showModal();
 }
 function comparisonUniverse() {
@@ -233,15 +240,15 @@ function searchCompare() {
 function renderMethodStatus() {
   const d=state.data;
   const sentiment=sentimentPanel.data||d.sentiment;
-  $('#method-status').innerHTML=`<table class="method-status-table"><tbody><tr><td>日線資料</td><td>${esc(d.asOf)} · ${d.meta.currentCount}/${d.meta.universeCount} 隻</td></tr><tr><td>1H 資料覆蓋</td><td>${d.meta.intradayCount} 隻（各列另附時點）</td></tr><tr><td>CNN 恐懼貪婪</td><td>${sentiment&&['ok','stale'].includes(sentiment.status)?esc(sentiment.source)+' · '+esc(sentiment.observationDate||sentiment.asOf?.slice(0,10)||'—')+(sentiment.status==='stale'?' · 舊值':''):'未取得，保留缺值'}</td></tr><tr><td>合約名單</td><td>${d.contracts.status==='ok'?'已取得':'未取得，停用篩選'}</td></tr><tr><td>下載失敗請求</td><td>${d.meta.errors.length} 筆（日線／小時線獨立計數）</td></tr><tr><td>FRED 更新</td><td>${d.meta.macroUpdateStatus==='retained'?'保留原有資料及日期':d.meta.macroError?'失敗，顯示舊值或缺值':'成功，使用各列觀測日期'}</td></tr></tbody></table>`;
+  $('#method-status').innerHTML=`<table class="method-status-table"><tbody><tr><td>日線資料</td><td>${esc(d.asOf)} · ${d.meta.currentCount}/${d.meta.universeCount} 隻</td></tr><tr><td>1H 資料覆蓋</td><td>${d.meta.intradayCount} 隻（各列另附時點）</td></tr><tr><td>板塊計分覆蓋</td><td>${d.sectors.filter(r=>Number.isFinite(r.score)).length}/${d.sectors.length} 項；缺值：${esc(d.sectors.filter(r=>!Number.isFinite(r.score)).map(r=>r.symbol).join('、')||'無')}</td></tr><tr><td>暫定派息補正</td><td>${d.meta.provisionalDividendCount||0} 隻；存託銀行金額未定案，保留標記。</td></tr><tr><td>CNN 恐懼貪婪</td><td>${sentiment&&['ok','stale'].includes(sentiment.status)?esc(sentiment.source)+' · '+esc(sentiment.observationDate||sentiment.asOf?.slice(0,10)||'—')+(sentiment.status==='stale'?' · 舊值':''):'未取得，保留缺值'}</td></tr><tr><td>合約名單</td><td>${d.contracts.status==='ok'?'已取得':'未取得，停用篩選'}</td></tr><tr><td>下載失敗請求</td><td>${d.meta.errors.length} 筆（日線／小時線獨立計數）</td></tr><tr><td>FRED 更新</td><td>${d.meta.macroUpdateStatus==='retained'?'保留原有資料及日期':d.meta.macroError?'失敗，顯示舊值或缺值':'成功，使用各列觀測日期'}</td></tr></tbody></table>`;
   const weights=d.meta.scoreWeights;
   if(weights)$('#score-formula').textContent=Object.entries(weights).map(([p,w])=>`${w} × 超額 ${p==='h1'?'1H':p==='h4'?'4H':p+'D'}`).join(' + ');
   const long=d.meta.longTermWeights;
   if(long)$('#long-formula').textContent='長線值 = '+Object.entries(long).map(([p,w])=>`${w} × 超額 ${p}D`).join(' + ');
 }
 function exportCSV() {
-  const headings=['rank','symbol','name','asOf','status','daily_close_reconstructed','daily_close_source_time','dividend_backfill_amount_usd','dividend_backfill_ex_date','dividend_backfill_source','price_USD','LokiRS_approx','rank_delta','1h_excess_pp','4h_excess_pp','1d_excess_pp','week_excess_pp','month_excess_pp','week_from','month_from','streak_approx','long_RS_percentile_approx','sector','sector_rank_approx','vs_sector_approx','vs_sector_1d_pp','intraday_asOf','h1_elapsed_hours','h4_elapsed_hours','exact_clock_1h_excess_pp','exact_clock_4h_excess_pp'];
-  const rows=filteredRows().map(r=>[r.rank,r.symbol,r.name,r.asOf,r.status,!!r.dailyCloseReconstructed,r.dailyCloseSourceTime,r.dividendBackfill?.amountUSD,r.dividendBackfill?.exDate,r.dividendBackfill?.source,r.price,r.score,r.rankDelta,r.intra.h1,r.intra.h4,r.d1,r.week?.value,r.month?.value,r.week?.from,r.month?.from,r.streak,r.longRS,r.sector,r.sectorRank,r.vsSector,r.vsSectorDay,r.intra.asOf,r.intra.h1ElapsedHours,r.intra.h4ElapsedHours,r.intra.clockH1,r.intra.clockH4]);
+  const headings=['rank','symbol','name','asOf','status','daily_close_reconstructed','daily_close_source_time','daily_close_source','dividend_backfill_amount_usd','dividend_backfill_ex_date','dividend_backfill_source','dividend_source_status','price_USD','LokiRS_approx','rank_delta','1h_excess_pp','4h_excess_pp','1d_excess_pp','week_excess_pp','month_excess_pp','week_from','month_from','streak_approx','long_RS_percentile_approx','sector','sector_rank_approx','vs_sector_approx','vs_sector_1d_pp','intraday_asOf','h1_elapsed_hours','h4_elapsed_hours','exact_clock_1h_excess_pp','exact_clock_4h_excess_pp'];
+  const rows=filteredRows().map(r=>[r.rank,r.symbol,r.name,r.asOf,r.status,!!r.dailyCloseReconstructed,r.dailyCloseSourceTime,r.dailyCloseSource,r.dividendBackfill?.amountUSD,r.dividendBackfill?.exDate,r.dividendBackfill?.source,r.dividendBackfill?.sourceStatus,r.price,r.score,r.rankDelta,r.intra.h1,r.intra.h4,r.d1,r.week?.value,r.month?.value,r.week?.from,r.month?.from,r.streak,r.longRS,r.sector,r.sectorRank,r.vsSector,r.vsSectorDay,r.intra.asOf,r.intra.h1ElapsedHours,r.intra.h4ElapsedHours,r.intra.clockH1,r.intra.clockH4]);
   const quote=v=>{let value=String(v??'');if(typeof v==='string'&&/^[=+\-@]/.test(value))value="'"+value;return '"'+value.replaceAll('"','""')+'"';};
   download('\ufeff'+[headings,...rows].map(r=>r.map(quote).join(',')).join('\r\n'),`lokirs-${state.data.asOf}.csv`,'text/csv;charset=utf-8');
 }
@@ -280,6 +287,7 @@ document.addEventListener('click',event=>{
 $$('dialog').forEach(dialog=>dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}}));
 $('#theme-toggle').addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='dark'?'reading':'dark'));
 $('#refresh').addEventListener('click',()=>state.view==='home'?home.load(true):Promise.allSettled([loadData(true),sentimentPanel.load(true)]));
+$('#stocks-auto').addEventListener('click',()=>{state.auto=!state.auto;storage.set('stocks-auto',state.auto);renderHeader();});
 $('#overview-toggle').addEventListener('click',()=>{const expanded=$('#overview-toggle').getAttribute('aria-expanded')==='true';$('#overview-grid').hidden=expanded;$('#overview-toggle').setAttribute('aria-expanded',!expanded);$('#overview-toggle').textContent=expanded?'展開 ＋':'收起 −';});
 $('#search').addEventListener('input',event=>{state.search=event.target.value.trim();state.exactSymbol=null;state.page=1;renderTable();});
 [['sector-filter','sector'],['metric-filter','metric'],['operator-filter','operator'],['value-filter','value']].forEach(([id,key])=>$('#'+id).addEventListener(id==='value-filter'?'input':'change',event=>{state[key]=event.target.value;state.page=1;renderTable();}));
@@ -299,6 +307,8 @@ const home=createHome({document,window,fetch:window.fetch.bind(window),download,
   onView:view=>switchView(view),onCompare:symbol=>{addCompare(symbol);switchView('compare');},
   onStock:symbol=>{switchView('stocks');resetFilters();state.search=symbol;state.exactSymbol=symbol;state.page=1;$('#search').value=symbol;renderTable();$('#rankings').scrollIntoView({behavior:'smooth',block:'start'});},
   onUpdate:()=>{$('#loading-state').hidden=true;$('#dashboard').hidden=false;renderHeader();renderComparison();}});
+createAutoRefresh({window,document,enabled:()=>state.auto,active:()=>state.view!=='home',
+  load:()=>Promise.allSettled([loadData(),sentimentPanel.load()])});
 window.addEventListener('popstate',()=>switchView(readView(),false));
 const initialSymbol=new URLSearchParams(location.search).get('s');
 if(initialSymbol){state.search=initialSymbol.replace(/^LB:/,'').replace(/\.US$/,'');state.exactSymbol=state.search;$('#search').value=state.search;}

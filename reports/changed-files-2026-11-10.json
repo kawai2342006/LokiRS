@@ -1,0 +1,196 @@
+{
+  "baselineCommit": "83424829e70ce9290d2fe0d70d03eeafdc85609a",
+  "manifestSelfExcluded": true,
+  "changes": [
+    {
+      "file": ".github/workflows/pages.yml",
+      "change": "modified",
+      "sha256": "470705697520cbd2b87ee80857db9de49498eb3669bab69d21c7cf42de44f1e3"
+    },
+    {
+      "file": ".github/workflows/sentiment.yml",
+      "change": "modified",
+      "sha256": "ce8c207953969eb7cd5233cd60c1ce0f9d1d69d797cee927d23fb15bb5720eac"
+    },
+    {
+      "file": ".nojekyll",
+      "change": "added",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "README.md",
+      "change": "modified",
+      "sha256": "ce47d177979b9f2b92ee66c9e17881f689e5d3269b2f22234346929a8745044a"
+    },
+    {
+      "file": "README_NOV10_REFRESH.md",
+      "change": "added",
+      "sha256": "2e4a1c2acfd633bd703457056dd3812f772601f90fec48d26d8be4c4cd353cfc"
+    },
+    {
+      "file": "assets/app.js",
+      "change": "modified",
+      "sha256": "a06cc3c7db800a6180ef64227f8ba8e5d443cf99f66cf2ee4f2e2889baea50c9"
+    },
+    {
+      "file": "assets/home.js",
+      "change": "modified",
+      "sha256": "e2341537410bf78bcb39097c52ba1225d5b13e0f90fc15344b86a2aa3c1a5a92"
+    },
+    {
+      "file": "assets/publication.js",
+      "change": "added",
+      "sha256": "0a92298fde40b98e401d8221ff7140a6393f7bc686956b72aaacc69b918b47ac"
+    },
+    {
+      "file": "assets/styles.css",
+      "change": "modified",
+      "sha256": "33c49980b24ef4363023a08e9af5e9329cb53da4496a6fd56b2a35dabdfb88bf"
+    },
+    {
+      "file": "config/settings.json",
+      "change": "modified",
+      "sha256": "f79307aca8d410eaf28a7ae0b80c8c2d7110e23ad49ad2f1efd5b141f93d3ee5"
+    },
+    {
+      "file": "config/universe.json",
+      "change": "modified",
+      "sha256": "fef1594be48e9a8102cbcbabf2b6de1bbd876c482eba4e16bfe20165243b791f"
+    },
+    {
+      "file": "config/verified_dividends.json",
+      "change": "modified",
+      "sha256": "6859204edc798507a576a236a057f4338ae2e2f3dd2fca03e789b0023087454b"
+    },
+    {
+      "file": "data/home.json",
+      "change": "modified",
+      "sha256": "cec122bab460db06ce64d46ecf8d95c7d9533925eb1b12c7b6f60a0d40711f2f"
+    },
+    {
+      "file": "data/latest.json",
+      "change": "modified",
+      "sha256": "2a6b93c7b32ff219ad226bd2ba2453d8bbc52a638c7f05cff5d9e70ab1a66cb7"
+    },
+    {
+      "file": "data/sentiment.json",
+      "change": "modified",
+      "sha256": "779b8757fe6f5dfeafd7f1704e08f3ec6e7dbfddc199257d617018b9f58c8c1f"
+    },
+    {
+      "file": "data/verification_2026-11-10.json",
+      "change": "added",
+      "sha256": "64a618be339737af0d2474faa097d0367faf69acec96693f2cb2c74071d3d540"
+    },
+    {
+      "file": "docs/AUDIT_2026-11-10.md",
+      "change": "added",
+      "sha256": "95cfdb773e0bc42ef0c2a842e534ed771f1b0fefaaecd6dfd01854e43ae618a9"
+    },
+    {
+      "file": "index.html",
+      "change": "modified",
+      "sha256": "6e757e2fbc7ec3357a44f0c0ae5c2366469acce6638a0f82a9cdc5307f26ce81"
+    },
+    {
+      "file": "package.json",
+      "change": "modified",
+      "sha256": "1f99fc6ca58806d5b8ca99bbadf5b33916a80e782a0173ce7112492e325255ad"
+    },
+    {
+      "file": "preview/LokiRS_Nov10_Preview.html",
+      "change": "added",
+      "sha256": "4834696adaeafbf48335f63654b1bb8a6b47c3f5cb8377d29129a95b148c4004"
+    },
+    {
+      "file": "reports/comparison-2026-11-09-original-cohort.json",
+      "change": "added",
+      "sha256": "0a1faa6a212cd618fedf5df461d4975a6a1c2efa4d88e0124d052378bbed6da7"
+    },
+    {
+      "file": "reports/comparison-2026-11-09.csv",
+      "change": "added",
+      "sha256": "9aed34327a362a8aa4e344d490a56bd4a6174fd8e3fe3413f77f350a12457b8c"
+    },
+    {
+      "file": "reports/comparison-2026-11-09.json",
+      "change": "added",
+      "sha256": "92176c5719bd94b047a22e2a7971e51e9ccf458e6b558a22079f36774ee21355"
+    },
+    {
+      "file": "reports/published-before-2026-11-10.csv",
+      "change": "added",
+      "sha256": "825bd98edb35e77043bea6a8d428bc2c97e2625c601731e9fd5098d985d0b490"
+    },
+    {
+      "file": "reports/published-before-2026-11-10.json",
+      "change": "added",
+      "sha256": "a3b03b06d793f740942c5fa08399eeff9cefa81137ba072734929ca2d181ede4"
+    },
+    {
+      "file": "scripts/build.py",
+      "change": "modified",
+      "sha256": "39ff541e68182f3ce2938210806a36155328ba1b2c08fe945cebbcaac9133843"
+    },
+    {
+      "file": "scripts/build_preview.py",
+      "change": "added",
+      "sha256": "ac6f9a6ccbe3760d818dffdcf892bd0c2b925b0d6c71b09ea768d66eeae34258"
+    },
+    {
+      "file": "scripts/compare_rankings.py",
+      "change": "modified",
+      "sha256": "8fa1404c9bbf9b4a87c82f600e143822b85beb0004959f6619c48293a2ff1e1a"
+    },
+    {
+      "file": "scripts/dividend_backfill.py",
+      "change": "modified",
+      "sha256": "7cf30837ad73da4f1969acc6c6e2972242b347eeb27aba42a639d40d2feeae1f"
+    },
+    {
+      "file": "scripts/engine.py",
+      "change": "modified",
+      "sha256": "f249313ca0267b2114993244ed41a9635c74226934ca14a985b7df222c8a2e1f"
+    },
+    {
+      "file": "scripts/providers.py",
+      "change": "modified",
+      "sha256": "2af2c7a42f81225f155191761e9b1dde6a992e11479c4451c726d97d0adabd61"
+    },
+    {
+      "file": "scripts/publication_summary.py",
+      "change": "added",
+      "sha256": "ae30275d363b38779b6b858220515fb159cd1f10621e1f9d497648120c34a231"
+    },
+    {
+      "file": "scripts/update_data.py",
+      "change": "modified",
+      "sha256": "474a38b83b7ba3ec526c48776d1f789e37696e5f3efc29506f3a71c9ab795818"
+    },
+    {
+      "file": "tests/export.test.js",
+      "change": "added",
+      "sha256": "3e5af6e5fd26e75790a438db98186cdad2cefd117653b3f8a884a23b987f7b28"
+    },
+    {
+      "file": "tests/publication.test.js",
+      "change": "added",
+      "sha256": "95ebc4e401f6bdc7246ef15b361c660bf0fd690e456fd0f61bdbd8e5f19cda86"
+    },
+    {
+      "file": "tests/test_calibrated_score.py",
+      "change": "modified",
+      "sha256": "e055697046b96197d833acd731316b361e5da3e225359d7d543b4894d1b6d3ed"
+    },
+    {
+      "file": "tests/test_dividend_backfill.py",
+      "change": "modified",
+      "sha256": "c3284b4f9237c872bd459780bdc659fb09388f4ed281bfdc1691e64fb9824f3c"
+    },
+    {
+      "file": "tests/test_freshness.py",
+      "change": "modified",
+      "sha256": "fd9ba918a6acbaacb02cb90a7c74038ef5f9158a20badb7e23c40508c2fe427f"
+    }
+  ]
+}

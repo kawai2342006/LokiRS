@@ -131,24 +131,32 @@ def parse_chart(data: dict, interval: str, now: datetime | None = None) -> dict:
         raw_price = raw_closes[i] if i < len(raw_closes) else None
         bars[key] = {"close": float(value), "price": float(raw_price) if raw_price is not None and math.isfinite(raw_price) else None,
                      "volume": volumes[i] if i < len(volumes) else None}
-    action_dates = []
-    for events in result.get("events", {}).values():
+    action_dates, non_cash_dates = [], []
+    for event_type, events in result.get("events", {}).items():
         for item in events.values() if isinstance(events, dict) else []:
             if isinstance(item, dict) and isinstance(item.get("date"), (int,float)):
-                action_dates.append(datetime.fromtimestamp(item["date"], tz).date().isoformat())
+                action_day=datetime.fromtimestamp(item["date"], tz).date().isoformat()
+                action_dates.append(action_day)
+                if event_type != "dividends":
+                    non_cash_dates.append(action_day)
     return {"bars": dict(sorted(bars.items())), "currency": meta.get("currency", "USD"), "timezone": str(tz),
             "sessionEnds":session_ends, "sessionStarts":session_starts, "pendingDailyDates":sorted(set(pending)),
             "dailySourceDates":sorted(set(source_dates)), "corporateActionDates":sorted(set(action_dates)),
             "actionsChecked":set(data.get("_lokirsRequestedEvents", [])) >= {"div","splits","capitalGains"},
-            "regularMarketTime":meta.get("regularMarketTime"), "observedThrough":now.isoformat()}
+            "nonCashActionDates":sorted(set(non_cash_dates)),
+            "regularMarketTime":meta.get("regularMarketTime"), "regularMarketPrice":meta.get("regularMarketPrice"),
+            "regularSessionEnd":meta.get("currentTradingPeriod", {}).get("regular", {}).get("end"),
+            "observedThrough":now.isoformat()}
 
 
-def reconcile_latest_daily(daily: dict, intraday: dict, now=None) -> dict:
+def reconcile_latest_daily(daily: dict, intraday: dict, now=None, verified_cash_actions=None) -> dict:
     """Reconstruct only a missing latest daily close from complete observed 30m bars.
 
     Never fill an open session, stale intraday data, missing adjustment metadata,
-    non-unit last adjustment factors, or dates with a corporate action. The
-    reconstructed close is provisional and carries explicit provenance.
+    unknown adjustment factors or unverified corporate actions. A dated,
+    independently verified cash dividend can be handled by backfill_verified;
+    splits and mixed actions always block reconstruction. All recovered daily
+    bars carry provisional provenance.
     """
     now = now or datetime.now(UTC)
     if not daily.get("actionsChecked") or not intraday.get("bars") or not daily.get("bars"):
@@ -170,7 +178,15 @@ def reconcile_latest_daily(daily: dict, intraday: dict, now=None) -> dict:
         return daily
     previous = max(before)
     gap = (datetime.fromisoformat(day)-datetime.fromisoformat(previous)).days
-    if not 0 < gap <= 4 or any(previous < d <= day for d in daily.get("corporateActionDates", [])):
+    if not 0 < gap <= 4:
+        return daily
+    cash_actions = [item for item in (verified_cash_actions or []) if previous < item["exDate"] <= day]
+    action_days = {d for d in daily.get("corporateActionDates", []) if previous < d <= day} | {item["exDate"] for item in cash_actions}
+    known_cash = (len(cash_actions)==1 and cash_actions[0]["exDate"]==day
+                  and daily.get("currency", "USD")=="USD" and action_days=={day}
+                  and "nonCashActionDates" in daily
+                  and not any(previous < d <= day for d in daily["nonCashActionDates"]))
+    if action_days and not known_cash:
         return daily
     missing = [d for d in daily.get("dailySourceDates", []) if previous < d <= day]
     market_time = daily.get("regularMarketTime")
@@ -179,7 +195,17 @@ def reconcile_latest_daily(daily: dict, intraday: dict, now=None) -> dict:
     if not missing_latest:
         return daily
     prior = daily["bars"][previous]
-    if not prior.get("price") or abs(prior["close"]/prior["price"]-1) > 1e-8:
+    if not prior.get("price"):
+        return daily
+    prior_factor=prior["close"]/prior["price"]
+    if known_cash:
+        amount=cash_actions[0]["amountUSD"]
+        if not isinstance(amount,(int,float)) or isinstance(amount,bool) or not math.isfinite(amount) or not 0<amount<prior["price"]*.25:
+            return daily
+        expected_factor=1-amount/prior["price"]
+        if abs(prior_factor-1)>1e-8 and abs(prior_factor-expected_factor)>1e-4:
+            return daily
+    elif abs(prior_factor-1)>1e-8:
         return daily
     start, end = intraday.get("sessionStarts", {}).get(day), closes[day]
     if start is None or (end-start) % 1800:
@@ -189,8 +215,20 @@ def reconcile_latest_daily(daily: dict, intraday: dict, now=None) -> dict:
     if not required or not all(t in bars and math.isfinite(bars[t]["close"]) and bars[t]["close"] > 0 for t in required):
         return daily
     value = bars[end]["close"]
+    basis = "completed-intraday-close"
+    # Closing auctions can differ from the last 30m candle. Prefer the source's
+    # regular-session quote only when its own session and timestamp verify the
+    # same completed close. This never uses a pre-close or after-hours quote.
+    quoted, quoted_at = daily.get("regularMarketPrice"), daily.get("regularMarketTime")
+    if (isinstance(quoted,(int,float)) and not isinstance(quoted,bool) and math.isfinite(quoted) and quoted>0
+        and isinstance(quoted_at,(int,float)) and not isinstance(quoted_at,bool)
+        and daily.get("regularSessionEnd")==end and end<=quoted_at<=end+300
+        and quoted_at<=observed.timestamp()):
+        value, basis = float(quoted), "completed-regular-session-quote"
     daily["bars"][day] = {"close":value,"price":value,"volume":None,"reconstructed":True,
-                           "basis":"completed-intraday-close","sourceTime":datetime.fromtimestamp(end,UTC).isoformat()}
+                           "basis":basis,"sourceTime":datetime.fromtimestamp(end,UTC).isoformat()}
+    if known_cash:
+        daily["bars"][day]["verifiedCashAction"] = cash_actions[0]
     daily["bars"] = dict(sorted(daily["bars"].items()))
     daily.setdefault("reconstructedDates", []).append(day)
     return daily

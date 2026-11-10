@@ -1,15 +1,102 @@
 {
   "purpose": "Dated, independently verified cash dividends missing from a newly fetched Yahoo Adj Close history. Keep raw quoted prices unchanged.",
   "actions": [
-    {"symbol":"CCL","exDate":"2026-11-06","amountUSD":0.15,"source":"https://www.carnivalcorp.com/media-center/news-releases/carnival-corporation-declares-dividend-3/"},
-    {"symbol":"CMS","exDate":"2026-11-06","amountUSD":0.57,"source":"https://www.cmsenergy.com/investor-relations/news-releases/news-release-details/2026/CMS-Energys-Board-of-Directors-Declares-Quarterly-Dividend-on-Common-Stock-8d680ca10/default.aspx"},
-    {"symbol":"ET","exDate":"2026-11-06","amountUSD":0.3425,"source":"https://www.txse.com/alerts/829b6521-1320-4b6f-a2b3-d603a21997ed"},
-    {"symbol":"FE","exDate":"2026-11-06","amountUSD":0.465,"source":"https://www.firstenergycorp.com/newsroom/news_articles/firstenergy-corp-declares-common-stock-dividend-of-46-5-cents-per-share.html"},
-    {"symbol":"HSBC","exDate":"2026-11-06","amountUSD":0.50,"source":"https://www.hsbc.com/investors/shareholder-and-dividend-information/dividend-information-and-timetable","note":"US$0.10 per ordinary share; each New York ADS represents five ordinary shares."},
-    {"symbol":"JBHT","exDate":"2026-11-06","amountUSD":0.45,"source":"https://api.nasdaq.com/api/calendar/dividends?date=2026-11-06"},
-    {"symbol":"MAS","exDate":"2026-11-06","amountUSD":0.32,"source":"https://investor.masco.com/news-stream/news-details/2026/Masco-Corporation-Reports-Third-Quarter-2026-Results/default.aspx"},
-    {"symbol":"NSC","exDate":"2026-11-06","amountUSD":1.35,"source":"https://norfolksouthern.com/en/newsroom/news-releases/norfolk-southern-declares-quarterly-dividend-10-21-2026"},
-    {"symbol":"PFE","exDate":"2026-11-06","amountUSD":0.43,"source":"https://investors.pfizer.com/Investors/stock-dividend/dividend-split-history/default.aspx"},
-    {"symbol":"WFC","exDate":"2026-11-06","amountUSD":0.50,"source":"https://www.wellsfargo.com/about/investor-relations/shareholder-information/"}
+    {
+      "symbol": "CCL",
+      "exDate": "2026-11-06",
+      "amountUSD": 0.15,
+      "source": "https://www.carnivalcorp.com/media-center/news-releases/carnival-corporation-declares-dividend-3/"
+    },
+    {
+      "symbol": "CMS",
+      "exDate": "2026-11-06",
+      "amountUSD": 0.57,
+      "source": "https://www.cmsenergy.com/investor-relations/news-releases/news-release-details/2026/CMS-Energys-Board-of-Directors-Declares-Quarterly-Dividend-on-Common-Stock-8d680ca10/default.aspx"
+    },
+    {
+      "symbol": "ET",
+      "exDate": "2026-11-06",
+      "amountUSD": 0.3425,
+      "source": "https://www.txse.com/alerts/829b6521-1320-4b6f-a2b3-d603a21997ed"
+    },
+    {
+      "symbol": "FE",
+      "exDate": "2026-11-06",
+      "amountUSD": 0.465,
+      "source": "https://www.firstenergycorp.com/newsroom/news_articles/firstenergy-corp-declares-common-stock-dividend-of-46-5-cents-per-share.html"
+    },
+    {
+      "symbol": "HSBC",
+      "exDate": "2026-11-06",
+      "amountUSD": 0.5,
+      "source": "https://www.hsbc.com/investors/shareholder-and-dividend-information/dividend-information-and-timetable",
+      "note": "US$0.10 per ordinary share; each New York ADS represents five ordinary shares."
+    },
+    {
+      "symbol": "JBHT",
+      "exDate": "2026-11-06",
+      "amountUSD": 0.45,
+      "source": "https://api.nasdaq.com/api/calendar/dividends?date=2026-11-06"
+    },
+    {
+      "symbol": "MAS",
+      "exDate": "2026-11-06",
+      "amountUSD": 0.32,
+      "source": "https://investor.masco.com/news-stream/news-details/2026/Masco-Corporation-Reports-Third-Quarter-2026-Results/default.aspx"
+    },
+    {
+      "symbol": "NSC",
+      "exDate": "2026-11-06",
+      "amountUSD": 1.35,
+      "source": "https://norfolksouthern.com/en/newsroom/news-releases/norfolk-southern-declares-quarterly-dividend-10-21-2026"
+    },
+    {
+      "symbol": "PFE",
+      "exDate": "2026-11-06",
+      "amountUSD": 0.43,
+      "source": "https://investors.pfizer.com/Investors/stock-dividend/dividend-split-history/default.aspx"
+    },
+    {
+      "symbol": "WFC",
+      "exDate": "2026-11-06",
+      "amountUSD": 0.5,
+      "source": "https://www.wellsfargo.com/about/investor-relations/shareholder-information/"
+    },
+    {
+      "symbol": "AMP",
+      "exDate": "2026-11-09",
+      "amountUSD": 1.7,
+      "source": "https://ir.ameriprise.com/news/news-details/2026/Ameriprise-Financial-Declares-Regular-Quarterly-Dividend-61e458ebe/default.aspx",
+      "note": "Issuer announced record date 2026-11-09. Normal cash distribution, ex-date follows the current T+1 same-business-day rule. Rule: https://www.finra.org/sites/default/files/2024-02/Regulatory_Notice_24-04.pdf"
+    },
+    {
+      "symbol": "GWW",
+      "exDate": "2026-11-09",
+      "amountUSD": 2.49,
+      "source": "https://invest.grainger.com/investor-news/news-details/2026/GRAINGER-DECLARES-QUARTERLY-DIVIDEND-fcfa98f72/default.aspx",
+      "note": "Issuer announced record date 2026-11-09. Normal cash distribution, ex-date follows the current T+1 same-business-day rule. Rule: https://www.finra.org/sites/default/files/2024-02/Regulatory_Notice_24-04.pdf"
+    },
+    {
+      "symbol": "LNG",
+      "exDate": "2026-11-09",
+      "amountUSD": 0.625,
+      "source": "https://www.sec.gov/Archives/edgar/data/3570/000000357026000040/cei20263rdqtrerex991.htm",
+      "note": "Issuer SEC-filed 2026 Q3 capital allocation disclosure; record date 2026-11-09, normal cash dividend under current T+1 rule."
+    },
+    {
+      "symbol": "VMC",
+      "exDate": "2026-11-09",
+      "amountUSD": 0.52,
+      "source": "https://www.vulcanmaterials.com/news-and-events/press-releases/2026/vulcan-declares-quarterly-dividend-on-common-stock-122511",
+      "note": "Issuer declared 2026-10-09; record date 2026-11-09, normal cash dividend under current T+1 rule."
+    },
+    {
+      "symbol": "INFY",
+      "exDate": "2026-11-03",
+      "amountUSD": 0.274815,
+      "source": "https://adr.db.com/drwebrebrand/api/druniverse/dividend-history/116",
+      "sourceStatus": "provisional",
+      "note": "Deutsche Bank publicly lists drRecordDate 2026-11-03, grossRate 0.274815 USD, netRate 0.234805 and finalApprox Approx. Use gross total-return distribution; preserve provisional status. Not a final USD distribution; reconcile when the depositary finalizes its amount. Issuer INR26 declaration: https://www.infosys.com/investors/documents/exchange-filings/2026/outcome-board-meeting23oct2026.pdf"
+    }
   ]
 }

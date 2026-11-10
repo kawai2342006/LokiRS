@@ -57,7 +57,8 @@ def backfill_verified(series: dict, actions: list[dict]) -> list[dict]:
         for date_key in prior_days:
             bars[date_key]["close"] *= factor
         mark = {"exDate": day, "amountUSD": amount, "source": action["source"],
-                "basis": "verified cash distribution absent from source adjustment"}
+                "sourceStatus":action.get("sourceStatus", "confirmed"),
+                "basis": "depositary-published provisional gross distribution absent from source adjustment" if action.get("sourceStatus")=="provisional" else "verified cash distribution absent from source adjustment"}
         after["dividendBackfill"] = mark
         applied.append(mark)
     return applied

@@ -38,10 +38,20 @@ class VerifiedDividendTests(unittest.TestCase):
         data=series();del data['bars']['2026-11-06']
         self.assertEqual(backfill_verified(data,[ACTION]),[])
 
+    def test_provisional_gross_cash_amount_keeps_its_status_and_does_not_use_net_payment(self):
+        data=series();event={**ACTION,'amountUSD':.274815,'sourceStatus':'provisional'}
+        applied=backfill_verified(data,[event])
+        self.assertAlmostEqual(data['bars']['2026-11-05']['close'],29.88-.274815)
+        self.assertEqual(applied[0]['sourceStatus'],'provisional')
+        self.assertIn('provisional gross',applied[0]['basis'])
+
     def test_dated_sources_and_unique_events_are_declared(self):
         actions=load_verified(ROOT/'config/verified_dividends.json')
-        self.assertEqual(len(actions),10)
+        self.assertTrue({'PFE','AMP','GWW','LNG','VMC','INFY'} <= set(actions))
         self.assertEqual(actions['PFE'][0]['amountUSD'],.43)
+        self.assertEqual((actions['AMP'][0]['exDate'],actions['AMP'][0]['amountUSD']),('2026-11-09',1.70))
+        self.assertEqual((actions['GWW'][0]['exDate'],actions['GWW'][0]['amountUSD']),('2026-11-09',2.49))
+        self.assertEqual((actions['INFY'][0]['amountUSD'],actions['INFY'][0]['sourceStatus']),(.274815,'provisional'))
         self.assertTrue(all(item['source'].startswith('https://') for group in actions.values() for item in group))
 
 

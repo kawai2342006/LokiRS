@@ -149,6 +149,22 @@ class ComparisonTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             read_public_reference(page)
 
+    def test_cross_date_diagnostic_requires_opt_in_and_cannot_claim_formula_accuracy(self):
+        snapshot={'asOf':'2026-10-30','rows':[{'symbol':'A','rank':1,'score':3},{'symbol':'B','rank':2,'score':1}]}
+        with self.assertRaises(ValueError):compare(snapshot,self.reference())
+        result=compare(snapshot,self.reference(),allow_date_mismatch=True)
+        self.assertEqual(result['referenceAsOf'],'2026-11-02')
+        self.assertEqual(result['lokiAsOf'],'2026-10-30')
+        self.assertFalse(result['formulaAccuracyComparable'])
+        self.assertEqual(result['comparisonType'],'cross-date-published-snapshots')
+        mixed=self.reference();mixed['rows'][0]['rollingExcess']['w1']['to']='2026-11-01'
+        with self.assertRaisesRegex(ValueError,'mixed'):compare(snapshot,mixed,allow_date_mismatch=True)
+
+    def test_duplicate_normalized_symbols_are_rejected_instead_of_silently_overwritten(self):
+        snapshot={'asOf':'2026-11-02','rows':[{'symbol':'A','rank':1,'score':3},{'symbol':'B','rank':2,'score':1}]}
+        reference=self.reference();reference['rows'][1]['symbol']='LB:A.US'
+        with self.assertRaisesRegex(ValueError,'duplicate'):compare(snapshot,reference)
+
 
 if __name__ == '__main__':
     unittest.main()

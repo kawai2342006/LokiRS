@@ -15,8 +15,9 @@ assert data["asOf"] == data["benchmark"]["asOf"], "Benchmark date does not match
 home = json.loads((ROOT / "data/home.json").read_text())
 validate_home(home)
 OUT.mkdir(exist_ok=True)
-for filename in ["index.html", ".nojekyll"]:
+for filename in ["index.html"]:
     shutil.copy2(ROOT / filename, OUT / filename)
+(OUT / ".nojekyll").touch()
 for directory in ["assets", "data"]:
     shutil.copytree(ROOT / directory, OUT / directory, dirs_exist_ok=True)
 print(f"Built {OUT}: {len(data['rows'])} stocks; {home['meta']['currentCount']}/{home['meta']['universeCount']} cross-markets; {home['asOf']}")

@@ -1,4 +1,5 @@
 import {sparkline, comparisonChart, escapeHTML as esc} from './charts.js?v=1.2.0';
+import {validatePublishedSnapshot, createAutoRefresh} from './publication.js?v=1.4.0';
 
 export function createHome(options) {
   const doc=options.document, win=options.window, root=doc.querySelector('#home-section');
@@ -101,7 +102,7 @@ export function createHome(options) {
     try{
       const response=await options.fetch(`./data/home.json?t=${Date.now()}`,{cache:'no-store',signal:win.AbortSignal.timeout(20000)});
       if(!response.ok)throw new Error(`HTTP ${response.status}`);
-      const data=await response.json();
+      const data=validatePublishedSnapshot(await response.json(),state.data);
       if(data.meta?.schemaVersion!==1||!Array.isArray(data.rows)||!data.rows.length||!Array.isArray(data.tiles))throw new Error('首頁資料格式不相容');
       const unchanged=state.data?.meta.generatedAt===data.meta.generatedAt;
       state.data=data;if(!unchanged)render();options.onUpdate();
@@ -133,6 +134,6 @@ export function createHome(options) {
   root.addEventListener('input',event=>{if(event.target.id==='home-search'){state.search=event.target.value.trim();renderMatrix();}});
   root.addEventListener('change',event=>{if(event.target.id==='home-group'){state.group=event.target.value;renderMatrix();}});
   root.addEventListener('toggle',event=>{if(event.target.dataset.homeFold)save(event.target.dataset.homeFold,event.target.open);},true);
-  const timer=win.setInterval(()=>{if(state.auto&&options.getView()==='home'&&doc.visibilityState==='visible')load(false);},60000);
-  return {load, get data(){return state.data;}, focusSearch(){const input=$('#home-search');if(input)input.focus();}, destroy(){win.clearInterval(timer);}};
+  const monitor=createAutoRefresh({window:win,document:doc,enabled:()=>state.auto,active:()=>options.getView()==='home',load:()=>load(false)});
+  return {load, get data(){return state.data;}, focusSearch(){const input=$('#home-search');if(input)input.focus();}, destroy(){monitor.dispose();}};
 }

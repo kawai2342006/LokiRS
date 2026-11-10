@@ -24,7 +24,7 @@ def retry_pending_daily(daily, intra, cache, now, workers=4):
     for symbol, series in daily.items():
         ends = intra.get(symbol, {}).get("sessionEnds", {})
         complete = [day for day,end in ends.items() if end <= now.timestamp()]
-        if complete and max(complete) in series.get("pendingDailyDates", []):
+        if complete and max(complete) in series.get("pendingDailyDates", []) and max(complete) not in series.get("bars", {}):
             pending.append(symbol)
     def get(symbol):
         try:
@@ -84,15 +84,22 @@ def run():
                 print(f"Downloaded {count}/{len(tasks)}; failed requests {len(errors)}; {time.monotonic()-start:.0f}s", flush=True)
     if settings["benchmark"] not in daily:
         raise RuntimeError("Benchmark fetch failed. Existing snapshot preserved.")
-    errors.extend(retry_pending_daily(daily, intra, cache, now, workers))
     verified_actions = load_verified(ROOT / "config/verified_dividends.json")
+    # A market-wide delayed daily feed used to cause hundreds of redundant
+    # retries even when a full, action-free 30m session was already available.
+    # Reconstruct eligible observations first; retry only unresolved closes.
+    for symbol, series in daily.items():
+        known_dates = {item["exDate"] for item in verified_actions.get(symbol, [])}
+        series["corporateActionDates"] = sorted(set(series.get("corporateActionDates", [])) | known_dates)
+        reconcile_latest_daily(series, intra.get(symbol, {}), now, verified_cash_actions=verified_actions.get(symbol, []))
+    errors.extend(retry_pending_daily(daily, intra, cache, now, workers))
     dividend_repairs = []
     for symbol in daily:
         # A missing daily bar on a known ex-date must not be reconstructed from
         # unadjusted intraday prices as if no corporate action happened.
         known_dates = {item["exDate"] for item in verified_actions.get(symbol, [])}
         daily[symbol]["corporateActionDates"] = sorted(set(daily[symbol].get("corporateActionDates", [])) | known_dates)
-        reconcile_latest_daily(daily[symbol], intra.get(symbol, {}), now)
+        reconcile_latest_daily(daily[symbol], intra.get(symbol, {}), now, verified_cash_actions=verified_actions.get(symbol, []))
         dividend_repairs.extend({"symbol":symbol, **item} for item in backfill_verified(daily[symbol], verified_actions.get(symbol, [])))
     benchmark_daily_day = max(daily[settings["benchmark"]]["bars"], default="")
     benchmark_intra = intra.get(settings["benchmark"], {})
@@ -130,13 +137,15 @@ def run():
                       "scoreFormula": " + ".join(f"{w} × excess({p[1:]+'H' if p in ('h1','h4') else p+'D'})" for p,w in settings["scoreWeights"].items()),
                       "scoreModel": settings.get("scoreModel", "daily-three-period-v1"), "calibrationReferenceDates":settings.get("calibrationReferenceDates", []),
                       "scoreWeights": settings["scoreWeights"], "longTermWeights": settings["longTermWeights"],
-                      "approximation": True, "priceBasis": "Yahoo Adj Close; independently verified cash distributions are backfilled only when the source lacks the ex-date adjustment. Raw quoted prices unchanged. Missing latest daily closes may use a complete observed regular-session 30m close only on action-free days, explicitly flagged. Intraday: Yahoo Close.",
+                      "approximation": True, "priceBasis": "Yahoo Adj Close; independently verified cash distributions are backfilled only when the source lacks the ex-date adjustment. Raw quoted prices unchanged. Missing daily closes require a fully observed regular 30m session; prefer the timestamp-verified regular-session quote, otherwise its final 30m close. Only action-free or independently verified normal cash-dividend dates, explicitly flagged. Intraday: Yahoo Close.",
                       "errors": errors, "macroError": macro_error, "macroUpdateStatus":macro_status, "streakWindow": result["rankHistorySessions"],
                       "reconstructedDailyCount":sum(bool(r.get("dailyCloseReconstructed")) for r in result["rows"]),
                       "verifiedDividendBackfills": dividend_repairs,
+                      "recoveredRegularQuoteCount":sum(r.get("dailyCloseSource")=="completed-regular-session-quote" for r in result["rows"]),
+                      "provisionalDividendCount":sum((r.get("dividendBackfill") or {}).get("sourceStatus")=="provisional" for r in result["rows"]),
                       "benchmarkCloseReconstructed":bool(daily[settings["benchmark"]]["bars"][result["asOf"]].get("reconstructed")),
-                      "dailyReconstructionPolicy":"Only a complete regular session's observed 30m close; latest daily missing; unit prior adjustment factor; corporate-action dates excluded; provisional provenance retained.",
-                      "notice": "Five-period weights inferred from public reference snapshots and rechecked through 2026-11-06; not an officially confirmed formula. Prices and runtime rankings are independently calculated from Yahoo. Long-term RS and historical ranks remain independent approximations."}
+                      "dailyReconstructionPolicy":"Complete observed regular 30m session required. Prefer a same-session regular quote stamped from the close through +300 seconds and observed at capture. Action-free unit factor, or independently verified cash dividend with unit/known matching factor; non-cash actions excluded. Provisional provenance retained.",
+                      "notice": f"Five-period weights inferred from public reference snapshots and rechecked through {max(settings.get('calibrationReferenceDates', ['unknown']))}; not an officially confirmed formula. Prices and runtime rankings are independently calculated from Yahoo. Long-term RS and historical ranks remain independent approximations."}
     from validate_snapshot import validate
     validate(result)
     output.parent.mkdir(parents=True, exist_ok=True)

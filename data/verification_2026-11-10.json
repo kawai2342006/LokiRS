@@ -1,0 +1,235 @@
+{
+  "checkedAt": "2026-11-10T02:31:27.714770+00:00",
+  "referenceUrl": "https://lazyrs.trade/?tab=stocks",
+  "referenceHttpDate": "Tue, 10 Nov 2026 02:00:30 GMT",
+  "referenceHtmlSha256": "53ad6f8fa01d3722742080d56f82355197b69e0000d48b3646e1ea83c4b036ef",
+  "productionSnapshotSha256": "2a6b93c7b32ff219ad226bd2ba2453d8bbc52a638c7f05cff5d9e70ab1a66cb7",
+  "publishedLokiSnapshotSha256": "e9316358f5f9b28d9ec2ab4e76a4ac68de5ce1e21d0d2754a028b5e1acace411",
+  "sourceRepositoryHead": "83424829e70ce9290d2fe0d70d03eeafdc85609a",
+  "formulaPublicInputCheck": {
+    "rows": 596,
+    "maxAbsoluteError": 7.49999999998252e-05,
+    "meanAbsoluteError": 2.7231543624171927e-05,
+    "weightsChanged": false,
+    "volatilityAdjustment": false
+  },
+  "before": {
+    "asOf": "2026-11-06",
+    "referenceAsOf": "2026-11-09",
+    "lokiAsOf": "2026-11-06",
+    "comparisonType": "cross-date-published-snapshots",
+    "formulaAccuracyComparable": false,
+    "referenceUrl": "https://lazyrs.trade/?tab=stocks",
+    "referenceUniverse": 596,
+    "lokiUniverse": 589,
+    "commonRanked": 588,
+    "referenceOnly": [
+      "DEO",
+      "GOOGM",
+      "GOOGN",
+      "MDLN",
+      "OKTA",
+      "SONY",
+      "TM",
+      "VYLR"
+    ],
+    "lokiOnly": [],
+    "method": "Re-rank both visible default orders within the same common-symbol cohort; no unmatched symbols shift ranks.",
+    "meanAbsoluteRankDifference": 77.84353741496598,
+    "medianAbsoluteRankDifference": 55.0,
+    "maxAbsoluteRankDifference": 445,
+    "spearman": 0.7892335624780161,
+    "topOverlap": {
+      "10": 5,
+      "20": 12,
+      "50": 31,
+      "100": 64
+    },
+    "scoreMeanAbsoluteError": 1.1452641156462584,
+    "scoreMedianAbsoluteError": 0.8640000000000001,
+    "scoreMaxAbsoluteError": 9.1998,
+    "scoreP95AbsoluteError": 3.1742000000000004,
+    "scoreWithin005": 15,
+    "scoreWithin010": 28,
+    "inputDifferences": {
+      "h1": {
+        "n": 588,
+        "maePP": 0.5455255102040817,
+        "biasPP": 0.1768251700680272
+      },
+      "h4": {
+        "n": 588,
+        "maePP": 0.8477549319727891,
+        "biasPP": 0.20433214285714285
+      },
+      "1": {
+        "n": 588,
+        "maePP": 2.2478229068895708,
+        "biasPP": -0.35855768559485124
+      },
+      "5": {
+        "n": 588,
+        "maePP": 3.867764267206669,
+        "biasPP": 0.7781814954604099
+      },
+      "20": {
+        "n": 588,
+        "maePP": 2.7996691032241063,
+        "biasPP": 0.011061537576031073
+      }
+    },
+    "checkedAt": "2026-11-10T02:09:20.067542+00:00"
+  },
+  "after": {
+    "asOf": "2026-11-09",
+    "referenceAsOf": "2026-11-09",
+    "lokiAsOf": "2026-11-09",
+    "comparisonType": "same-session-independent-prices",
+    "formulaAccuracyComparable": true,
+    "referenceUrl": "https://lazyrs.trade/?tab=stocks",
+    "referenceUniverse": 596,
+    "lokiUniverse": 596,
+    "commonRanked": 596,
+    "referenceOnly": [],
+    "lokiOnly": [],
+    "method": "Re-rank both visible default orders within the same common-symbol cohort; no unmatched symbols shift ranks.",
+    "meanAbsoluteRankDifference": 0.9932885906040269,
+    "medianAbsoluteRankDifference": 1.0,
+    "maxAbsoluteRankDifference": 45,
+    "spearman": 0.9998962156107932,
+    "topOverlap": {
+      "10": 10,
+      "20": 20,
+      "50": 50,
+      "100": 100
+    },
+    "scoreMeanAbsoluteError": 0.009307046979865785,
+    "scoreMedianAbsoluteError": 0.0046499999999999875,
+    "scoreMaxAbsoluteError": 0.4666000000000001,
+    "scoreP95AbsoluteError": 0.027300000000000324,
+    "scoreWithin005": 590,
+    "scoreWithin010": 593,
+    "inputDifferences": {
+      "h1": {
+        "n": 596,
+        "maePP": 0.01626778523489933,
+        "biasPP": 0.0009959731543624168
+      },
+      "h4": {
+        "n": 596,
+        "maePP": 0.016872651006711408,
+        "biasPP": -5.721476510067349e-05
+      },
+      "1": {
+        "n": 596,
+        "maePP": 0.001944402535596084,
+        "biasPP": 0.001370071321484657
+      },
+      "5": {
+        "n": 596,
+        "maePP": 0.003323318586960299,
+        "biasPP": 0.00011790974011469063
+      },
+      "20": {
+        "n": 596,
+        "maePP": 0.004126117818224527,
+        "biasPP": -9.83093902578403e-06
+      }
+    },
+    "checkedAt": "2026-11-10T02:28:00.100111+00:00"
+  },
+  "afterOriginal588Cohort": {
+    "asOf": "2026-11-09",
+    "referenceAsOf": "2026-11-09",
+    "lokiAsOf": "2026-11-09",
+    "comparisonType": "same-session-independent-prices",
+    "formulaAccuracyComparable": true,
+    "referenceUrl": "https://lazyrs.trade/?tab=stocks",
+    "referenceUniverse": 596,
+    "lokiUniverse": 588,
+    "commonRanked": 588,
+    "referenceOnly": [
+      "DEO",
+      "GOOGM",
+      "GOOGN",
+      "MDLN",
+      "OKTA",
+      "SONY",
+      "TM",
+      "VYLR"
+    ],
+    "lokiOnly": [],
+    "method": "Re-rank both visible default orders within the same common-symbol cohort; no unmatched symbols shift ranks.",
+    "meanAbsoluteRankDifference": 0.9965986394557823,
+    "medianAbsoluteRankDifference": 1.0,
+    "maxAbsoluteRankDifference": 44,
+    "spearman": 0.9998948729583086,
+    "topOverlap": {
+      "10": 10,
+      "20": 20,
+      "50": 49,
+      "100": 100
+    },
+    "scoreMeanAbsoluteError": 0.009365986394557834,
+    "scoreMedianAbsoluteError": 0.0046499999999999875,
+    "scoreMaxAbsoluteError": 0.4666000000000001,
+    "scoreP95AbsoluteError": 0.027300000000000324,
+    "scoreWithin005": 582,
+    "scoreWithin010": 585,
+    "inputDifferences": {
+      "h1": {
+        "n": 588,
+        "maePP": 0.01630578231292517,
+        "biasPP": 0.0008591836734693885
+      },
+      "h4": {
+        "n": 588,
+        "maePP": 0.01700799319727891,
+        "biasPP": -0.00011887755102041054
+      },
+      "1": {
+        "n": 588,
+        "maePP": 0.0019705081412605165,
+        "biasPP": 0.0013887959264861172
+      },
+      "5": {
+        "n": 588,
+        "maePP": 0.003368282742358524,
+        "biasPP": 0.00011947294103465078
+      },
+      "20": {
+        "n": 588,
+        "maePP": 0.0041656337746125375,
+        "biasPP": 6.550625100290634e-06
+      }
+    }
+  },
+  "provisionalDividendCount": 1,
+  "missingSectors": [
+    "IPAY",
+    "PBJ"
+  ],
+  "latestPublicWorkflowRun": {
+    "id": 42363542035,
+    "event": "push",
+    "conclusion": "success",
+    "createdAt": "2026-11-07T10:20:31Z",
+    "completedAt": "2026-11-07T10:24:12Z"
+  },
+  "lastObservedScheduledStockRun": {
+    "id": 42345779919,
+    "createdAt": "2026-11-07T06:10:01Z",
+    "conclusion": "success"
+  },
+  "scheduleDiagnosis": "No newer stock run was returned by the public API at inspection. Workflow active on default main. Account-level or scheduler cause not proven; no remote settings changed.",
+  "validation": {
+    "pythonTests": 83,
+    "javascriptTests": 9,
+    "syntax": true,
+    "yamlParsed": true,
+    "snapshotValidated": true,
+    "staticBuild": true,
+    "browserQA": "Unavailable: browser control tool denied access. No visual verification claimed."
+  },
+  "deployment": "Local source package only; not pushed or deployed to the existing GitHub Pages site."
+}
