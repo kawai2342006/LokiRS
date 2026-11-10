@@ -1,0 +1,90 @@
+{
+  "version": "1.4.1",
+  "marketDate": "2026-11-09",
+  "periods": {
+    "d3": {
+      "basis": "3 SPY trading sessions",
+      "from": "2026-11-04"
+    },
+    "fortnight": {
+      "basis": "14 calendar days, benchmark session on or before target",
+      "from": "2026-10-26"
+    }
+  },
+  "stockCount": 596,
+  "coverage": {
+    "d3": 596,
+    "fortnight": 596
+  },
+  "unchangedOriginalSnapshotValues": true,
+  "checks": {
+    "pythonTests": 89,
+    "javascriptTests": 13,
+    "syntax": "passed",
+    "snapshotValidation": "passed",
+    "staticBuild": "passed",
+    "desktopMobileVisualQA": "not completed: browser could not connect to local preview"
+  },
+  "changedFiles": [
+    {
+      "path": "README.md",
+      "status": "modified"
+    },
+    {
+      "path": "README_RETURN_COLUMNS.md",
+      "status": "added"
+    },
+    {
+      "path": "assets/app.js",
+      "status": "modified"
+    },
+    {
+      "path": "assets/styles.css",
+      "status": "modified"
+    },
+    {
+      "path": "data/latest.json",
+      "status": "modified"
+    },
+    {
+      "path": "index.html",
+      "status": "modified"
+    },
+    {
+      "path": "package.json",
+      "status": "modified"
+    },
+    {
+      "path": "preview/LokiRS_3D_2Week_Preview.html",
+      "status": "added"
+    },
+    {
+      "path": "scripts/add_return_columns.py",
+      "status": "added"
+    },
+    {
+      "path": "scripts/build_preview.py",
+      "status": "modified"
+    },
+    {
+      "path": "scripts/engine.py",
+      "status": "modified"
+    },
+    {
+      "path": "scripts/validate_snapshot.py",
+      "status": "modified"
+    },
+    {
+      "path": "tests/export.test.js",
+      "status": "modified"
+    },
+    {
+      "path": "tests/return-columns.test.js",
+      "status": "added"
+    },
+    {
+      "path": "tests/test_return_columns.py",
+      "status": "added"
+    }
+  ]
+}

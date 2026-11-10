@@ -215,7 +215,7 @@ select { border: 1px solid var(--border); color: var(--text); background: var(--
 .table-hint { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 9px; padding: 13px 0 11px; }
 .table-scroll { overflow: auto; max-height: 850px; border: 1px solid var(--border); background: var(--panel); scrollbar-width: thin; scrollbar-color: var(--accent) var(--panel); }
 table { border-spacing: 0; border-collapse: separate; width: 100%; font-size: 11px; }
-#stock-table { min-width: 1500px; }
+#stock-table { min-width: 1740px; }
 th { position: sticky; top: 0; z-index: 3; background: var(--panel-2); color: var(--muted); border-bottom: 1px solid var(--accent); height: 62px; padding: 12px 10px; text-align: right; font: 10px var(--mono); white-space: nowrap; }
 th button { display: inline-flex; align-items: center; gap: 6px; padding: 0; font: inherit; white-space: nowrap; }
 th button span { font: 9px var(--mono); }
@@ -283,6 +283,10 @@ th.score-col { background: var(--bg); }
 .detail-metrics>div:last-child { border: 0; }
 .detail-metrics span { display: block; color: var(--muted); font-size: 10px; margin-bottom: 7px; }
 .detail-metrics b { font: 500 17px var(--mono); white-space: nowrap; }
+.equity-detail-metrics { grid-template-columns: repeat(3,minmax(0,1fr)); padding: 0; }
+.equity-detail-metrics>div { padding: 14px 19px; border-bottom: 1px solid var(--border); }
+.equity-detail-metrics>div:nth-child(3n) { border-right: 0; }
+.equity-detail-metrics>div:nth-last-child(-n+3) { border-bottom: 0; }
 .comparison-svg { width: 100%; height: auto; display: block; }
 .chart-legend { display: grid; grid-template-columns: repeat(auto-fit,minmax(145px,1fr)); gap: 12px 20px; padding: 18px 8px 8px; }
 .chart-legend>span { display: flex; align-items: center; gap: 8px; font: 10px var(--mono); min-width: 0; }
@@ -472,6 +476,9 @@ p,h1,h2,h3,.notice-copy,.detail-heading { overflow-wrap: anywhere; }
   .detail-metrics>div:nth-child(2) { border-right: 0; }
   .detail-metrics>div:nth-child(3),.detail-metrics>div:nth-child(4) { border-bottom: 0; }
   .detail-metrics b { font-size: 16px; }
+  .equity-detail-metrics>div:nth-child(n) { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .equity-detail-metrics>div:nth-child(2n) { border-right: 0; }
+  .equity-detail-metrics>div:nth-last-child(-n+2) { border-bottom: 0; }
   .dialog-bottom { display: grid; gap: 13px; }
   .method-content h2 { font-size: 23px; }
   .method-status-table td:first-child { width: 100px; }

@@ -1,6 +1,6 @@
 """Check a published snapshot's internal dates, coverage and cross-series consistency."""
 import math
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 import json
 from zoneinfo import ZoneInfo
@@ -35,7 +35,7 @@ def validate(data):
                 if row.get("dailyCloseReconstructed"):
                     assert datetime.fromisoformat(row["dailyCloseSourceTime"]).astimezone(ZoneInfo("America/New_York")).date().isoformat() == data["asOf"]
                     assert row["dailyCloseSourceTime"] == row["intra"]["asOf"]
-        for field in ["price", "score", "d1", "longRS", "vsSector", "vsSectorDay"]:
+        for field in ["price", "score", "d1", "longRS", "vsSector", "vsSectorDay"] + (["d3"] if "d3" in row else []):
             assert row[field] is None or math.isfinite(row[field]), (row["symbol"], field)
         if row["longRS"] is not None:
             assert 0 <= row["longRS"] <= 100
@@ -49,10 +49,15 @@ def validate(data):
             benchmark_prices[point["date"]] = point["benchmark"]
         if row["rsLine"]:
             assert len(row["rsLine"]) <= 21 and abs(row["rsLine"][0] - 100) < 0.0001
-        for period in ["week", "month"]:
+        if "d3" in row and row["d3"] is not None:
+            assert row["d3From"] < data["asOf"]
+        for period in ["week", "month"] + (["fortnight"] if "fortnight" in row else []):
             value = row[period]
+            assert value["value"] is None or math.isfinite(value["value"]), (row["symbol"], period)
             if value["value"] is not None:
                 assert value["from"] <= value["target"] <= value["to"] == data["asOf"]
+            if period == "fortnight":
+                assert value["target"] == (date.fromisoformat(data["asOf"]) - timedelta(days=14)).isoformat()
         intra = row["intra"]
         for n in [1, 4]:
             if intra[f"h{n}"] is not None:

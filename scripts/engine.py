@@ -53,6 +53,16 @@ def rolling_excess(asset, benchmark, sessions, end, target):
     return {"value": rnd(excess(asset, benchmark, start, end)), "from": start, "to": end, "target": target}
 
 
+def additional_excess_periods(asset, benchmark, sessions, end):
+    """3 SPY trading sessions and 14 calendar days, using the existing return basis."""
+    at = sessions.index(end)
+    start = sessions[at - 3] if at >= 3 else None
+    target = (date.fromisoformat(end) - timedelta(days=14)).isoformat()
+    return {"d3": rnd(excess(asset, benchmark, start, end)) if start else None,
+            "d3From": start,
+            "fortnight": rolling_excess(asset, benchmark, sessions, end, target)}
+
+
 def percentiles(values: dict) -> dict:
     """Average ranks for ties, 0..100 inclusive. Undefined when fewer than two valid observations."""
     items = sorted((value, key) for key, value in values.items() if value is not None)
@@ -228,7 +238,8 @@ def build_equities(universe, settings, daily, intra, prior=None):
                      "dividendBackfill":applied_cash[-1] if applied_cash else None,
                      "status": "ok" if valid and score is not None else "partial" if valid else "stale" if latest else "unavailable", "score": rnd(score),
                      "scoreInputs": score_inputs(bars, benchmark, sessions, at, weights, intraday),
-                     "d1": rnd(excess(bars, benchmark, sessions[at - 1], end)), "week": week, "month": month,
+                     "d1": rnd(excess(bars, benchmark, sessions[at - 1], end)),
+                     **additional_excess_periods(bars, benchmark, sessions, end), "week": week, "month": month,
                      "intra": intraday, "longRS": long_percentiles.get(symbol), "streak": streak if score is not None else None,
                      "streakCapped": streak_capped, "sectorRank": sector_ranks.get(sector), "sectorScore": rnd(sector_score),
                      "vsSector": rnd(score - sector_score) if score is not None and sector_score is not None else None,

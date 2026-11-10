@@ -44,7 +44,7 @@ window.fetch=(input,options)=>{const url=new URL(typeof input==='string'?input:i
     html=re.sub(r'<script type="module" src="\./assets/app\.js[^\"]*"></script>',lambda _:bootstrap+'<script type="module" src="'+module(ROOT/'assets/app.js')+'"></script>',html)
     html=html.replace('<main>','<main><p class="notice-copy">離線預覽 · 內嵌快照固定於美股 '+data['latest.json']['asOf']+'；更新行情請使用正式網站及更新流程。</p>')
     html=html.replace('<title>','<title>離線預覽 / ',1)
-    destination=ROOT/'preview/LokiRS_Nov10_Preview.html'
+    destination=ROOT/'preview/LokiRS_3D_2Week_Preview.html'
     destination.parent.mkdir(exist_ok=True)
     destination.write_text(html)
     print(f'Built {destination.name}: {data["latest.json"]["asOf"]}; {len(modules)} embedded JS modules')
