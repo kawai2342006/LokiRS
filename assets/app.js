@@ -1,4 +1,5 @@
 import {sparkline, comparisonChart, palette, seriesDashes, escapeHTML as esc} from './charts.js?v=1.2.0';
+import {filterRankings, formatMarketCap, marketCapTitle, summarizeRankings, renderRankingDashboard} from './rankings.js?v=1.5.0';
 import {createHome} from './home.js?v=1.4.0';
 import {createSentiment} from './sentiment.js?v=1.3.3';
 import {validatePublishedSnapshot, publicationAge, reloadMessage, createAutoRefresh} from './publication.js?v=1.4.0';
@@ -15,16 +16,15 @@ const storage = {
   set(key, value) { try { localStorage.setItem('lokirs:'+key,JSON.stringify(value)); } catch { /* private browsing */ } }
 };
 const readView = () => {const tab=new URLSearchParams(location.search).get('tab');return ['home','stocks','watchlist','compare'].includes(tab)?tab:location.hash==='#rankings'?'stocks':'home';};
-const state = {data:null, view:readView(), search:'', exactSymbol:null, sector:'', sectorTop:0, metric:'score', operator:'gte', value:'', streak:false,
+const state = {data:null, view:readView(), search:'', exactSymbol:null, sector:'', sectorTop:0, metric:'score', operator:'gte', value:'', capUnit:1e9, streak:false,
   long:false, resilient:false, perp:false, sort:'score', direction:-1, page:1, pageSize:50,
   watched:new Set(storage.get('watchlist',[])), compare:storage.get('compare',['SPY','NVDA','AAPL']), period:64,
   auto:storage.get('stocks-auto',true)};
 const number = (v, digits=2) => Number.isFinite(v) ? v.toLocaleString('en-US',{minimumFractionDigits:digits,maximumFractionDigits:digits}) : '—';
 const signed = (v,digits=2) => Number.isFinite(v) ? (v>0?'+':'')+number(v,digits) : '—';
 const cls = v => Number.isFinite(v) ? v>0?'positive':v<0?'negative':'muted' : 'muted';
-const pp = v => Number.isFinite(v) ? signed(v)+' pp' : '—';
+const percent = v => Number.isFinite(v) ? signed(v)+'%' : '—';
 const hkTime = value => { try { return new Intl.DateTimeFormat('zh-HK',{timeZone:'Asia/Hong_Kong',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(value)); } catch { return '—'; } };
-const metric = (r,key) => key==='week'||key==='fortnight'||key==='month'?r[key]?.value:key==='h1'||key==='h4'?r.intra?.[key]:key==='vsSector'&&state.resilient?r.vsSectorDay:r[key];
 let toastTimer, loading=false;
 
 function toast(message) {
@@ -129,44 +129,40 @@ function renderFilters() {
   if(!available) {state.perp=false;$('#perp-filter').checked=false;}
 }
 function filteredRows() {
-  if(!state.data) return [];
-  const threshold=state.value.trim()===''?null:Number(state.value);
-  const contracts=new Set(state.data.contracts?.symbols||[]);
-  const rows=state.data.rows.filter(r=>{
-    if(state.view==='watchlist'&&!state.watched.has(r.symbol)) return false;
-    if(state.exactSymbol&&r.symbol!==state.exactSymbol)return false;
-    if(state.search&&!`${r.symbol} ${r.name} ${r.sectorName} ${r.sector}`.toLowerCase().includes(state.search.toLowerCase())) return false;
-    if(state.sector&&r.sector!==state.sector) return false;
-    if(state.sectorTop&&(!Number.isFinite(r.sectorRank)||r.sectorRank>state.sectorTop)) return false;
-    if(state.streak&&!(r.streak>=7)) return false;
-    if(state.long&&!(r.longRS>=50)) return false;
-    if(state.perp&&!contracts.has(r.symbol)) return false;
-    if(Number.isFinite(threshold)) {const v=metric(r,state.metric);if(!Number.isFinite(v)||(state.operator==='gte'?v<threshold:v>threshold))return false;}
-    return true;
-  });
-  return rows.sort((a,b)=>{
-    const x=metric(a,state.sort),y=metric(b,state.sort);
-    if(!Number.isFinite(x)) return Number.isFinite(y)?1:a.symbol.localeCompare(b.symbol);
-    if(!Number.isFinite(y)) return -1;
-    return (x-y)*state.direction||a.symbol.localeCompare(b.symbol);
-  });
+  return filterRankings(state.data?.rows||[],state,state.data?.contracts?.symbols||[]);
 }
+function renderRankingsDashboard(rows) {
+  $('#ranking-dashboard').hidden=state.view!=='stocks';
+  if(state.view!=='stocks')return;
+  const summary=summarizeRankings(rows);
+  $('#dashboard-scope').textContent=`${rows.length} / ${state.data.rows.length} 隻 · ${summary.sectors.length} 個板塊 · 統計全部篩選結果`;
+  $('#ranking-dashboard-content').innerHTML=renderRankingDashboard(summary);
+}
+function updateMetricControl() {
+  const marketCap=state.metric==='marketCap';
+  $('#cap-unit-filter').hidden=!marketCap;
+  $('#value-filter').placeholder=marketCap?'例：10':'數值';
+  $('#value-filter').setAttribute('aria-label',marketCap?'市值篩選數值，單位由右方選擇':'篩選數值');
+  $('#value-filter').title=marketCap?'K = 千、M = 百萬、B = 十億 USD；例如 10 B = 100 億美元':'';
+}
+
 function renderTable() {
   if(!state.data) return;
-  const rows=filteredRows(), pages=Math.max(1,Math.ceil(rows.length/state.pageSize));
+  const rows=filteredRows(); renderRankingsDashboard(rows);
+  const pages=Math.max(1,Math.ceil(rows.length/state.pageSize));
   state.page=Math.min(state.page,pages);
   const start=(state.page-1)*state.pageSize;
-  const cell=(value,title='')=>`<td class="numeric ${cls(value)}"${title?` title="${esc(title)}"`:''}>${pp(value)}</td>`;
+  const cell=(value,title='')=>`<td class="numeric ${cls(value)}"${title?` title="${esc(title)}"`:''}>${percent(value)}</td>`;
   $('#stock-body').innerHTML=rows.slice(start,start+state.pageSize).map(r=>{
-    const watch=state.watched.has(r.symbol), delta=r.rankDelta;
+    const delta=r.rankDelta;
     const scoreMax=Math.max(10,...state.data.rows.map(a=>Math.abs(a.score||0)));
     const range=Number.isFinite(r.score)?Math.min(100,Math.abs(r.score)/scoreMax*100):0;
-    return `<tr${r.status!=='ok'?' class="stale-row"':''}><td class="numeric rank-col">${r.rank??'—'}</td><td class="numeric rank-delta ${cls(delta)}">${delta>0?'↑ '+delta:delta<0?'↓ '+Math.abs(delta):delta===0?'·':'—'}</td><td class="asset-col"><div class="asset-cell"><button class="watch-button ${watch?'watched':''}" data-watch="${esc(r.symbol)}" aria-label="${watch?'移除自選':'加入自選'} ${esc(r.symbol)}" aria-pressed="${watch}">${watch?'★':'☆'}</button><div><button class="stock-link" data-symbol="${esc(r.symbol)}">${esc(r.symbol)}</button><span class="asset-name" title="${esc(r.name)}">${esc(r.name)}</span>${r.dailyCloseReconstructed?'<span class="stale-badge" title="日線缺值，使用完整小時線核對的同日收市資料；來源詳見 CSV。">收市重建</span>':''}${r.dividendBackfill?`<span class="stale-badge" title="${r.dividendBackfill.sourceStatus==='provisional'?'存託銀行公開的暫定總派息，尚未定案。':'獨立來源核實派息，Yahoo 日線尚未調整。'}">${r.dividendBackfill.sourceStatus==='provisional'?'暫定派息':'派息補正'}</span>`:''}${r.status!=='ok'?`<span class="stale-badge">${r.asOf?esc(r.asOf):'缺數據'}</span>`:''}</div></div></td><td class="numeric price-cell">${number(r.price)}</td><td class="numeric score-col"><span class="score-cell ${cls(r.score)}"><i style="width:${range}%"></i><b>${signed(r.score)}</b></span></td>${cell(r.intra.h1,r.intra.asOf?'小時線時點 '+hkTime(r.intra.asOf)+' HKT；1H 格實際跨度 '+(r.intra.h1ElapsedHours??'—')+' 小時':'缺少完整且同步的小時數據')}${cell(r.intra.h4)}${cell(r.d1)}${cell(r.d3,tradingPeriodTitle(r.d3From,state.data.asOf))}${cell(r.week?.value,periodTitle(r.week))}${cell(r.fortnight?.value,periodTitle(r.fortnight))}${cell(r.month?.value,periodTitle(r.month))}<td class="numeric ${r.streak>=7?'streak-good':'muted'}">${r.streak===null?'—':r.streakCapped?r.streak+'+':r.streak?r.streak+' 日':'·'}</td><td class="numeric"><span class="percentile ${r.longRS>=50?'positive':'muted'}">${number(r.longRS,0)}</span></td><td class="sector-cell"><span title="${esc(r.sectorName)} · ${esc(r.sector)}">${esc(r.sectorName)}</span><b class="${r.sectorRank<=3?'sector-top':''}">${r.sectorRank?'#'+r.sectorRank:'—'}</b></td>${cell(state.resilient?r.vsSectorDay:r.vsSector)}<td class="spark-col">${sparkline(r.rsLine)}</td></tr>`;
+    return `<tr${r.status!=='ok'?' class="stale-row"':''}><td class="numeric rank-col">${r.rank??'—'}</td><td class="numeric rank-delta ${cls(delta)}">${delta>0?'↑ '+delta:delta<0?'↓ '+Math.abs(delta):delta===0?'·':'—'}</td><td class="asset-col"><div class="asset-cell"><div><button class="stock-link" data-symbol="${esc(r.symbol)}">${esc(r.symbol)}</button><span class="asset-name" title="${esc(r.name)}">${esc(r.name)}</span>${r.dailyCloseReconstructed?'<span class="stale-badge" title="日線缺值，使用完整小時線核對的同日收市資料；來源詳見 CSV。">收市重建</span>':''}${r.dividendBackfill?`<span class="stale-badge" title="${r.dividendBackfill.sourceStatus==='provisional'?'存託銀行公開的暫定總派息，尚未定案。':'獨立來源核實派息，Yahoo 日線尚未調整。'}">${r.dividendBackfill.sourceStatus==='provisional'?'暫定派息':'派息補正'}</span>`:''}${r.status!=='ok'?`<span class="stale-badge">${r.asOf?esc(r.asOf):'缺數據'}</span>`:''}</div></div></td><td class="numeric price-cell">${number(r.price)}</td><td class="numeric market-cap-cell" title="${esc(marketCapTitle(r))}">${formatMarketCap(r.marketCap)}${r.marketCapStatus==='stale'?'<small>舊值</small>':''}</td><td class="numeric score-col"><span class="score-cell ${cls(r.score)}"><i style="width:${range}%"></i><b>${signed(r.score)}</b></span></td>${cell(r.intra.h1,r.intra.asOf?'小時線時點 '+hkTime(r.intra.asOf)+' HKT；1H 格實際跨度 '+(r.intra.h1ElapsedHours??'—')+' 小時':'缺少完整且同步的小時數據')}${cell(r.intra.h4)}${cell(r.d1)}${cell(r.d3,tradingPeriodTitle(r.d3From,state.data.asOf))}${cell(r.week?.value,periodTitle(r.week))}${cell(r.fortnight?.value,periodTitle(r.fortnight))}${cell(r.month?.value,periodTitle(r.month))}<td class="numeric ${r.streak>=7?'streak-good':'muted'}">${r.streak===null?'—':r.streakCapped?r.streak+'+':r.streak?r.streak+' 日':'·'}</td><td class="numeric"><span class="percentile ${r.longRS>=50?'positive':'muted'}">${number(r.longRS,0)}</span></td><td class="sector-cell"><span title="${esc(r.sectorName)} · ${esc(r.sector)}">${esc(r.sectorName)}</span><b class="${r.sectorRank<=3?'sector-top':''}">${r.sectorRank?'#'+r.sectorRank:'—'}</b></td>${cell(state.resilient?r.vsSectorDay:r.vsSector)}<td class="spark-col">${sparkline(r.rsLine)}</td></tr>`;
   }).join('');
   $('#result-count').textContent=`${rows.length} 隻 / ${state.data.rows.length}`;
   $('#ranking-title').textContent=state.view==='watchlist'?'我的自選清單':'全部排名';
   $('#empty-state').hidden=rows.length>0;
-  if(state.view==='watchlist'&&!state.watched.size) {$('#empty-state h3').textContent='先收藏幾隻值得留意的股票';$('#empty-state p').textContent='在美股排名按 ☆，便會儲存到這部裝置的自選清單。';} else {$('#empty-state h3').textContent='沒有符合條件的股票';$('#empty-state p').textContent='試試減少篩選條件，或搜尋其他代號。';}
+  if(state.view==='watchlist'&&!state.watched.size) {$('#empty-state h3').textContent='先收藏幾隻值得留意的股票';$('#empty-state p').textContent='在美股排名點入股票代號，再按視窗左上角代號旁的 ☆，即可加入自選。';} else {$('#empty-state h3').textContent='沒有符合條件的股票';$('#empty-state p').textContent='試試減少篩選條件，或搜尋其他代號。';}
   $('#page-info').textContent=rows.length?`顯示 ${start+1}–${Math.min(start+state.pageSize,rows.length)}，共 ${rows.length} 隻`:'顯示 0 隻';
   $('#page-label').textContent=`${state.page} / ${pages}`;
   $('#prev-page').disabled=state.page===1; $('#next-page').disabled=state.page===pages;
@@ -179,10 +175,16 @@ function updateWatchCount() {$('#watch-count').textContent=state.watched.size;}
 function toggleWatch(symbol) {
   state.watched.has(symbol)?state.watched.delete(symbol):state.watched.add(symbol);
   storage.set('watchlist',[...state.watched]); updateWatchCount(); renderTable();
+  $$('[data-watch]').forEach(button=>{
+    const watched=state.watched.has(button.dataset.watch);
+    button.classList.toggle('watched',watched);button.textContent=watched?'★':'☆';
+    button.setAttribute('aria-pressed',String(watched));
+    button.setAttribute('aria-label',`${watched?'移除自選':'加入自選'} ${button.dataset.watch}`);
+  });
 }
 function resetFilters() {
-  Object.assign(state,{search:'',exactSymbol:null,sector:'',sectorTop:0,metric:'score',operator:'gte',value:'',streak:false,long:false,resilient:false,perp:false,page:1});
-  $('#search').value=''; $('#sector-filter').value=''; $('#metric-filter').value='score'; $('#operator-filter').value='gte'; $('#value-filter').value='';
+  Object.assign(state,{search:'',exactSymbol:null,sector:'',sectorTop:0,metric:'score',operator:'gte',value:'',capUnit:1e9,streak:false,long:false,resilient:false,perp:false,page:1});
+  $('#search').value=''; $('#sector-filter').value=''; $('#metric-filter').value='score'; $('#operator-filter').value='gte'; $('#value-filter').value=''; $('#cap-unit-filter').value='1000000000'; updateMetricControl();
   ['streak','long','resilient','perp'].forEach(k=>$('#'+k+'-filter').checked=false);
   $$('[data-sector-top]').forEach(b=>{const selected=b.dataset.sectorTop==='0';b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',selected);});
   renderTable();
@@ -211,7 +213,7 @@ function showDetail(symbol) {
   const priceSeries=r.history.map(p=>({date:p.date,value:p.close}));
   const benchmarkSeries=r.history.map(p=>({date:p.date,value:p.benchmark}));
   const chart=comparisonChart([{name:symbol,points:priceSeries},{name:'SPY',points:benchmarkSeries}],{height:300,width:850});
-  $('#detail-content').innerHTML=`<div class="detail-heading"><div><h2>${esc(symbol)}<span>${esc(r.name)}</span></h2><p>${esc(r.sectorName)} · ${esc(r.sector)} · 收市 ${esc(r.asOf||'—')}</p></div><div><strong>${number(r.price)}</strong><span>USD</span></div></div><div class="detail-metrics equity-detail-metrics"><div><span>LokiRS · 近似</span><b class="${cls(r.score)}">${signed(r.score)}</b></div><div><span>1D 超額</span><b class="${cls(r.d1)}">${pp(r.d1)}</b></div><div><span>3D 超額</span><b class="${cls(r.d3)}">${pp(r.d3)}</b></div><div><span>一週超額</span><b class="${cls(r.week?.value)}">${pp(r.week?.value)}</b></div><div><span>兩周超額</span><b class="${cls(r.fortnight?.value)}">${pp(r.fortnight?.value)}</b></div><div><span>一月超額</span><b class="${cls(r.month?.value)}">${pp(r.month?.value)}</b></div></div><div class="detail-chart">${chart}</div><div class="detail-meta"><p>小時線時點：${r.intra.asOf?esc(hkTime(r.intra.asOf))+' HKT':'無完整同步數據'}。日線超額和小時線超額使用各自時點。</p>${r.dailyCloseReconstructed?'<p class="panel-footnote">收市重建：日線缺值，使用完整小時線核對的同日收市資料；來源詳見 CSV。</p>':''}${r.dividendBackfill?`<p class="panel-footnote">${r.dividendBackfill.sourceStatus==='provisional'?'暫定派息補正（存託銀行未定案）':'派息補正'}：${number(r.dividendBackfill.amountUSD,6)} USD／股；除淨日 ${esc(r.dividendBackfill.exDate)}。來源網址記錄於 CSV。</p>`:''}<p>1H／4H K 線格數的實際跨度：${number(r.intra.h1ElapsedHours,1)}／${number(r.intra.h4ElapsedHours,1)} 小時。<br>精確時鐘 1H 超額：${pp(r.intra.clockH1)}；精確時鐘 4H 超額：${pp(r.intra.clockH4)}。</p><p>3D：${esc(tradingPeriodTitle(r.d3From,state.data.asOf))}<br>一週：${esc(periodTitle(r.week))}<br>兩周：${esc(periodTitle(r.fortnight))}<br>一個月：${esc(periodTitle(r.month))}</p><p>超額 = 個股同期回報 − SPY 同期回報；單位為百分點（pp），正數表示跑贏 SPY，負數表示跑輸。</p></div><div class="dialog-bottom"><button class="button" data-add-compare="${esc(symbol)}">＋ 加入走勢比較</button><a class="external-link" target="_blank" rel="noopener" href="https://finance.yahoo.com/quote/${encodeURIComponent(symbol)}/">Yahoo Finance ↗</a></div>`;
+  $('#detail-content').innerHTML=`<div class="detail-heading"><div><h2>${esc(symbol)}<button class="watch-button detail-watch ${state.watched.has(symbol)?'watched':''}" data-watch="${esc(symbol)}" aria-label="${state.watched.has(symbol)?'移除自選':'加入自選'} ${esc(symbol)}" aria-pressed="${state.watched.has(symbol)}" title="加入或移除 02 自選清單">${state.watched.has(symbol)?'★':'☆'}</button><span>${esc(r.name)}</span></h2><p>${esc(r.sectorName)} · ${esc(r.sector)} · 收市 ${esc(r.asOf||'—')}</p><p class="detail-market-cap" title="${esc(marketCapTitle(r))}">市值 <b>${formatMarketCap(r.marketCap)}</b> USD${r.marketCapStatus==='stale'?' · 舊值':''}<small>${esc(marketCapTitle(r))}</small></p></div><div><strong>${number(r.price)}</strong><span>USD</span></div></div><div class="detail-metrics equity-detail-metrics"><div><span>LokiRS 綜合分數</span><b class="${cls(r.score)}">${signed(r.score)}</b></div><div><span>1D 超額</span><b class="${cls(r.d1)}">${percent(r.d1)}</b></div><div><span>3D 超額</span><b class="${cls(r.d3)}">${percent(r.d3)}</b></div><div><span>一週超額</span><b class="${cls(r.week?.value)}">${percent(r.week?.value)}</b></div><div><span>兩周超額</span><b class="${cls(r.fortnight?.value)}">${percent(r.fortnight?.value)}</b></div><div><span>一月超額</span><b class="${cls(r.month?.value)}">${percent(r.month?.value)}</b></div></div><div class="detail-chart">${chart}</div><div class="detail-meta"><p>小時線時點：${r.intra.asOf?esc(hkTime(r.intra.asOf))+' HKT':'無完整同步數據'}。日線超額和小時線超額使用各自時點。</p>${r.dailyCloseReconstructed?'<p class="panel-footnote">收市重建：日線缺值，使用完整小時線核對的同日收市資料；來源詳見 CSV。</p>':''}${r.dividendBackfill?`<p class="panel-footnote">${r.dividendBackfill.sourceStatus==='provisional'?'暫定派息補正（存託銀行未定案）':'派息補正'}：${number(r.dividendBackfill.amountUSD,6)} USD／股；除淨日 ${esc(r.dividendBackfill.exDate)}。來源網址記錄於 CSV。</p>`:''}<p>1H／4H K 線格數的實際跨度：${number(r.intra.h1ElapsedHours,1)}／${number(r.intra.h4ElapsedHours,1)} 小時。<br>精確時鐘 1H 超額：${percent(r.intra.clockH1)}；精確時鐘 4H 超額：${percent(r.intra.clockH4)}。</p><p>3D：${esc(tradingPeriodTitle(r.d3From,state.data.asOf))}<br>一週：${esc(periodTitle(r.week))}<br>兩周：${esc(periodTitle(r.fortnight))}<br>一個月：${esc(periodTitle(r.month))}</p><p>超額 = 個股同期回報 − SPY 同期回報；以 % 顯示回報差（百分點），正數表示跑贏 SPY，負數表示跑輸。</p></div><div class="dialog-bottom"><button class="button" data-add-compare="${esc(symbol)}">＋ 加入走勢比較</button><a class="external-link" target="_blank" rel="noopener" href="https://finance.yahoo.com/quote/${encodeURIComponent(symbol)}/">Yahoo Finance ↗</a></div>`;
   $('#detail-dialog').showModal();
 }
 function comparisonUniverse() {
@@ -248,8 +250,8 @@ function renderMethodStatus() {
   if(long)$('#long-formula').textContent='長線值 = '+Object.entries(long).map(([p,w])=>`${w} × 超額 ${p}D`).join(' + ');
 }
 function exportCSV() {
-  const headings=['rank','symbol','name','asOf','status','daily_close_reconstructed','daily_close_source_time','daily_close_source','dividend_backfill_amount_usd','dividend_backfill_ex_date','dividend_backfill_source','dividend_source_status','price_USD','LokiRS_approx','rank_delta','1h_excess_pp','4h_excess_pp','1d_excess_pp','3d_excess_pp','week_excess_pp','fortnight_excess_pp','month_excess_pp','3d_from','week_from','fortnight_from','month_from','streak_approx','long_RS_percentile_approx','sector','sector_rank_approx','vs_sector_approx','vs_sector_1d_pp','intraday_asOf','h1_elapsed_hours','h4_elapsed_hours','exact_clock_1h_excess_pp','exact_clock_4h_excess_pp'];
-  const rows=filteredRows().map(r=>[r.rank,r.symbol,r.name,r.asOf,r.status,!!r.dailyCloseReconstructed,r.dailyCloseSourceTime,r.dailyCloseSource,r.dividendBackfill?.amountUSD,r.dividendBackfill?.exDate,r.dividendBackfill?.source,r.dividendBackfill?.sourceStatus,r.price,r.score,r.rankDelta,r.intra.h1,r.intra.h4,r.d1,r.d3,r.week?.value,r.fortnight?.value,r.month?.value,r.d3From,r.week?.from,r.fortnight?.from,r.month?.from,r.streak,r.longRS,r.sector,r.sectorRank,r.vsSector,r.vsSectorDay,r.intra.asOf,r.intra.h1ElapsedHours,r.intra.h4ElapsedHours,r.intra.clockH1,r.intra.clockH4]);
+  const headings=['rank','symbol','name','asOf','status','daily_close_reconstructed','daily_close_source_time','daily_close_source','dividend_backfill_amount_usd','dividend_backfill_ex_date','dividend_backfill_source','dividend_source_status','price_USD','market_cap_USD','market_cap_currency','market_cap_status','market_cap_asOf','market_cap_fetchedAt','market_cap_source','LokiRS_score','rank_delta','1h_excess_pct','4h_excess_pct','1d_excess_pct','3d_excess_pct','week_excess_pct','fortnight_excess_pct','month_excess_pct','3d_from','week_from','fortnight_from','month_from','streak_approx','long_RS_percentile_approx','sector','sector_rank_approx','vs_sector_approx','vs_sector_1d_pct','intraday_asOf','h1_elapsed_hours','h4_elapsed_hours','exact_clock_1h_excess_pct','exact_clock_4h_excess_pct'];
+  const rows=filteredRows().map(r=>[r.rank,r.symbol,r.name,r.asOf,r.status,!!r.dailyCloseReconstructed,r.dailyCloseSourceTime,r.dailyCloseSource,r.dividendBackfill?.amountUSD,r.dividendBackfill?.exDate,r.dividendBackfill?.source,r.dividendBackfill?.sourceStatus,r.price,r.marketCap,r.marketCapCurrency,r.marketCapStatus,r.marketCapAsOf,r.marketCapFetchedAt,r.marketCapSource,r.score,r.rankDelta,r.intra.h1,r.intra.h4,r.d1,r.d3,r.week?.value,r.fortnight?.value,r.month?.value,r.d3From,r.week?.from,r.fortnight?.from,r.month?.from,r.streak,r.longRS,r.sector,r.sectorRank,r.vsSector,r.vsSectorDay,r.intra.asOf,r.intra.h1ElapsedHours,r.intra.h4ElapsedHours,r.intra.clockH1,r.intra.clockH4]);
   const quote=v=>{let value=String(v??'');if(typeof v==='string'&&/^[=+\-@]/.test(value))value="'"+value;return '"'+value.replaceAll('"','""')+'"';};
   download('\ufeff'+[headings,...rows].map(r=>r.map(quote).join(',')).join('\r\n'),`lokirs-${state.data.asOf}.csv`,'text/csv;charset=utf-8');
 }
@@ -278,20 +280,28 @@ document.addEventListener('click',event=>{
   const target=event.target.closest('button');if(!target)return;
   if(target.dataset.symbol)showDetail(target.dataset.symbol);
   if(target.dataset.watch)toggleWatch(target.dataset.watch);
+  if(target.dataset.dashboardSector){state.sector=target.dataset.dashboardSector;$('#sector-filter').value=state.sector;state.page=1;renderTable();}
   if(target.dataset.view)switchView(target.dataset.view);
   if(target.dataset.sectorTop!==undefined){state.sectorTop=Number(target.dataset.sectorTop);state.page=1;$$('[data-sector-top]').forEach(b=>{const selected=b===target;b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',selected);});renderTable();}
   if(target.hasAttribute('data-close-dialog'))target.closest('dialog').close();
   if(target.dataset.addCompare){addCompare(target.dataset.addCompare);if(target.closest('#detail-dialog')){$('#detail-dialog').close();switchView('compare');}}
   if(target.dataset.removeCompare){state.compare=state.compare.filter(s=>s!==target.dataset.removeCompare);storage.set('compare',state.compare);renderComparison();}
 });
-['method-open','notice-method','footer-method'].forEach(id=>$('#'+id).addEventListener('click',()=>$('#method-dialog').showModal()));
+['method-open','footer-method'].forEach(id=>$('#'+id).addEventListener('click',()=>$('#method-dialog').showModal()));
 $$('dialog').forEach(dialog=>dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}}));
 $('#theme-toggle').addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='dark'?'reading':'dark'));
 $('#refresh').addEventListener('click',()=>state.view==='home'?home.load(true):Promise.allSettled([loadData(true),sentimentPanel.load(true)]));
 $('#stocks-auto').addEventListener('click',()=>{state.auto=!state.auto;storage.set('stocks-auto',state.auto);renderHeader();});
 $('#overview-toggle').addEventListener('click',()=>{const expanded=$('#overview-toggle').getAttribute('aria-expanded')==='true';$('#overview-grid').hidden=expanded;$('#overview-toggle').setAttribute('aria-expanded',!expanded);$('#overview-toggle').textContent=expanded?'展開 ＋':'收起 −';});
 $('#search').addEventListener('input',event=>{state.search=event.target.value.trim();state.exactSymbol=null;state.page=1;renderTable();});
-[['sector-filter','sector'],['metric-filter','metric'],['operator-filter','operator'],['value-filter','value']].forEach(([id,key])=>$('#'+id).addEventListener(id==='value-filter'?'input':'change',event=>{state[key]=event.target.value;state.page=1;renderTable();}));
+[['sector-filter','sector'],['metric-filter','metric'],['operator-filter','operator'],['value-filter','value']].forEach(([id,key])=>$('#'+id).addEventListener(id==='value-filter'?'input':'change',event=>{state[key]=event.target.value;updateMetricControl();state.page=1;renderTable();}));
+$('#cap-unit-filter').addEventListener('change',event=>{state.capUnit=Number(event.target.value);state.page=1;renderTable();});
+$('#ranking-dashboard-toggle').addEventListener('click',()=>{
+  const expanded=$('#ranking-dashboard-toggle').getAttribute('aria-expanded')==='true';
+  $('#ranking-dashboard-content').hidden=expanded;
+  $('#ranking-dashboard-toggle').setAttribute('aria-expanded',String(!expanded));
+  $('#ranking-dashboard-toggle').textContent=expanded?'展開 ＋':'收起 −';
+});
 ['streak','long','resilient','perp'].forEach(key=>$('#'+key+'-filter').addEventListener('change',event=>{state[key]=event.target.checked;state.page=1;renderTable();}));
 ['reset-filters','empty-reset'].forEach(id=>$('#'+id).addEventListener('click',resetFilters));
 $$('th[data-sort]').forEach(th=>th.querySelector('button').addEventListener('click',()=>{state.direction=state.sort===th.dataset.sort?-state.direction:['rank','sectorRank'].includes(th.dataset.sort)?1:-1;state.sort=th.dataset.sort;state.page=1;renderTable();}));

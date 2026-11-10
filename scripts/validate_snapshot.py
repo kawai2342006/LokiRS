@@ -23,6 +23,15 @@ def validate(data):
         assert set(meta["scoreWeights"]) == {"h1", "h4", "1", "5", "20"}
     benchmark_prices = {}
     for row in rows:
+        if "marketCap" in row:
+            cap = row["marketCap"]
+            assert cap is None or (isinstance(cap, (int, float)) and not isinstance(cap, bool) and math.isfinite(cap) and cap > 0), (row["symbol"], "marketCap")
+            assert row["marketCapStatus"] in ("ok", "stale", "unavailable")
+            if cap is not None:
+                assert row["marketCapCurrency"] == "USD" and row["marketCapSource"].startswith("https://")
+                assert datetime.fromisoformat(row["marketCapFetchedAt"]).tzinfo is not None
+            else:
+                assert row["marketCapStatus"] == "unavailable"
         if row["rank"] is not None:
             assert row["asOf"] == data["asOf"] and row["status"] == "ok", (row["symbol"], "ranked observation date/status", row["asOf"], data["asOf"], row["status"])
             if calibrated:
@@ -65,6 +74,12 @@ def validate(data):
                 duration = (datetime.fromisoformat(intra["asOf"]) - datetime.fromisoformat(intra[f"h{n}Start"])).total_seconds() / 3600
                 assert abs(duration - intra[f"h{n}ElapsedHours"]) < 0.00001
     assert len({row["id"] for row in data["macro"]}) == len(data["macro"])
+    if "marketCap" in meta:
+        caps = meta["marketCap"]
+        assert caps["availableCount"] == sum(row.get("marketCap") is not None for row in rows)
+        assert caps["staleCount"] == sum(row.get("marketCapStatus") == "stale" for row in rows)
+        assert caps["currentCount"] + caps["staleCount"] == caps["availableCount"]
+        assert caps["availableCount"] + caps["missingCount"] == len(rows)
     if "reconstructedDailyCount" in meta:
         assert meta["reconstructedDailyCount"] == sum(bool(r.get("dailyCloseReconstructed")) for r in rows)
     if "verifiedDividendBackfills" in meta:

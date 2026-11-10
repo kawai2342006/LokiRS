@@ -179,7 +179,7 @@ class FreshnessTests(unittest.TestCase):
             published=root/'data/latest.json';published.write_text(json.dumps(prior));original=published.read_bytes()
             def downloaded(symbol,interval,*args):return {'symbol':symbol,'interval':interval},False
             def parsed(raw,interval,*args):return (daily if interval=='1d' else hourly)[raw['symbol']]
-            with patch.object(update_data,'ROOT',root), patch.object(update_data,'cached_chart',side_effect=downloaded), patch.object(update_data,'parse_chart',side_effect=parsed), patch('sys.argv',['update_data','--rankings-only']), patch('validate_snapshot.validate',side_effect=ValueError('rejected snapshot')):
+            with patch.object(update_data,'ROOT',root), patch.object(update_data,'cached_chart',side_effect=downloaded), patch.object(update_data,'parse_chart',side_effect=parsed), patch.object(update_data,'refresh_market_caps',return_value={}), patch('sys.argv',['update_data','--rankings-only']), patch('validate_snapshot.validate',side_effect=ValueError('rejected snapshot')):
                 with self.assertRaisesRegex(ValueError,'rejected snapshot'):update_data.run()
             self.assertEqual(published.read_bytes(),original)
 

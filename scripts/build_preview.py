@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Build one offline HTML preview from the current source and dated snapshots."""
 import base64
+import argparse
 import json
 import re
 from pathlib import Path
@@ -8,7 +9,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 
 
-def build():
+def build(output='LokiRS_Rankings_Dashboard_Preview.html', stocks=False):
     html=(ROOT/'index.html').read_text()
     css=[]
     for name in ['assets/fonts/fonts.css','assets/styles.css','assets/home.css']:
@@ -41,13 +42,20 @@ def build():
 const originalPreviewFetch=window.fetch.bind(window);
 window.fetch=(input,options)=>{const url=new URL(typeof input==='string'?input:input.url,location.href);const name=url.pathname.split('/').pop();return previewSnapshots[name]?Promise.resolve(new Response(JSON.stringify(previewSnapshots[name]),{status:200,headers:{'Content-Type':'application/json'}})):originalPreviewFetch(input,options);};
 </script>'''
+    if stocks:
+        bootstrap += '<script>if(!new URLSearchParams(location.search).has("tab"))location.hash="rankings";</script>'
     html=re.sub(r'<script type="module" src="\./assets/app\.js[^\"]*"></script>',lambda _:bootstrap+'<script type="module" src="'+module(ROOT/'assets/app.js')+'"></script>',html)
     html=html.replace('<main>','<main><p class="notice-copy">離線預覽 · 內嵌快照固定於美股 '+data['latest.json']['asOf']+'；更新行情請使用正式網站及更新流程。</p>')
     html=html.replace('<title>','<title>離線預覽 / ',1)
-    destination=ROOT/'preview/LokiRS_3D_2Week_Preview.html'
+    destination=ROOT/'preview'/output
     destination.parent.mkdir(exist_ok=True)
     destination.write_text(html)
     print(f'Built {destination.name}: {data["latest.json"]["asOf"]}; {len(modules)} embedded JS modules')
 
 
-if __name__=='__main__':build()
+if __name__=='__main__':
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output', default='LokiRS_Rankings_Dashboard_Preview.html')
+    parser.add_argument('--stocks', action='store_true', help='Open directly in the stock rankings')
+    args=parser.parse_args()
+    build(args.output, args.stocks)

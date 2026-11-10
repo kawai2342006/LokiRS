@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {filterRankings, formatMarketCap, marketCapTitle, summarizeRankings, renderRankingDashboard} from '../assets/rankings.js';
 
 const app=readFileSync(new URL('../assets/app.js',import.meta.url),'utf8');
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
@@ -24,11 +25,11 @@ function setup(){
     if(!nodes.has(key))nodes.set(key,{innerHTML:'',textContent:'',hidden:false,firstChild:{textContent:''},showModal(){this.open=true;}});
     return nodes.get(key);
   };
-  const helpers=['number','signed','cls','pp','metric'].map(name=>app.split('\n').find(line=>line.startsWith(`const ${name} =`))).join('\n');
-  const api=new Function('state','$','$$','esc','sparkline','comparisonChart','hkTime',
-    helpers+'\n'+['filteredRows','renderTable','periodTitle','tradingPeriodTitle','showDetail'].map(declaration).join('\n')+
-    '\nreturn {filteredRows,renderTable,showDetail,pp};')
-    (state,$,()=>[],String,()=>'<svg></svg>',()=>'<svg></svg>',String);
+  const helpers=['number','signed','cls','percent'].map(name=>app.split('\n').find(line=>line.startsWith(`const ${name} =`))).join('\n');
+  const api=new Function('state','$','$$','esc','sparkline','comparisonChart','hkTime','filterRankings','formatMarketCap','marketCapTitle','summarizeRankings','renderRankingDashboard',
+    helpers+'\n'+['filteredRows','renderRankingsDashboard','renderTable','periodTitle','tradingPeriodTitle','showDetail'].map(declaration).join('\n')+
+    '\nreturn {filteredRows,renderTable,showDetail,percent};')
+    (state,$,()=>[],String,()=>'<svg></svg>',()=>'<svg></svg>',String,filterRankings,formatMarketCap,marketCapTitle,summarizeRankings,renderRankingDashboard);
   return {state,nodes,...api};
 }
 
@@ -58,12 +59,12 @@ test('rendered rows align added values and date tooltips with the headers',()=>{
   const body=ui.nodes.get('#stock-body').innerHTML;
   const first=body.slice(body.indexOf('<tr'),body.indexOf('</tr>'));
   const cells=[...first.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)].map(m=>m[1]);
-  assert.equal(cells.length,17);
-  assert.equal(cells[8],'+4.25 pp');
-  assert.equal(cells[10],'-2.75 pp');
+  assert.equal(cells.length,18);
+  assert.equal(cells[9],'+4.25%');
+  assert.equal(cells[11],'-2.75%');
   assert.match(first,/2026-11-04 → 2026-11-09；3 個 SPY 交易日/);
   assert.match(first,/2026-10-26 → 2026-11-09；目標起日 2026-10-26/);
-  assert.equal(ui.pp(null),'—');
+  assert.equal(ui.percent(null),'—');
 });
 
 test('stock details include both new periods, their dates and units',()=>{
@@ -71,9 +72,40 @@ test('stock details include both new periods, their dates and units',()=>{
   const detail=ui.nodes.get('#detail-content').innerHTML;
   assert.match(detail,/<span>3D 超額<\/span>/);
   assert.match(detail,/<span>兩周超額<\/span>/);
-  assert.match(detail,/\+4\.25 pp/);
-  assert.match(detail,/-2\.75 pp/);
+  assert.match(detail,/\+4\.25%/);
+  assert.match(detail,/-2\.75%/);
   assert.match(detail,/3D：2026-11-04 → 2026-11-09/);
   assert.match(detail,/兩周：2026-10-26 → 2026-11-09/);
   assert.equal(ui.nodes.get('#detail-dialog').open,true);
+});
+
+test('watch control moves from table rows to immediately after the detail ticker',()=>{
+  const ui=setup();ui.renderTable();
+  assert.doesNotMatch(ui.nodes.get('#stock-body').innerHTML,/data-watch=/);
+  ui.showDetail('A');
+  assert.match(ui.nodes.get('#detail-content').innerHTML,/<h2>A<button[^>]*data-watch="A"[^>]*aria-pressed="false"/);
+  ui.state.watched.add('A');ui.showDetail('A');
+  assert.match(ui.nodes.get('#detail-content').innerHTML,/<h2>A<button[^>]*aria-pressed="true"[^>]*>★<\/button>/);
+});
+
+test('table pagination and filter edits update the dashboard scope from the same complete result set',()=>{
+  const ui=setup();ui.state.pageSize=1;ui.renderTable();
+  assert.equal((ui.nodes.get('#stock-body').innerHTML.match(/<tr/g)||[]).length,1);
+  assert.match(ui.nodes.get('#dashboard-scope').textContent,/3 \/ 3 隻/);
+  const dashboard=ui.nodes.get('#ranking-dashboard-content').innerHTML;
+  ui.state.page=2;ui.renderTable();
+  assert.equal(ui.nodes.get('#ranking-dashboard-content').innerHTML,dashboard);
+  Object.assign(ui.state,{metric:'d3',operator:'gte',value:'0'});ui.renderTable();
+  assert.match(ui.nodes.get('#dashboard-scope').textContent,/1 \/ 3 隻/);
+  assert.equal(ui.state.page,1);
+  ui.state.view='watchlist';ui.renderTable();
+  assert.equal(ui.nodes.get('#ranking-dashboard').hidden,true);
+});
+
+test('removed research banner has no dangling event binding and ranking units are percent throughout',()=>{
+  assert.doesNotMatch(html,/approx-notice|notice-method|FIELD NOTE/);
+  assert.doesNotMatch(app,/notice-method/);
+  assert.doesNotMatch(html,/\bpp\b|近似綜合分數/);
+  assert.doesNotMatch(app,/_excess_pp|\+3 pp/);
+  assert.match(html,/<option value="marketCap">市值 USD<\/option>/);
 });

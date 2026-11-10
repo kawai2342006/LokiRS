@@ -13,6 +13,7 @@ from zoneinfo import ZoneInfo
 
 from engine import build_equities, macro_summary
 from dividend_backfill import load_verified, backfill_verified
+from market_caps import refresh_market_caps
 from providers import cached_chart, fetch_contracts, fetch_fred, parse_chart, reconcile_latest_daily
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -146,6 +147,8 @@ def run():
                       "benchmarkCloseReconstructed":bool(daily[settings["benchmark"]]["bars"][result["asOf"]].get("reconstructed")),
                       "dailyReconstructionPolicy":"Complete observed regular 30m session required. Prefer a same-session regular quote stamped from the close through +300 seconds and observed at capture. Action-free unit factor, or independently verified cash dividend with unit/known matching factor; non-cash actions excluded. Provisional provenance retained.",
                       "notice": f"Five-period weights inferred from public reference snapshots and rechecked through {max(settings.get('calibrationReferenceDates', ['unknown']))}; not an officially confirmed formula. Prices and runtime rankings are independently calculated from Yahoo. Long-term RS and historical ranks remain independent approximations."}
+    # Valuation failures must not prevent publication of independently valid rankings.
+    result["meta"]["marketCap"] = refresh_market_caps(result["rows"], prior, cache, args.refresh)
     from validate_snapshot import validate
     validate(result)
     output.parent.mkdir(parents=True, exist_ok=True)

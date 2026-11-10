@@ -1,0 +1,85 @@
+{
+  "version": "1.5.0",
+  "date": "2026-11-10",
+  "changedFiles": [
+    {
+      "file": ".github/workflows/pages.yml",
+      "kind": "updated"
+    },
+    {
+      "file": "README_RANKINGS_DASHBOARD.md",
+      "kind": "new"
+    },
+    {
+      "file": "assets/app.js",
+      "kind": "updated"
+    },
+    {
+      "file": "assets/rankings.js",
+      "kind": "new"
+    },
+    {
+      "file": "assets/styles.css",
+      "kind": "updated"
+    },
+    {
+      "file": "data/latest.json",
+      "kind": "updated"
+    },
+    {
+      "file": "docs/VALIDATION_RANKINGS_2026-11-10.md",
+      "kind": "new"
+    },
+    {
+      "file": "index.html",
+      "kind": "updated"
+    },
+    {
+      "file": "package.json",
+      "kind": "updated"
+    },
+    {
+      "file": "preview/LokiRS_Rankings_Dashboard_Preview.html",
+      "kind": "new"
+    },
+    {
+      "file": "scripts/build_preview.py",
+      "kind": "updated"
+    },
+    {
+      "file": "scripts/market_caps.py",
+      "kind": "new"
+    },
+    {
+      "file": "scripts/update_data.py",
+      "kind": "updated"
+    },
+    {
+      "file": "scripts/validate_snapshot.py",
+      "kind": "updated"
+    },
+    {
+      "file": "tests/export.test.js",
+      "kind": "updated"
+    },
+    {
+      "file": "tests/rankings-dashboard.test.js",
+      "kind": "new"
+    },
+    {
+      "file": "tests/return-columns.test.js",
+      "kind": "updated"
+    },
+    {
+      "file": "tests/test_freshness.py",
+      "kind": "updated"
+    },
+    {
+      "file": "tests/test_market_caps.py",
+      "kind": "new"
+    }
+  ],
+  "pythonTestsPassed": 94,
+  "nodeTestsPassed": 25,
+  "browserQA": "unverified: preview relay unavailable"
+}
