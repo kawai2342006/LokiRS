@@ -50,11 +50,16 @@ def retry_pending_daily(daily, intra, cache, now, workers=4):
 
 def run():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--snapshot", choices=["close", "intraday"], default="close", help="Publish the canonical close or a separate completed-60m intraday snapshot")
     parser.add_argument("--refresh", action="store_true", help="Ignore cache TTLs")
     parser.add_argument("--workers", type=int, help="Download concurrency, 1–8")
     parser.add_argument("--skip-optional", action="store_true", help="Skip sentiment sources and Binance")
     parser.add_argument("--rankings-only", action="store_true", help="Update equities and sectors; retain dated optional data and homepage")
     args = parser.parse_args()
+    if args.snapshot == "intraday":
+        from intraday_snapshot import publish_intraday
+        publish_intraday(ROOT, refresh=args.refresh, workers=args.workers or 4)
+        return
     settings = json.loads((ROOT / "config/settings.json").read_text())
     universe = json.loads((ROOT / "config/universe.json").read_text())
     output = ROOT / "data/latest.json"

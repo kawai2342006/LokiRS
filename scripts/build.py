@@ -14,6 +14,10 @@ assert data["meta"]["schemaVersion"] == 1 and len(data["rows"]) > 0, "Missing or
 assert data["asOf"] == data["benchmark"]["asOf"], "Benchmark date does not match snapshot"
 home = json.loads((ROOT / "data/home.json").read_text())
 validate_home(home)
+intraday_path = ROOT / "data/intraday.json"
+if intraday_path.exists():
+    from intraday_snapshot import validate_intraday
+    validate_intraday(json.loads(intraday_path.read_text()))
 OUT.mkdir(exist_ok=True)
 for filename in ["index.html"]:
     shutil.copy2(ROOT / filename, OUT / filename)
