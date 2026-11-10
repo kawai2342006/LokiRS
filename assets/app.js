@@ -3,7 +3,7 @@ import {filterRankings, formatMarketCap, marketCapTitle, summarizeRankings, rend
 import {createRankingUI} from './ranking-ui.js?v=1.5.2';
 import {createHome} from './home.js?v=1.4.0';
 import {createSentiment} from './sentiment.js?v=1.3.3';
-import {createSnapshotLoader, publicationAge, reloadMessage, createAutoRefresh} from './publication.js?v=1.6.0';
+import {createSnapshotLoader, publicationAge, reloadMessage, createAutoRefresh} from './publication.js?v=1.6.1';
 
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
@@ -94,13 +94,13 @@ function renderSnapshotControls() {
   $('#snapshot-empty').hidden=isHome||available||snapshotLoading;
   $('#snapshot-empty-title').textContent=intraday?'尚未能載入盤中快照':'未能載入收市快照';
   $('#snapshot-empty-text').textContent=intraday?
-    '首次使用需在 GitHub Actions 按 Run workflow，選 snapshot_mode = intraday，保留 refresh_data 勾選。美國交易日首支完整 K 線於紐約 10:30 完成，完成部署後再檢查。':
+    '等待下一次盤中自動排程發布，或在 GitHub Actions 按 Run workflow，選 snapshot_mode = intraday，保留 refresh_data 勾選。正常交易日於紐約 10:40–15:40 每小時更新；完成部署後再檢查。':
     '請檢查 GitHub Pages 已部署 data/latest.json，再按「檢查更新」。';
   $('#stocks-bookmarks').hidden=state.view!=='stocks'||!available;
   const windowText=intraday&&meta?`完整 K 線 ${hkTime(meta.snapshotBarStart)}–${hkTime(meta.snapshotAt)} HKT`:'完整 60m K 線';
   $('#snapshot-note').textContent=intraday&&meta?
     `${windowText} · 1D 至一個月均截至此時點。Δ 對比 ${meta.referenceCloseDate||'未提供'} 收市排名；長線 RS／持續日數沿用 ${meta.closedMetricsAsOf||'未提供'} 收市值；市值沿用原有來源時點。`:
-    intraday?'手動發布 · 僅用已完成常規交易時段的完整 60 分鐘 K 線；每 60 秒只檢查發布版本。':'每日收市後自動抓取及重算；可切換至手動發布的盤中 60m 快照。';
+    intraday?'紐約交易日 10:40–15:40 每小時自動抓取，正常全日 6 次；僅用已完成的完整 60m K 線。網頁每 60 秒只檢查發布版本。':'每日收市後自動抓取及重算；可切換至按小時自動發布的盤中 60m 快照。';
   const titles=intraday?{
     rankDelta:`${meta?.referenceCloseDate||'參考日'} 收市名次 − 盤中名次；沒有先前收市參考便留空`,
     h1:'1 根完整 60m K 線的收盤點之差；跨夜按 K 線格數計，詳情列實際跨度。',
@@ -114,11 +114,11 @@ function renderSnapshotControls() {
     '美股歷史調整價換算至上一原始收市價基準，末點為盤中 60m 快照；跨市場資產沿用各自收市資料。只比較共同日期。':
     '使用 Yahoo 股息及拆股調整收市價。只用所有已選資產均有數據的日期。';
   $('#publication-help').textContent=intraday?
-    '盤中快照需手動執行 snapshot_mode = intraday 並勾選 refresh_data；每 60 秒只檢查已發布版本。':
+    '盤中於紐約交易日 10:40–15:40 每小時自動抓取；休市或沒有新 K 線便跳過。亦可手動執行 intraday 更新。網頁每 60 秒只檢查已發布版本。':
     '每日美股收市後由排程抓取及重算；本頁每 60 秒檢查已發布版本。';
   $('#update-workflow').title='Run workflow：snapshot_mode 選 close（收市）或 intraday（完整 60m 盤中），保留 refresh_data 勾選；部署完成後檢查更新。';
   const age=publicationAge(d), old=age!==null&&age>=36, issues=meta?meta.universeCount-meta.currentCount:0, reconstructed=meta?.reconstructedDailyCount||0;
-  const messages=isHome?[]:[snapshotError?`${intraday?'盤中':'收市'}快照讀取失敗（${snapshotError.message}）。${available?'保留此模式已載入的快照。':intraday&&snapshotError.status===404?'尚未發布，請先執行盤中更新流程。':'請檢查部署或稍後重試。'}`:'',
+  const messages=isHome?[]:[snapshotError?`${intraday?'盤中':'收市'}快照讀取失敗（${snapshotError.message}）。${available?'保留此模式已載入的快照。':intraday&&snapshotError.status===404?'尚未發布，請等待自動排程或手動執行盤中更新。':'請檢查部署或稍後重試。'}`:'',
     old?`此${intraday?'盤中':'收市'}快照已 ${age} 小時未發布新版本；快照時點見上方標示。`:'',
     issues?`${issues} 隻股票缺少當期有效分數，已排除於當期排名。`:'',
     reconstructed?`${reconstructed} 隻股票日線缺值，以同日完整小時線核對收市。`:''].filter(Boolean);

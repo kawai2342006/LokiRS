@@ -48,7 +48,7 @@ export function reloadMessage(data, previous=null) {
   if(snapshotMode(data)==='intraday') {
     const time=new Intl.DateTimeFormat('zh-HK',{timeZone:'Asia/Hong_Kong',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date(data.meta.snapshotAt));
     return previous?.meta?.generatedAt===data.meta.generatedAt?
-      `仍是 ${time} HKT 的盤中快照；下一支 K 線需手動抓取並發布。`:
+      `仍是 ${time} HKT 的盤中快照；等待下一次自動更新，亦可手動抓取。`:
       `已載入盤中 60m 快照，K 線截至 ${time} HKT。`;
   }
   if(previous?.meta?.generatedAt===data.meta.generatedAt) {

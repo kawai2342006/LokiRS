@@ -196,7 +196,7 @@ def build_intraday_snapshot(universe, settings, daily, intra, closed, now, gener
                      "source": "Yahoo Finance completed regular-session chart bars", "errors": errors or [],
                      "macroUpdateStatus": "retained", "marketCapUpdateStatus": "retained",
                      "priceBasis": "Raw completed 60m close. Prior adjusted daily history rebased to the immediately prior raw close. Current-session corporate actions excluded. Long RS/streak retained from the dated canonical close snapshot.",
-                     "notice": "Full 60m endpoints only. Daily returns include the current partial session; ranks compare with the reference close. This is a manually published intraday snapshot, not streaming quotes."}}
+                     "notice": "Full 60m endpoints only. Daily returns include the current partial session; ranks compare with the reference close. This is a separately published intraday snapshot, not streaming quotes."}}
 
 
 def validate_intraday(data):
@@ -264,7 +264,7 @@ def write_intraday_snapshot(root, result):
     return output
 
 
-def publish_intraday(root, refresh=False, workers=4, now=None):
+def publish_intraday(root, refresh=False, workers=4, now=None, automatic=False):
     from dividend_backfill import load_verified, backfill_verified
     from providers import cached_chart, parse_chart
     root = Path(root)
@@ -275,17 +275,34 @@ def publish_intraday(root, refresh=False, workers=4, now=None):
     cache = root / ".cache/openrs"
     symbol = settings["benchmark"]
     daily, intra, errors = {}, {}, []
-    # Check SPY first, so a pre-open/weekend request does not download the whole universe.
-    for interval, destination in [("1d", daily), ("30m", intra)]:
-        raw, _ = cached_chart(symbol, interval, cache, refresh)
-        destination[symbol] = parse_chart(raw, interval, now)
-    current_endpoint(full_hour_candles(intra[symbol], now), now)
+    # One live SPY request gates the entire download, build and deployment.
+    raw, _ = cached_chart(symbol, "30m", cache, refresh)
+    intra[symbol] = parse_chart(raw, "30m", now)
+    try:
+        endpoint = current_endpoint(full_hour_candles(intra[symbol], now), now)
+    except ValueError:
+        if not automatic:
+            raise
+        print("Intraday skipped: no completed 60m candle in the current New York session", flush=True)
+        return None
+    previous_path = root / "data/intraday.json"
+    if automatic and previous_path.exists():
+        previous = json.loads(previous_path.read_text())
+        published = previous.get("meta", {}).get("snapshotAt")
+        if published and datetime.fromisoformat(published).timestamp() >= endpoint:
+            print("Intraday skipped: latest completed 60m candle is already published", flush=True)
+            return None
+    # Daily history is unchanged during the session. Automatic runs reuse its
+    # six-hour cache; manual refreshes may still force all sources to reload.
+    daily_refresh = refresh and not automatic
+    raw, _ = cached_chart(symbol, "1d", cache, daily_refresh)
+    daily[symbol] = parse_chart(raw, "1d", now)
     symbols = sorted({row["symbol"] for row in universe["stocks"] + universe["sectors"]} - {symbol})
     tasks = [(key, interval) for interval in ["1d", "30m"] for key in symbols]
     def get(task):
         key, interval = task
         try:
-            raw, _ = cached_chart(key, interval, cache, refresh)
+            raw, _ = cached_chart(key, interval, cache, daily_refresh if interval == "1d" else refresh)
             return key, interval, parse_chart(raw, interval, now), None
         except Exception as exc:
             return key, interval, None, str(exc)[:180]
@@ -302,6 +319,7 @@ def publish_intraday(root, refresh=False, workers=4, now=None):
         series["corporateActionDates"] = sorted(set(series.get("corporateActionDates", [])) | {item["exDate"] for item in verified.get(key, [])})
         backfill_verified(series, verified.get(key, []))
     result = build_intraday_snapshot(universe, settings, daily, intra, closed, now, datetime.now(UTC), errors)
+    result["meta"]["updateMode"] = "scheduled" if automatic else "manual"
     output = write_intraday_snapshot(root, result)
     print(f"Saved {output.name}: {result['meta']['currentCount']}/{len(result['rows'])}, 60m ending {result['meta']['snapshotAt']}", flush=True)
     return result
