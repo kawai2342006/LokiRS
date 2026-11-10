@@ -1,17 +1,26 @@
-import {formatMarketCap,metricValue} from './rankings.js?v=1.5.1';
+import {formatMarketCap,metricValue} from './rankings.js?v=1.5.2';
 
 const finite=Number.isFinite;
 const number=(value,digits=2)=>finite(value)?value.toLocaleString('en-US',{minimumFractionDigits:digits,maximumFractionDigits:digits}):'—';
 const signed=value=>finite(value)?(value>0?'+':'')+number(value):'—';
 const percent=value=>finite(value)?signed(value)+'%':'—';
 const nameLimit=176;
+const percentageColumns=new Set([6,7,8,9,10,11,12,16]);
+const centralPercentages=[6,7,8,9,10,11,12];
+
+// Some browsers return an empty `font` shorthand for variable-font styles.
+// Compose the canvas font from the actual longhand properties instead.
+export function canvasFontFromStyle(style) {
+  return `${style.fontStyle||'normal'} ${style.fontWeight||'400'} ${style.fontSize||'13px'} ${style.fontFamily||'monospace'}`;
+}
 
 // Measure the entire filtered cohort so paging and sorting do not move columns.
 export function measureRankingColumns(rows,headers,measure,resilient=false) {
-  const widths=headers.slice(0,17).map(header=>Math.ceil(measure(header,'header')+22));
+  const widths=headers.slice(0,17).map((header,index)=>Math.max(percentageColumns.has(index)?88:0,Math.ceil(measure(header,'header')+(percentageColumns.has(index)?30:22))));
   const fit=(index,text,font='number',extra=0)=>{
     const content=measure(text,font);
-    widths[index]=Math.max(widths[index],Math.ceil((font==='name'?Math.min(nameLimit,content):content)+16+extra));
+    const gutter=percentageColumns.has(index)?28:16;
+    widths[index]=Math.max(widths[index],Math.ceil((font==='name'?Math.min(nameLimit,content):content)+gutter+extra));
   };
   for(const row of rows){
     fit(0,row.rank??'—');
@@ -27,10 +36,17 @@ export function measureRankingColumns(rows,headers,measure,resilient=false) {
   return widths;
 }
 
-export function allocateRankingWidths(contentWidths,availableWidth,minSparkWidth=240) {
-  const fixed=contentWidths.map(width=>Math.max(1,Math.ceil(width)));
-  const total=fixed.reduce((sum,width)=>sum+width,0);
-  return [...fixed,Math.max(minSparkWidth,Math.floor(availableWidth)-total)];
+export function allocateRankingWidths(contentWidths,availableWidth,sparkWidth=128) {
+  const widths=contentWidths.map(width=>Math.max(1,Math.ceil(width)));
+  const chart=Math.max(100,Math.min(160,Math.ceil(sparkWidth)));
+  const total=widths.reduce((sum,width)=>sum+width,0)+chart;
+  const surplus=Math.max(0,Math.floor(availableWidth)-total);
+  const targets=centralPercentages.filter(index=>index<widths.length);
+  if(targets.length){
+    const extra=Math.floor(surplus/targets.length),remainder=surplus%targets.length;
+    targets.forEach((index,i)=>widths[index]+=extra+(i<remainder?1:0));
+  }
+  return [...widths,chart];
 }
 
 export function createRankingUI({document:doc,window:win,getView,getRows,getResilient}) {
@@ -71,8 +87,8 @@ export function createRankingUI({document:doc,window:win,getView,getRows,getResi
     if(getRows)rows=getRows();
     if(getResilient)resilient=getResilient();
     const first=table.querySelector('tbody tr');
-    const font=selector=>win.getComputedStyle(first?.querySelector(selector)||table).font;
-    const fonts={number:font('.numeric'),name:font('.asset-name'),ticker:font('.stock-link'),sector:font('.sector-cell'),header:win.getComputedStyle(table.querySelector('th button')).font};
+    const font=selector=>canvasFontFromStyle(win.getComputedStyle(first?.querySelector(selector)||table));
+    const fonts={number:font('.numeric'),name:font('.asset-name'),ticker:font('.stock-link'),sector:font('.sector-cell'),header:canvasFontFromStyle(win.getComputedStyle(table.querySelector('th button')))};
     const measure=(value,type)=>{
       if(!context)return String(value??'').length*(type==='name'?6:8);
       context.font=fonts[type];return context.measureText(String(value??'')).width;

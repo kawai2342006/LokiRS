@@ -1,6 +1,6 @@
 import {sparkline, comparisonChart, palette, seriesDashes, escapeHTML as esc} from './charts.js?v=1.2.0';
-import {filterRankings, formatMarketCap, marketCapTitle, summarizeRankings, renderRankingDashboard} from './rankings.js?v=1.5.1';
-import {createRankingUI} from './ranking-ui.js?v=1.5.1';
+import {filterRankings, formatMarketCap, marketCapTitle, summarizeRankings, renderRankingDashboard} from './rankings.js?v=1.5.2';
+import {createRankingUI} from './ranking-ui.js?v=1.5.2';
 import {createHome} from './home.js?v=1.4.0';
 import {createSentiment} from './sentiment.js?v=1.3.3';
 import {validatePublishedSnapshot, publicationAge, reloadMessage, createAutoRefresh} from './publication.js?v=1.4.0';
