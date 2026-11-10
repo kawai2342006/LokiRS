@@ -17,6 +17,10 @@ on:
         type: boolean
         default: true
   schedule:
+    # Six full 60m candles, ten minutes after each end. NY timezone follows DST.
+    # Holidays, early closes and already-published candles are skipped by SPY preflight.
+    - cron: '40 10-15 * * 1-5'
+      timezone: America/New_York
     # 22:17 UTC = 06:17 HKT next day. After the US close in both DST and standard time.
     # GitHub schedules run from the default branch and may be delayed.
     - cron: '17 22 * * 1-5'
@@ -37,6 +41,11 @@ jobs:
     permissions:
       contents: write
       pages: read
+    env:
+      SNAPSHOT_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.snapshot_mode || github.event.schedule == '40 10-15 * * 1-5' && 'intraday' || 'close' }}
+      INTRADAY_AUTO: ${{ github.event_name == 'schedule' && github.event.schedule == '40 10-15 * * 1-5' }}
+    outputs:
+      publish: ${{ steps.refresh.outputs.publish }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -54,24 +63,46 @@ jobs:
           node --check assets/rankings.js
           node --check assets/home.js
           node --check assets/sentiment.js
+      - name: Set a daily cache key in New York time
+        id: cache-date
+        run: |
+          python - <<'PY'
+          import os
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              print('day=' + datetime.now(ZoneInfo('America/New_York')).date().isoformat(), file=output)
+          PY
       - name: Restore data download cache
         if: github.event_name != 'workflow_dispatch' || inputs.refresh_data
         uses: actions/cache@v6
         with:
           path: .cache/openrs
-          key: lokirs-data-v2-${{ github.run_id }}
-          restore-keys: lokirs-data-v2-
+          key: lokirs-data-v3-${{ steps.cache-date.outputs.day }}-${{ env.SNAPSHOT_MODE }}
+          restore-keys: lokirs-data-v3-
       - name: Fetch free data and recalculate
+        id: refresh
         if: github.event_name != 'workflow_dispatch' || inputs.refresh_data
-        env:
-          SNAPSHOT_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.snapshot_mode || 'close' }}
-        run: python -u scripts/update_data.py --snapshot "$SNAPSHOT_MODE" --refresh --workers 4
+        run: |
+          if [ "$INTRADAY_AUTO" = "true" ]; then
+            BEFORE_INTRADAY="$(git hash-object data/intraday.json 2>/dev/null || true)"
+            python -u scripts/update_data.py --snapshot intraday --intraday-auto --refresh --workers 2
+            AFTER_INTRADAY="$(git hash-object data/intraday.json 2>/dev/null || true)"
+            if [ "$BEFORE_INTRADAY" = "$AFTER_INTRADAY" ]; then
+              echo 'publish=false' >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          else
+            python -u scripts/update_data.py --snapshot "$SNAPSHOT_MODE" --refresh --workers 4
+          fi
+          echo 'publish=true' >> "$GITHUB_OUTPUT"
       - name: Build static files
+        if: steps.refresh.outputs.publish != 'false'
         run: |
           touch .nojekyll
           python scripts/build.py
       - name: Retain the calculated snapshot
-        if: github.event_name != 'workflow_dispatch' || inputs.refresh_data
+        if: steps.refresh.outputs.publish != 'false' && (github.event_name != 'workflow_dispatch' || inputs.refresh_data)
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
@@ -82,12 +113,16 @@ jobs:
             git push
           fi
       - uses: actions/configure-pages@v6
+        if: steps.refresh.outputs.publish != 'false'
       - uses: actions/upload-pages-artifact@v5
+        if: steps.refresh.outputs.publish != 'false'
         with:
           path: _site
+          retention-days: 1
 
   deploy:
     needs: prepare
+    if: needs.prepare.outputs.publish != 'false'
     runs-on: ubuntu-latest
     permissions:
       pages: write
