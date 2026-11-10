@@ -5,6 +5,13 @@ on:
     branches: [main, master]
   workflow_dispatch:
     inputs:
+      snapshot_mode:
+        description: 'Snapshot: close = 收市; intraday = 完整60分鐘盤中快照'
+        type: choice
+        options:
+          - close
+          - intraday
+        default: close
       refresh_data:
         description: Download fresh market data before deployment
         type: boolean
@@ -44,6 +51,7 @@ jobs:
           python -m unittest discover -s tests -v
           node --test tests/*.test.js
           node --check assets/app.js
+          node --check assets/rankings.js
           node --check assets/home.js
           node --check assets/sentiment.js
       - name: Restore data download cache
@@ -55,7 +63,9 @@ jobs:
           restore-keys: lokirs-data-v2-
       - name: Fetch free data and recalculate
         if: github.event_name != 'workflow_dispatch' || inputs.refresh_data
-        run: python -u scripts/update_data.py --refresh --workers 4
+        env:
+          SNAPSHOT_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.snapshot_mode || 'close' }}
+        run: python -u scripts/update_data.py --snapshot "$SNAPSHOT_MODE" --refresh --workers 4
       - name: Build static files
         run: |
           touch .nojekyll
@@ -66,6 +76,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add data/latest.json data/home.json data/sentiment.json
+          if [ -f data/intraday.json ]; then git add data/intraday.json; fi
           if ! git diff --cached --quiet; then
             git commit -m "Update public market snapshot"
             git push
