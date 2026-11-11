@@ -1,4 +1,6 @@
 name: Update data and deploy Pages
+run-name: >-
+  ${{ (github.event_name == 'workflow_dispatch' && inputs.snapshot_mode == 'intraday' || github.event_name == 'schedule' && github.event.schedule == '40 10-15 * * 1-5') && '盤中 60m' || '收市快照' }} · ${{ github.event_name }}
 
 on:
   push:
@@ -21,9 +23,10 @@ on:
     # Holidays, early closes and already-published candles are skipped by SPY preflight.
     - cron: '40 10-15 * * 1-5'
       timezone: America/New_York
-    # 22:17 UTC = 06:17 HKT next day. After the US close in both DST and standard time.
-    # GitHub schedules run from the default branch and may be delayed.
-    - cron: '17 22 * * 1-5'
+    # Start at 05:56 HKT Tue-Sat, after the US close in both DST and standard time.
+    # This is the requested start time; fetching, deployment and GitHub delays add time.
+    - cron: '56 5 * * 2-6'
+      timezone: Asia/Hong_Kong
     # Backup at 08:17 HKT after UTC-day markets close; GitHub cron is best-effort.
     - cron: '17 0 * * 2-6'
 
