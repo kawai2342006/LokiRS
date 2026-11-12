@@ -7,7 +7,7 @@ import concurrent.futures
 import json
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -17,6 +17,62 @@ from market_caps import refresh_market_caps
 from providers import cached_chart, fetch_contracts, fetch_fred, parse_chart, reconcile_latest_daily
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def require_observed_close(benchmark, intraday, now, published_intraday=None, symbol="SPY"):
+    """Reject daily history older than an observed, already completed session.
+
+    Use source session timestamps and the independently published 60m snapshot.
+    Never guess a trading day by subtracting a calendar day: holidays, weekends
+    and early closes retain their real source dates. If every source is stale,
+    this check cannot certify the newest exchange session without a calendar.
+    """
+    ny = ZoneInfo("America/New_York")
+    evidence = {}
+
+    def require(day, source):
+        date.fromisoformat(day)
+        evidence.setdefault(day, []).append(source)
+
+    for label, series in [("daily", benchmark), ("30m", intraday)]:
+        observed = now
+        if series.get("observedThrough"):
+            captured = datetime.fromisoformat(series["observedThrough"])
+            if captured.tzinfo is None:
+                raise ValueError("Benchmark capture time is missing its timezone")
+            observed = min(now, captured)
+        end = series.get("regularSessionEnd")
+        if isinstance(end, (int, float)) and not isinstance(end, bool) and 0 < end <= observed.timestamp():
+            require(datetime.fromtimestamp(end, ny).date().isoformat(), label + " regular-session metadata")
+        for day, end in series.get("sessionEnds", {}).items():
+            if end <= observed.timestamp() and datetime.fromtimestamp(end, ny).date().isoformat() == day:
+                require(day, label + " completed-session metadata")
+    # parse_chart records source daily dates only after that session has closed,
+    # even when its adjusted price is missing. A missing final 30m bar must not
+    # let a known, newer trading date disappear from the freshness check.
+    for day in benchmark.get("dailySourceDates", []):
+        require(day, "completed daily source date")
+    if published_intraday:
+        try:
+            from intraday_snapshot import validate_intraday
+            validate_intraday(published_intraday)
+            meta = published_intraday["meta"]
+            close = datetime.fromisoformat(meta["sessionClose"])
+            generated = datetime.fromisoformat(meta["generatedAt"])
+            if (close.tzinfo is not None and close <= now and generated <= now
+                    and close.astimezone(ny).date().isoformat() == published_intraday["asOf"]
+                    and published_intraday["benchmark"]["symbol"] == symbol):
+                require(published_intraday["asOf"], "validated published 60m snapshot after its session close")
+        except (AssertionError, KeyError, TypeError, ValueError, OverflowError):
+            # Unverified optional evidence cannot assert a new trading session.
+            pass
+    latest = max(benchmark.get("bars", {}), default="")
+    required = max(evidence, default=latest)
+    if latest < required:
+        sources = "; ".join(evidence[required])
+        raise RuntimeError(f"Daily benchmark is stale: {latest or 'missing'}; observed completed session {required} ({sources}). Existing snapshot preserved.")
+    print(f"Close freshness: daily {latest}; newest observed completed session {required}. This is source-based validation, not an exchange-calendar guarantee.", flush=True)
+    return required
 
 
 def retry_pending_daily(daily, intra, cache, now, workers=4):
@@ -113,12 +169,15 @@ def run():
         daily[symbol]["corporateActionDates"] = sorted(set(daily[symbol].get("corporateActionDates", [])) | known_dates)
         reconcile_latest_daily(daily[symbol], intra.get(symbol, {}), now, verified_cash_actions=verified_actions.get(symbol, []))
         dividend_repairs.extend({"symbol":symbol, **item} for item in backfill_verified(daily[symbol], verified_actions.get(symbol, [])))
-    benchmark_daily_day = max(daily[settings["benchmark"]]["bars"], default="")
-    benchmark_intra = intra.get(settings["benchmark"], {})
-    observed_closes = [day for day,end in benchmark_intra.get("sessionEnds", {}).items()
-                       if end <= now.timestamp() and end in benchmark_intra.get("bars", {})]
-    if observed_closes and benchmark_daily_day < max(observed_closes):
-        raise RuntimeError(f"Daily benchmark lags completed intraday session: daily {benchmark_daily_day}, intraday {max(observed_closes)}. Existing snapshot preserved.")
+    published_intraday = None
+    intraday_path = ROOT / "data/intraday.json"
+    if intraday_path.exists():
+        try:
+            published_intraday = json.loads(intraday_path.read_text())
+        except (OSError, ValueError):
+            pass
+    require_observed_close(daily[settings["benchmark"]], intra.get(settings["benchmark"], {}),
+                           now, published_intraday, settings["benchmark"])
     result = build_equities(universe, settings, daily, intra, prior)
     if prior.get("asOf") and result["asOf"] < prior["asOf"]:
         raise RuntimeError("New market date predates published snapshot. Existing snapshot preserved.")
