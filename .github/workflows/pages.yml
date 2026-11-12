@@ -1,6 +1,6 @@
 name: Update data and deploy Pages
 run-name: >-
-  ${{ (github.event_name == 'workflow_dispatch' && inputs.snapshot_mode == 'intraday' || github.event_name == 'schedule' && github.event.schedule == '40 10-15 * * 1-5') && '盤中 60m' || '收市快照' }} · ${{ github.event_name }}
+  ${{ (github.event_name == 'workflow_dispatch' && inputs.snapshot_mode == 'intraday' || github.event_name == 'schedule' && github.event.schedule == '40 10-15 * * 1-5') && '盤中 60m' || '收市快照' }} · ${{ github.event_name }}${{ github.event_name == 'schedule' && format(' · cron {0}', github.event.schedule) || '' }}
 
 on:
   push:
@@ -27,6 +27,9 @@ on:
     # This is the requested start time; fetching, deployment and GitHub delays add time.
     - cron: '56 5 * * 2-6'
       timezone: Asia/Hong_Kong
+    # Near-close retries at 06:11 and 06:31 HKT Tue-Sat (UTC Mon-Fri).
+    # A valid same-session close is reused; deployment is still retried.
+    - cron: '11,31 22 * * 1-5'
     # Backup at 08:17 HKT after UTC-day markets close; GitHub cron is best-effort.
     - cron: '17 0 * * 2-6'
 
@@ -36,6 +39,7 @@ permissions:
 concurrency:
   group: lokirs-pages
   cancel-in-progress: false
+  queue: max
 
 jobs:
   prepare:
@@ -47,6 +51,8 @@ jobs:
     env:
       SNAPSHOT_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.snapshot_mode || github.event.schedule == '40 10-15 * * 1-5' && 'intraday' || 'close' }}
       INTRADAY_AUTO: ${{ github.event_name == 'schedule' && github.event.schedule == '40 10-15 * * 1-5' }}
+      LOKIRS_EVENT_NAME: ${{ github.event_name }}
+      LOKIRS_SCHEDULE_CRON: ${{ github.event.schedule }}
     outputs:
       publish: ${{ steps.refresh.outputs.publish }}
     steps:
@@ -54,6 +60,9 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
+      - name: Record timing and check the existing close for backup runs
+        id: observation
+        run: python scripts/publication_summary.py --before
       - uses: actions/setup-node@v7
         with:
           node-version: '24'
@@ -77,7 +86,7 @@ jobs:
               print('day=' + datetime.now(ZoneInfo('America/New_York')).date().isoformat(), file=output)
           PY
       - name: Restore data download cache
-        if: github.event_name != 'workflow_dispatch' || inputs.refresh_data
+        if: steps.observation.outputs.reuse_close != 'true' && (github.event_name != 'workflow_dispatch' || inputs.refresh_data)
         uses: actions/cache@v6
         with:
           path: .cache/openrs
@@ -86,8 +95,12 @@ jobs:
       - name: Fetch free data and recalculate
         id: refresh
         if: github.event_name != 'workflow_dispatch' || inputs.refresh_data
+        env:
+          REUSE_CLOSE: ${{ steps.observation.outputs.reuse_close }}
         run: |
-          if [ "$INTRADAY_AUTO" = "true" ]; then
+          if [ "$REUSE_CLOSE" = "true" ]; then
+            echo 'Backup: reusing the validated close for the current New York date; retrying deployment without redownloading prices.'
+          elif [ "$INTRADAY_AUTO" = "true" ]; then
             BEFORE_INTRADAY="$(git hash-object data/intraday.json 2>/dev/null || true)"
             python -u scripts/update_data.py --snapshot intraday --intraday-auto --refresh --workers 2
             AFTER_INTRADAY="$(git hash-object data/intraday.json 2>/dev/null || true)"
@@ -99,6 +112,9 @@ jobs:
             python -u scripts/update_data.py --snapshot "$SNAPSHOT_MODE" --refresh --workers 4
           fi
           echo 'publish=true' >> "$GITHUB_OUTPUT"
+      - name: Report actual snapshot observation dates
+        if: always()
+        run: python scripts/publication_summary.py
       - name: Build static files
         if: steps.refresh.outputs.publish != 'false'
         run: |
