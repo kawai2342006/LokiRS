@@ -30,7 +30,7 @@ on:
     # Near-close retries at 06:11 and 06:31 HKT Tue-Sat (UTC Mon-Fri).
     # A valid same-session close is reused; deployment is still retried.
     - cron: '11,31 22 * * 1-5'
-    # Backup at 08:17 HKT after UTC-day markets close; GitHub cron is best-effort.
+    # Refresh UTC-day markets at 08:17 HKT, with a full fetch when US prices need work.
     - cron: '17 0 * * 2-6'
 
 permissions:
@@ -57,10 +57,13 @@ jobs:
       publish: ${{ steps.refresh.outputs.publish }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          # Scheduled runs may wait behind a publisher that commits a newer snapshot.
+          ref: ${{ github.event_name == 'schedule' && github.ref || '' }}
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - name: Record timing and check the existing close for backup runs
+      - name: Record timing and check whether the scheduled close needs fetching
         id: observation
         run: python scripts/publication_summary.py --before
       - uses: actions/setup-node@v7
@@ -77,6 +80,7 @@ jobs:
           node --check assets/sentiment.js
       - name: Set a daily cache key in New York time
         id: cache-date
+        if: steps.observation.outputs.close_action == 'refresh' && (github.event_name != 'workflow_dispatch' || inputs.refresh_data)
         run: |
           python - <<'PY'
           import os
@@ -86,7 +90,7 @@ jobs:
               print('day=' + datetime.now(ZoneInfo('America/New_York')).date().isoformat(), file=output)
           PY
       - name: Restore data download cache
-        if: steps.observation.outputs.reuse_close != 'true' && (github.event_name != 'workflow_dispatch' || inputs.refresh_data)
+        if: steps.cache-date.outcome == 'success'
         uses: actions/cache@v6
         with:
           path: .cache/openrs
@@ -96,10 +100,15 @@ jobs:
         id: refresh
         if: github.event_name != 'workflow_dispatch' || inputs.refresh_data
         env:
-          REUSE_CLOSE: ${{ steps.observation.outputs.reuse_close }}
+          CLOSE_ACTION: ${{ steps.observation.outputs.close_action }}
         run: |
-          if [ "$REUSE_CLOSE" = "true" ]; then
-            echo 'Backup: reusing the validated close for the current New York date; retrying deployment without redownloading prices.'
+          if [ "$CLOSE_ACTION" = "home" ]; then
+            echo 'Reusing the validated US close and refreshing only homepage markets.'
+            if ! python -u scripts/update_home.py --refresh --workers 4; then
+              echo '::warning::Homepage update failed. Deploying with the previously validated home.json.'
+            fi
+          elif [ "$CLOSE_ACTION" = "redeploy" ]; then
+            echo 'Reusing the validated US close for deployment.'
           elif [ "$INTRADAY_AUTO" = "true" ]; then
             BEFORE_INTRADAY="$(git hash-object data/intraday.json 2>/dev/null || true)"
             python -u scripts/update_data.py --snapshot intraday --intraday-auto --refresh --workers 2
