@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
-"""Report actual observation times and conservatively reuse closes on backup runs."""
+"""Report actual observation times and reuse validated scheduled closes."""
 import argparse
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, time, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
 NY = ZoneInfo("America/New_York")
 HK = ZoneInfo("Asia/Hong_Kong")
-# Keep the original 08:17 refresh: it also updates markets closing at UTC midnight.
-BACKUP_SCHEDULES = {"11,31 22 * * 1-5"}
+HOME_BACKUP = "17 0 * * 2-6"
+CLOSE_STARTS_HKT = {
+    "56 5 * * 2-6": time(5, 56),
+    "11,31 22 * * 1-5": time(6, 11),
+    HOME_BACKUP: time(8, 17),
+}
 SCHEDULE_LABELS = {
     "56 5 * * 2-6": "05:56 HKT，星期二至六，收市主排程",
     "11,31 22 * * 1-5": "06:11／06:31 HKT，星期二至六，收市備用",
-    "17 0 * * 2-6": "08:17 HKT，星期二至六，收市備用",
+    HOME_BACKUP: "08:17 HKT，星期二至六，首頁更新／美股收市備用",
     "40 10-15 * * 1-5": "紐約 10:40 至 15:40，星期一至五，完整 60m 盤中",
 }
 
@@ -28,27 +32,31 @@ def read_snapshot(path):
 
 
 def can_reuse_close(root, now=None, env=None):
-    """Only near-close backups may reuse a validated close for today's NY date.
-
-    This is duplicate-download suppression, not an exchange calendar or a claim
-    that the live feed is current. On a holiday, an older date never qualifies.
-    Before 16:00 NY (including a very late prior-day trigger), always fetch.
-    Reused data is still built/deployed so a failed prior deployment can recover.
-    """
+    """Check the intended US session even when the run starts after New York midnight."""
     env = os.environ if env is None else env
     now = now or datetime.now(timezone.utc)
+    cron = env.get("LOKIRS_SCHEDULE_CRON")
     if (env.get("LOKIRS_EVENT_NAME") != "schedule"
             or env.get("SNAPSHOT_MODE") != "close"
-            or env.get("LOKIRS_SCHEDULE_CRON") not in BACKUP_SCHEDULES):
+            or cron not in CLOSE_STARTS_HKT):
         return False
-    local = now.astimezone(NY)
+    local = now.astimezone(HK)
+    if not 1 <= local.weekday() <= 5 or local.time() < CLOSE_STARTS_HKT[cron]:
+        return False
+    expected = (local.date() - timedelta(days=1)).isoformat()
     data = read_snapshot(root / "data/latest.json")
-    if local.hour < 16 or data.get("asOf") != local.date().isoformat():
+    if data.get("asOf") != expected:
         return False
     try:
         meta = data["meta"]
         generated = datetime.fromisoformat(meta["generatedAt"])
         if generated.tzinfo is None or generated > now or meta.get("snapshotMode", "close") != "close":
+            return False
+        # The later run can replace proxy prices with native daily closes and
+        # retry failed requests after the provider has caught up.
+        if cron == HOME_BACKUP and (meta.get("benchmarkCloseReconstructed") is not False
+                                    or meta.get("reconstructedDailyCount") != 0
+                                    or meta.get("errors") != []):
             return False
         settings = json.loads((root / "config/settings.json").read_text())
         universe = json.loads((root / "config/universe.json").read_text())
@@ -113,14 +121,20 @@ if __name__ == "__main__":
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     now = datetime.now(timezone.utc)
-    reuse = can_reuse_close(root, now) if args.before else False
-    if args.before and os.environ.get("GITHUB_OUTPUT"):
-        with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as output:
-            output.write(f"reuse_close={str(reuse).lower()}\n")
     report = summarize(root, args.before, now)
     if args.before:
-        report += ("\n備用重試：已有經驗證的本紐約日期收市檔，沿用資料並重新部署；本次不重新抓價。\n"
-                   if reuse else "\n本次未符合備用資料重用條件；按原本所選模式及 refresh_data 選項執行。\n")
+        action = "refresh"
+        if can_reuse_close(root, now):
+            action = "home" if os.environ.get("LOKIRS_SCHEDULE_CRON") == HOME_BACKUP else "redeploy"
+        if os.environ.get("GITHUB_OUTPUT"):
+            with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as output:
+                output.write(f"close_action={action}\n")
+        messages = {
+            "refresh": "按所選模式及 refresh_data 選項執行。",
+            "home": "已有經驗證的同一交易日美股收市。只更新首頁市場並部署。",
+            "redeploy": "已有經驗證的同一交易日美股收市。直接重新部署。",
+        }
+        report += f"\n{messages[action]}\n"
     print(report)
     if os.environ.get("GITHUB_STEP_SUMMARY"):
         with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as output:

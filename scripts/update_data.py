@@ -142,8 +142,11 @@ def run():
 
     tasks = [(s, interval) for interval in ["1d", "30m"] for s in symbols]
     workers = max(1, min(8, args.workers or settings["workers"]))
-    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
-        for count, (symbol, interval, data, error) in enumerate(executor.map(get, tasks), 1):
+    # FRED is independent of Yahoo prices and can spend time retrying its own feed.
+    with (concurrent.futures.ThreadPoolExecutor(max_workers=1) as macro_pool,
+          concurrent.futures.ThreadPoolExecutor(max_workers=workers) as price_pool):
+        fred = None if args.rankings_only else macro_pool.submit(fetch_fred, cache, args.refresh)
+        for count, (symbol, interval, data, error) in enumerate(price_pool.map(get, tasks), 1):
             if data is not None:
                 (daily if interval == "1d" else intra)[symbol] = data
             else:
@@ -185,13 +188,13 @@ def run():
     coverage = valid / len(universe["stocks"])
     if coverage < settings["minimumCoverage"]:
         raise RuntimeError(f"Only {coverage:.1%} current coverage, below safety threshold. Existing snapshot preserved.")
-    if args.rankings_only:
+    if fred is None:
         result["macro"] = [{**row, "status": "stale"} for row in prior.get("macro", [])]
         macro_error = prior.get("meta", {}).get("macroError")
         macro_status = "retained"
     else:
         try:
-            result["macro"] = macro_summary(fetch_fred(cache, args.refresh), now.astimezone(ZoneInfo("Asia/Hong_Kong")).date())
+            result["macro"] = macro_summary(fred.result(), now.astimezone(ZoneInfo("Asia/Hong_Kong")).date())
             macro_error, macro_status = None, "updated"
         except Exception as exc:
             result["macro"] = [{**row, "status": "stale"} for row in prior.get("macro", [])]
